@@ -1,0 +1,40 @@
+<div class="app-layout">
+  <!-- Header -->
+  <header class="app-header">
+    <a routerLink="/" class="header-logo">MyApp</a>
+    <nav class="header-nav">
+      <!-- Example: Login/Settings links -->
+      <a href="#">Settings</a>
+      <a href="#">Logout</a>
+    </nav>
+  </header>
+
+  <!-- Main Area (Sidebar + Content) -->
+  <div class="main-area">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <nav>
+        <ul>
+          <li><a routerLink="/dashboard" routerLinkActive="active-link">Dashboard</a></li>
+          <li><a routerLink="/users" routerLinkActive="active-link">Users</a></li>
+          <li><a routerLink="/products" routerLinkActive="active-link">Products</a></li>
+          <li><a routerLink="/reports" routerLinkActive="active-link">Reports</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <router-outlet></router-outlet> <!-- اینجا محتوای صفحه فعلی نمایش داده می‌شود -->
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <p>© 2026 MyApp. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms of Service</a>
+    </div>
+  </footer>
+</div>

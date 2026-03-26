@@ -1,0 +1,45 @@
+<div class="login-container">
+  <div class="login-card">
+    <h2>Login</h2>
+    <form (ngSubmit)="onSubmit()" [formGroup]="loginForm">
+      <!-- Username Input -->
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input id="username" type="text" formControlName="username" placeholder="Enter your username" required>
+        <!-- از CommonModule برای *ngIf استفاده می‌شود -->
+        <div *ngIf="getError('username', 'required')" class="error-message">
+          Username is required.
+        </div>
+      </div>
+
+      <!-- Password Input -->
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input id="password" type="password" formControlName="password" placeholder="Enter your password" required>
+        <!-- از CommonModule برای *ngIf استفاده می‌شود -->
+        <div *ngIf="getError('password', 'required')" class="error-message">
+          Password is required.
+        </div>
+        <div *ngIf="getError('password', 'minlength')" class="error-message">
+          Password must be at least 6 characters long.
+        </div>
+      </div>
+
+      <!-- Login Button -->
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="loginForm.invalid || isLoading()">
+
+        <ng-container *ngIf="!isLoading(); else loadingTpl">
+          <span>Login</span>
+        </ng-container>
+
+        <ng-template #loadingTpl>
+          <span class="spinner"></span>
+          <span class="loading-text">در حال ورود...</span>
+        </ng-template>
+      </button>
+    </form>
+  </div>
+</div>

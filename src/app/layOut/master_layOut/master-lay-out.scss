@@ -1,0 +1,145 @@
+/* General Layout Container */
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* حداقل ارتفاع صفحه نمایش */
+  width: 100%;
+  overflow-x: hidden; /* جلوگیری از اسکرول افقی ناخواسته */
+}
+
+/* Header Styles (using the previous 'app-header' styles is recommended) */
+.app-header {
+  background-color: #4ca1af;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  /* No 'position: sticky' here if footer is also present and we want layout to flow */
+}
+
+.header-logo {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: white;
+  text-decoration: none;
+}
+
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.header-nav a {
+  color: white;
+  text-decoration: none;
+}
+
+/* Main Content and Sidebar Container */
+.main-area {
+  display: flex;
+  flex: 1; /* Takes up remaining vertical space */
+  width: 100%;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  width: 250px; /* Fixed width for sidebar */
+  background-color: #f4f7f6; /* Light background for sidebar */
+  padding: 1.5rem;
+  border-right: 1px solid #e0e0e0;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+  flex-shrink: 0; /* Prevent sidebar from shrinking */
+  overflow-y: auto; /* Allow scrolling within sidebar if content is too long */
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar li {
+  margin-bottom: 1rem;
+}
+
+.sidebar a {
+  color: #333;
+  text-decoration: none;
+  font-size: 1rem;
+  display: block; /* Make the whole area clickable */
+  padding: 0.5rem 0;
+  transition: color 0.2s ease-in-out, padding-left 0.2s ease-in-out;
+}
+
+.sidebar a:hover,
+.sidebar a.active-link {
+  color: #4ca1af; /* Highlight color */
+  padding-left: 10px; /* Indent on hover/active */
+  font-weight: bold;
+}
+
+/* Main Content Styles */
+.main-content {
+  flex: 1; /* Takes up remaining horizontal space */
+  padding: 2rem;
+  overflow-y: auto; /* Allow scrolling for content */
+  background-color: #ffffff; /* White background for content */
+}
+
+/* Footer Styles (using the previous 'footer' styles is recommended) */
+.app-footer {
+  background-color: #1e1e1e; /* Dark footer */
+  color: white;
+  padding: 1rem;
+  text-align: center;
+  width: 100%;
+  margin-top: auto; /* Pushes footer to the bottom if content is short */
+}
+
+.footer-links a {
+  color: #80bfff;
+  text-decoration: none;
+  margin: 0 0.5rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+  .sidebar {
+    width: 200px; /* Slightly narrower sidebar */
+  }
+  .main-content {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-area {
+    flex-direction: column; /* Stack sidebar and content vertically */
+  }
+  .sidebar {
+    width: 100%;
+    height: auto; /* Allow sidebar to take full width */
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+  .sidebar ul {
+    display: flex; /* Horizontal nav on mobile sidebar */
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.8rem;
+  }
+  .sidebar li {
+    margin-bottom: 0;
+  }
+  .sidebar a {
+    padding: 0.5rem;
+  }
+  .main-content {
+    padding: 1.5rem 1rem; /* Adjust padding for mobile */
+  }
+}

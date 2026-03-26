@@ -1,0 +1,42 @@
+/* auth-layout.component.css */
+.auth-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* حداقل ارتفاع کل صفحه */
+  width: 100%;
+}
+
+.header {
+  background-color: #4ca1af;
+  color: white;
+  padding: 1rem 2rem;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0; /* اجازه نده هدر کوچک شود */
+}
+
+.main-content {
+  display: flex; /* برای اینکه بتواند محتوای درونش را مدیریت کند */
+  flex-grow: 1; /* این باعث می‌شود فضای خالی بین هدر و فوتر را بگیرد */
+  flex-direction: column; /* اگر محتوای شما (app-login) خودش column باشد */
+  /* یا flex-direction: row; اگر میخواهید ابعاد کلی صفحه را بگیرد */
+  width: 100%; /* عرض کامل */
+}
+
+.footer {
+  background-color: #151515;
+  color: #ddd;
+  padding: 15px 30px;
+  text-align: center;
+  font-size: 13px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  flex-shrink: 0; /* اجازه نده فوتر کوچک شود */
+}
+
+/* استایل‌های اضافی برای .main-content که ممکن است نیاز باشد */
+.main-content {
+  /* اگر میخواهید محتوای داخل main-content (یعنی app-login) را هم center کنید */
+  justify-content: center; /* عمودی */
+  align-items: center;     /* افقی */
+  padding: 1rem; /* اضافه کردن مقداری padding به اطراف main-content */
+}
