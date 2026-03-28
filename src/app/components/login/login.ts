@@ -16,39 +16,38 @@ export class LoginComponent {
   private auth = inject(AuthService);
   private router = inject(Router);
 
-  // فرم واکنشی
   loginForm = this.fb.group({
     username: ['', Validators.required],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
-  // حالت بارگذاری
   isLoading = signal(false);
+  loginError = signal<string | null>(null);
 
-  // متد ارسال فرم
   onSubmit(): void {
-    if (this.loginForm.invalid) return;
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
 
     this.isLoading.set(true);
+    this.loginError.set(null);
 
     const { username, password } = this.loginForm.value;
 
-     this.auth.login(username ?? '', password ?? '').subscribe({
-    next: (response) => {
-      console.log("success");
-      this.router.navigateByUrl('/dashboard');
-    },
-    error: () => {
-      alert('نام کاربری یا رمز عبور اشتباه است.');
-    },
-    complete: () => this.isLoading.set(false)
-  });;
-
-
-
-    this.isLoading.set(false);
-
-
+    this.auth.login(username!, password!).subscribe({
+      next: (response) => {
+        this.auth.handleLoginResponse(response);
+        this.router.navigateByUrl('/dashboard');
+      },
+      error: () => {
+        this.loginError.set('نام کاربری یا رمز عبور اشتباه است.');
+        this.isLoading.set(false);
+      },
+      complete: () => {
+        this.isLoading.set(false);
+      }
+    });
   }
 
   getError(controlName: string, errorType: string): boolean {

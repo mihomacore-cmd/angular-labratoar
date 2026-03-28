@@ -1,47 +1,69 @@
-import {inject, Injectable, signal} from '@angular/core';
+import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import {AuthResponse} from '../interfaces/auth.interface'
+import { AuthResponse } from '../interfaces/auth.interface';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private accessToken = signal<string | null>(null);
-  private refreshToken = signal<string | null>(null);
+  private http = inject(HttpClient);
+  private router = inject(Router);
+  private platformId = inject(PLATFORM_ID);
 
-  constructor(
-    private http: HttpClient,
-    private router: Router) {}
+  private API_URL = 'http://localhost:8080/api/auth';
 
+  // ✅ LOGIN (خیلی مهم: withCredentials)
   login(username: string, password: string) {
-   return this.http.post<AuthResponse>("http://localhost:8080/api/auth/login",
-      { username, password })
+    return this.http.post<AuthResponse>(
+      `${this.API_URL}/login`,
+      { username, password },
+      { withCredentials: true } // 👈 برای ارسال/دریافت کوکی
+    );
   }
+
+  // ✅ فقط refreshToken ذخیره میشه
+  handleLoginResponse(response: AuthResponse) {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('refreshToken', response.refreshToken);
+    }
+  }
+
+  getRefreshToken(): string | null {
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem('refreshToken');
+    }
+    return null;
+  }
+
+  // ❌ accessToken رو دیگه نمی‌خونیم (HttpOnly هست)
+  // getAccessToken حذف شد
 
   logout() {
-    this.accessToken.set(null);
-    this.refreshToken.set(null);
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    this.router.navigate(['/login']);
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('refreshToken');
+    }
+
+    // درخواست به سرور برای حذف کوکی
+    this.http.post(`${this.API_URL}/logout`, {}, {
+      withCredentials: true
+    }).subscribe();
+
+    this.router.navigateByUrl('/login');
   }
 
-  getAccessToken() {
-    return this.accessToken() || localStorage.getItem('access_token');
-  }
-
-  getRefreshToken() {
-    return this.refreshToken() || localStorage.getItem('refresh_token');
-  }
-
+  // ساده‌ترین چک لاگین
   isAuthenticated(): boolean {
-    return !!this.getAccessToken();
+    return !!this.getRefreshToken();
   }
 
-  // اگر بخوای refresh token رو اعمال کنی
+  // 🔄 رفرش توکن (واقعی)
   refreshAccessToken() {
-    // اینجا درخواست واقعی به سرور می‌فرستی، فعلاً تستی:
-    const newAccess = 'NEW_ACCESS_TOKEN';
-    localStorage.setItem('access_token', newAccess);
-    this.accessToken.set(newAccess);
+    const refreshToken = this.getRefreshToken();
+
+    return this.http.post<any>(
+      `${this.API_URL}/refresh`,
+      { refreshToken },
+      { withCredentials: true }
+    );
   }
 }
