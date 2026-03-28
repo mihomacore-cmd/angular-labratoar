@@ -33,23 +33,24 @@ export class LoginComponent {
 
     const { username, password } = this.loginForm.value;
 
-    // فراخوانی سرویس احراز هویت
-    const success = this.auth.login(username ?? '', password ?? '');
+     this.auth.login(username ?? '', password ?? '').subscribe({
+    next: (response) => {
+      console.log("success");
+      this.router.navigateByUrl('/dashboard');
+    },
+    error: () => {
+      alert('نام کاربری یا رمز عبور اشتباه است.');
+    },
+    complete: () => this.isLoading.set(false)
+  });;
+
+
 
     this.isLoading.set(false);
 
-    if (success) {
-      console.log('success');
-      // هدایت به داشبورد یا صفحه‌ی اصلی
-    //  this.router.navigate(['/dashboard']).then(r =>r );
-      this.router.navigateByUrl('/dashboard');
-    } else {
-      // نمایش خطای ناموفق بودن ورود
-      alert('نام کاربری یا رمز عبور اشتباه است.');
-    }
+
   }
 
-  // متد کمکی برای گرفتن خطا از کنترل
   getError(controlName: string, errorType: string): boolean {
     const control = this.loginForm.get(controlName);
     return !!control?.hasError(errorType) && (control?.dirty || control?.touched);

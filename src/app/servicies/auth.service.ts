@@ -1,27 +1,20 @@
-import { Injectable, signal } from '@angular/core';
+import {inject, Injectable, signal} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import {AuthResponse} from '../interfaces/auth.interface'
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private accessToken = signal<string | null>(null);
   private refreshToken = signal<string | null>(null);
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router) {}
 
-  // تستی - بدون درخواست واقعی
   login(username: string, password: string) {
-    // در حالت واقعی اینجا باید از http.post استفاده کنی
-    if (username === '1' && password === '123456') {
-      const fakeAccess = 'FAKE_ACCESS_TOKEN';
-      const fakeRefresh = 'FAKE_REFRESH_TOKEN';
-      this.accessToken.set(fakeAccess);
-      this.refreshToken.set(fakeRefresh);
-      localStorage.setItem('access_token', fakeAccess);
-      localStorage.setItem('refresh_token', fakeRefresh);
-      return true;
-    }
-    return false;
+   return this.http.post<AuthResponse>("http://localhost:8080/api/auth/login",
+      { username, password })
   }
 
   logout() {
