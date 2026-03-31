@@ -4,10 +4,7 @@ import {LoginComponent} from '../../components/login/login';
 
 @Component({
   selector: 'app-login-page',
-  imports: [
-    AuthLayOut,
-    LoginComponent
-  ],
+ imports:[LoginComponent],
   templateUrl: './login-page.html',
   styleUrl: './login-page.scss',
 })

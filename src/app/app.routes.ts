@@ -1,14 +1,40 @@
 import { Routes } from '@angular/router';
-import {LoginPage} from './pages/login-page/login-page';
-import {authGuard} from './guards/auth.gaurd';
+import { AuthLayOut } from './layOut/auth_layOut/auth-lay-out';
+import { MasterLayOut } from './layOut/master_layOut/master-lay-out';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: 'login', component: LoginPage },
 
-  { path: 'dashboard',
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
 
-    loadComponent :()=> import('./pages/dashboard/dashboard-page').then(m => m.DashboardPage)
-    , canActivate: [authGuard]
-  }
+  // ✅ auth layout
+  {
+    path: '',
+    component: AuthLayOut,
+    children: [
+      {
+        path: 'login',
+        loadComponent: () =>
+          import('./pages/login-page/login-page').then(m => m.LoginPage),
+      },
+    ],
+  },
+
+  // ✅ main app layout
+  {
+    path: '',
+    component: MasterLayOut,
+    // canActivate: [authGuard]
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./pages/dashboard/dashboard-page').then(m => m.DashboardPage),
+      },
+      {
+        path: 'addOrder',
+        loadComponent: () =>
+          import('./components/addOrder/add-order.component').then(m => m.AddOrderComponent),
+      },
+    ],
+  },
 ];

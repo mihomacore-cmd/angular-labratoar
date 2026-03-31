@@ -13,9 +13,10 @@
   <div class="main-area">
     <!-- Sidebar -->
     <aside class="sidebar">
+
       <nav>
         <ul>
-          <li><a routerLink="/dashboard" routerLinkActive="active-link">Dashboard</a></li>
+          <li><a [routerLink]="['/addOrder']" routerLinkActive="active-link">ثبت سفارش جدید</a></li>
           <li><a routerLink="/users" routerLinkActive="active-link">Users</a></li>
           <li><a routerLink="/products" routerLinkActive="active-link">Products</a></li>
           <li><a routerLink="/reports" routerLinkActive="active-link">Reports</a></li>
@@ -25,7 +26,7 @@
 
     <!-- Main Content -->
     <main class="main-content">
-      <router-outlet></router-outlet> <!-- اینجا محتوای صفحه فعلی نمایش داده می‌شود -->
+      <router-outlet></router-outlet>
     </main>
   </div>
 
