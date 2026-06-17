@@ -44,16 +44,38 @@
       </div>
     </div>
 
-    <div class="field-item">
-      <label for="entryDate">تاریخ ورود</label>
-      <input id="entryDate" type="text" formControlName="entryDate" placeholder="ورود">
-    </div>
+    
+<div class="field-item">
+  <label>تاریخ ورود</label>
 
-    <div class="field-item">
-      <label for="exitDate">تاریخ خروج</label>
-      <input id="exitDate" type="text" formControlName="exitDate" placeholder="خروج">
-    </div>
+  <mat-form-field appearance="outline" class="date-field">
+    <input
+      matInput
+      [matDatepicker]="entryPicker"
+      formControlName="entryDate"
+      [value]="formatPersianDate(form.controls.entryDate.value)"
+      readonly
+    >
+    <mat-datepicker-toggle matSuffix [for]="entryPicker"></mat-datepicker-toggle>
+    <mat-datepicker #entryPicker (closed)="updateEntryDate()"></mat-datepicker>
+  </mat-form-field>
+</div>
 
+<div class="field-item">
+  <label>تاریخ خروج</label>
+
+  <mat-form-field appearance="outline" class="date-field">
+    <input
+      matInput
+      [matDatepicker]="exitPicker"
+      formControlName="exitDate"
+      [value]="formatPersianDate(form.controls.exitDate.value)"
+      readonly
+    >
+    <mat-datepicker-toggle matSuffix [for]="exitPicker"></mat-datepicker-toggle>
+    <mat-datepicker #exitPicker (closed)="updateExitDate()"></mat-datepicker>
+  </mat-form-field>
+</div>
     <div></div>
   </div>
 
@@ -161,3 +183,17 @@
     <button class="submit-btn" type="submit">ثبت سفارش</button>
   </div>
 </form>
+<div *ngIf="showErrorModal" class="error-modal-backdrop">
+  <div class="error-modal-content">
+    <div class="error-modal-header">
+      <h3>خطا</h3>
+      <button class="close-button" (click)="closeErrorModal()">&times;</button>
+    </div>
+    <div class="error-modal-body">
+      <p>{{ errorMessage }}</p>
+    </div>
+    <div class="error-modal-footer">
+      <button class="confirm-button" (click)="closeErrorModal()">تایید</button>
+    </div>
+  </div>
+</div>

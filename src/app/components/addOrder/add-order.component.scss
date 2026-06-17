@@ -489,3 +489,93 @@ tbody tr:hover td {
     padding: 0.95rem 1.5rem;
   }
 }
+
+/* فایل: error-modal.component.css */
+
+.error-modal-backdrop {
+  position: fixed; /* برای پوشاندن کل صفحه */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* پس‌زمینه نیمه‌شفاف */
+  display: flex;
+  justify-content: center; /* وسط کردن افقی */
+  align-items: center;   /* وسط کردن عمودی */
+  z-index: 1000;         /* اطمینان از نمایش روی همه عناصر دیگر */
+}
+
+.error-modal-content {
+  background-color: #fff;
+  padding: 20px 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 500px; /* حداکثر عرض مودال */
+  text-align: right; /* راست‌چین کردن متن برای فارسی */
+  animation: fadeIn 0.3s ease-out; /* انیمیشن ورود */
+}
+
+.error-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.error-modal-header h3 {
+  color: #d9534f; /* رنگ قرمز برای عنوان خطا */
+  margin: 0;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: #aaa;
+  padding: 0 5px;
+}
+.close-button:hover {
+    color: #777;
+}
+
+.error-modal-body {
+  margin-bottom: 20px;
+  color: #333; /* رنگ متن اصلی */
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.error-modal-body p {
+    margin: 0; /* حذف مارجین پیش‌فرض پاراگراف */
+}
+
+.error-modal-footer {
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+  text-align: center;
+}
+
+.confirm-button {
+  background-color: #d9534f; /* دکمه تایید به رنگ قرمز */
+  color: white;
+  padding: 10px 25px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.confirm-button:hover {
+  background-color: #c9302c; /* تیره‌تر شدن رنگ در حالت هاور */
+}
+
+/* انیمیشن ساده برای ورود مودال */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

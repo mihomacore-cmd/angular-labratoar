@@ -11,7 +11,7 @@
 .app-header {
   background-color: #4ca1af;
   color: white;
-  padding: 0.8rem 1.5rem;
+  padding: 1.9rem 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -21,7 +21,7 @@
 }
 
 .header-logo {
-  font-size: 1.4rem;
+  font-size: 1.9rem;
   font-weight: bold;
   color: white;
   text-decoration: none;
@@ -35,6 +35,7 @@
 .header-nav a {
   color: white;
   text-decoration: none;
+  font-size:2.4rem;
 }
 
 /* Main Content and Sidebar Container */
@@ -46,40 +47,55 @@
 
 /* Sidebar Styles */
 .sidebar {
-  width: 250px; /* Fixed width for sidebar */
-  background-color: #f4f7f6; /* Light background for sidebar */
+  width: 240px;
+  background: linear-gradient(180deg, #f7f9f9 0%, #f1f4f4 100%);
   padding: 1.5rem;
-  border-right: 1px solid #e0e0e0;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
-  flex-shrink: 0; /* Prevent sidebar from shrinking */
-  overflow-y: auto; /* Allow scrolling within sidebar if content is too long */
+  border-right: 1px solid #d9e1e1;
+  box-shadow: 3px 0 12px rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+  overflow-y: auto;
+  border-radius: 0 12px 12px 0; /* گوشه های نرم‌تر */
 }
 
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
+/* List items */
 .sidebar li {
-  margin-bottom: 1rem;
+  margin-bottom: 1.4rem;
 }
 
+/* Links */
 .sidebar a {
-  color: #333;
+  color: #444;
   text-decoration: none;
-  font-size: 1rem;
-  display: block; /* Make the whole area clickable */
-  padding: 0.5rem 0;
-  transition: color 0.2s ease-in-out, padding-left 0.2s ease-in-out;
+  font-size: 1.65rem;
+  display: block;
+  padding: 0.9rem 1rem;
+  border-radius: 8px;
+
+  /* سایه‌ای بسیار ظریف هنگام hover */
+  transition:
+    color 0.25s ease,
+    background-color 0.25s ease,
+    padding-left 0.3s ease,
+    box-shadow 0.25s ease;
 }
 
-.sidebar a:hover,
-.sidebar a.active-link {
-  color: #4ca1af; /* Highlight color */
-  padding-left: 10px; /* Indent on hover/active */
-  font-weight: bold;
+/* Hover state */
+.sidebar a:hover {
+  background-color: #e9f1ff;
+  color: #1a4d9e;
+  padding-left: 1.6rem;
+  box-shadow: 0 4px 12px rgba(40, 60, 120, 0.12);
 }
+
+/* Active state */
+.sidebar a.active {
+  background-color: #dbe8ff;
+  color: #104799;
+  padding-left: 1.6rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(40, 60, 120, 0.15);
+}
+
 
 /* Main Content Styles */
 .main-content {

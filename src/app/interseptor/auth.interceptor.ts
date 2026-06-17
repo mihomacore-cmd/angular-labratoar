@@ -11,7 +11,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
     // ✅ فقط withCredentials اضافه می‌کنیم
     const cloned = req.clone({
-      withCredentials: true
+     // withCredentials: true
     });
 
     return next.handle(cloned);

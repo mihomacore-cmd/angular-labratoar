@@ -17,16 +17,18 @@ export class AuthService {
     return this.http.post<AuthResponse>(
       `${this.API_URL}/login`,
       { username, password },
-      { withCredentials: true } // 👈 برای ارسال/دریافت کوکی
+    //  { withCredentials: true } // 👈 برای ارسال/دریافت کوکی
     );
   }
 
   // ✅ فقط refreshToken ذخیره میشه
-  handleLoginResponse(response: AuthResponse) {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('refreshToken', response.refreshToken);
-    }
+handleLoginResponse(response: AuthResponse) {
+  if (isPlatformBrowser(this.platformId)) {
+    localStorage.setItem('access_token', response.access_token);
+    debugger;
+    localStorage.setItem('refresh_token', response.refresh_token);
   }
+}
 
   getRefreshToken(): string | null {
     if (isPlatformBrowser(this.platformId)) {

@@ -1,7 +1,6 @@
 export interface AuthResponse{
-    refreshToken:string;
-    accessToken:string;
-    type:string;
-    username:string;
+        username:string;
     role:string;
+    access_token:string;
+    refresh_token:string;
 }

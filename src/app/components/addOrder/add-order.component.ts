@@ -1,21 +1,13 @@
 import { CommonModule } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Output,
-  inject,
-} from '@angular/core';
-import {
-  AbstractControl,
-  FormArray,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  ValidationErrors,
-  Validators,
-} from '@angular/forms';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject } from '@angular/core';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { AddOrderService} from '../../servicies/addOrder.service';
+import { ReactiveFormsModule, AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+
 
 export type InvoiceType = 'daily' | 'monthly';
 
@@ -41,7 +33,7 @@ export interface OrderPayload {
   grossTotal: number;
   netTotal: number;
   items: OrderItemPayload[];
-  attachments: File[];
+ // attachments: File[];
 }
 
 type OrderItemForm = {
@@ -58,8 +50,8 @@ type OrderFormControls = {
   patientName: FormControl<string>;
   invoiceNumber: FormControl<string>;
   invoiceType: FormControl<InvoiceType>;
-  entryDate: FormControl<string>;
-  exitDate: FormControl<string>;
+  entryDate: FormControl<Date | null>;
+  exitDate: FormControl<Date | null>;
   discountAmount: FormControl<number>;
   description: FormControl<string>;
   items: FormArray<FormGroup<OrderItemForm>>;
@@ -68,17 +60,31 @@ type OrderFormControls = {
 @Component({
   selector: 'add-order',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDatepickerModule,
+    MatInputModule,
+    MatFormFieldModule,
+  ],
+  providers: [
+  provideNativeDateAdapter()
+  ],
   templateUrl: './add-order.component.html',
   styleUrl: './add-order.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddOrderComponent {
-  private readonly fb = inject(FormBuilder);
 
+  showErrorModal: boolean = false;
+  errorMessage: string = '';
+
+  private readonly fb = inject(FormBuilder);
+  private orderService = inject(AddOrderService);
   @Output() readonly orderSubmit = new EventEmitter<OrderPayload>();
 
   selectedFiles: File[] = [];
+
 
   private readonly invoiceNumberRequiredIfDaily = (
     control: AbstractControl,
@@ -99,8 +105,8 @@ export class AddOrderComponent {
       patientName: this.fb.nonNullable.control('', [Validators.required]),
       invoiceNumber: this.fb.nonNullable.control(''),
       invoiceType: this.fb.nonNullable.control<InvoiceType>('daily'),
-      entryDate: this.fb.nonNullable.control('', [Validators.required]),
-      exitDate: this.fb.nonNullable.control('', [Validators.required]),
+      entryDate: this.fb.control<Date | null>(null, [Validators.required]),
+      exitDate: this.fb.control<Date | null>(null, [Validators.required]),
       discountAmount: this.fb.nonNullable.control(0, [Validators.min(0)]),
       description: this.fb.nonNullable.control(''),
       items: this.fb.array<FormGroup<OrderItemForm>>([this.createItemGroup()]),
@@ -146,8 +152,8 @@ export class AddOrderComponent {
       patientName: '',
       invoiceNumber: '',
       invoiceType: 'daily',
-      entryDate: '',
-      exitDate: '',
+      entryDate: null,
+      exitDate: null,
       discountAmount: 0,
       description: '',
     });
@@ -155,6 +161,16 @@ export class AddOrderComponent {
     this.form.markAsPristine();
     this.form.markAsUntouched();
   }
+
+  updateEntryDate() {
+  const value = this.form.controls.entryDate.value;
+  this.form.controls.entryDate.setValue(value);
+}
+
+updateExitDate() {
+  const value = this.form.controls.exitDate.value;
+  this.form.controls.exitDate.setValue(value);
+}
 
   onFilesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -183,6 +199,15 @@ export class AddOrderComponent {
 
   formatMoney(value: number): string {
     return new Intl.NumberFormat('fa-IR').format(value || 0);
+  }
+
+   formatPersianDate(date: Date | null): string {
+    if (!date) return '';
+    return new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(date);
   }
 
   onSubmit(): void {
@@ -218,18 +243,58 @@ export class AddOrderComponent {
       patientName: raw.patientName.trim(),
       invoiceNumber: raw.invoiceNumber.trim(),
       invoiceType: raw.invoiceType,
-      entryDate: raw.entryDate.trim(),
-      exitDate: raw.exitDate.trim(),
+      entryDate: this.formatPersianDate(raw.entryDate),
+      exitDate: this.formatPersianDate(raw.exitDate),
       discountAmount,
       description: raw.description.trim(),
       grossTotal,
       netTotal,
       items,
-      attachments: [...this.selectedFiles],
+    //  attachments: [...this.selectedFiles],
     };
 
     this.orderSubmit.emit(payload);
+
+    this.sendOrderToBackend(payload );
+
   }
+
+   private sendOrderToBackend(payload: OrderPayload ): void {
+    if (this.form.invalid) {
+      alert('فرم نامعتبر است.');
+     
+      this.errorMessage = 'لطفاً تمام فیلدهای الزامی را به درستی پر کنید.';
+      this.showErrorModal = true;
+      return;
+    }
+
+    // استفاده از سینتکس جدید subscribe
+    this.orderService.submitOrder(payload , this.selectedFiles).subscribe({
+      next: response => {
+        alert('سفارش با موفقیت ثبت شد!'); // استفاده از alert کمی قدیمی است، شاید بهتر باشد از modal یا snackbar استفاده کنید
+        this.form.reset();
+        this.selectedFiles = [];
+       
+      },
+      error: error => {
+       this.errorMessage = 'خطایی رخ داده است مجددا تلاش کنید ';
+       this.showErrorModal = true;
+      }, 
+    });
+  }
+
+
+
+ closeErrorModal(): void {
+    this.showErrorModal = false;
+    this.errorMessage = '';
+  }
+
+
+
+
+
+
 
   private normalizeNumber(value: number | string | null | undefined): number {
     if (typeof value === 'number') {
