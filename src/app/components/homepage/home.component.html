@@ -1,0 +1,42 @@
+<!-- بخش Hero (فقط تصویر و افکت‌ها) -->
+<div class="hero" id="hero" style="background: #0c4a6e;">
+  <button class="login-btn" (click)="goToLogin()">
+    <span class="login-btn__icon">→</span>
+    <span>Login</span>
+  </button>
+  <img src="/logo.png" alt="لوگو" class="logo">
+  <img src="/befor.png" alt="زمینه" class="hero-img-base">
+  <img src="/after2.png" alt="رویی" class="hero-img-reveal" id="revealImg">
+  <div class="hero-scanlines" id="scanLines"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+  <div class="cursor-dot" id="cursorDot"></div>
+</div>
+
+<div class="hero-placeholder"></div>
+
+<!-- بخش جدید برای نوشته‌ها (زیر تصویر) -->
+<section class="hero-body">
+  <div class="hero-body-inner">
+    <div class="name">
+      <div class="name-title">نگاره لبخند</div>
+      <div class="name-sub">(کریمی)</div>
+      <div class="name-desc">
+        تولید پروتزهای ارتودنسی، زیبایی و ارتودنسی پیشگیری (اطفال)
+      </div>
+    </div>
+  </div>
+
+  <div class="slider-container">
+      <div class="slider-track">
+        <div class="slide" *ngFor="let img of images; let i = index" [class.active]="i === currentIndex">
+          <img [src]="img" alt="اسلاید {{i+1}}">
+        </div>
+      </div>
+      <div class="dots">
+        <span class="dot" *ngFor="let img of images; let i = index" 
+              [class.active]="i === currentIndex"
+              (click)="goToSlide(i)"></span>
+      </div>
+    </div>
+
+</section>

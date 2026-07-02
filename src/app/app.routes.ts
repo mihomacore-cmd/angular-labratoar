@@ -3,10 +3,16 @@ import { AuthLayOut } from './layOut/auth_layOut/auth-lay-out';
 import { MasterLayOut } from './layOut/master_layOut/master-lay-out';
 
 export const routes: Routes = [
+  // Home page (without any layout)
+  {
+    path: '',
+    loadComponent: () =>
+      import('./components/homepage/home.component').then(
+        (m) => m.HomeComponent
+      ),
+  },
 
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
-
-  // ✅ auth layout
+  // Authentication layout
   {
     path: '',
     component: AuthLayOut,
@@ -14,12 +20,14 @@ export const routes: Routes = [
       {
         path: 'login',
         loadComponent: () =>
-          import('./pages/login-page/login-page').then(m => m.LoginPage),
+          import('./pages/login-page/login-page').then(
+            (m) => m.LoginPage
+          ),
       },
     ],
   },
 
-  // ✅ main app layout
+  // Main application layout
   {
     path: '',
     component: MasterLayOut,
@@ -28,13 +36,23 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         loadComponent: () =>
-          import('./pages/dashboard/dashboard-page').then(m => m.DashboardPage),
+          import('./pages/dashboard/dashboard-page').then(
+            (m) => m.DashboardPage
+          ),
       },
       {
         path: 'addOrder',
         loadComponent: () =>
-          import('./components/addOrder/add-order.component').then(m => m.AddOrderComponent),
+          import('./components/addOrder/add-order.component').then(
+            (m) => m.AddOrderComponent
+          ),
       },
     ],
+  },
+
+  // Fallback
+  {
+    path: '**',
+    redirectTo: '',
   },
 ];
