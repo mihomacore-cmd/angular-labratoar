@@ -21,6 +21,8 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   router = inject(Router);
   private heroElement: HTMLElement | null = null;
   private scrollListener: (() => void) | null = null;
+  private navbarElement: HTMLElement | null = null;
+
 
   goToLogin(): void {
     this.router.navigate(['/login']);
@@ -33,6 +35,8 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     const scanLines = document.getElementById('scanLines') as HTMLDivElement;
     const cursorRing = document.getElementById('cursorRing') as HTMLDivElement;
     const cursorDot = document.getElementById('cursorDot') as HTMLDivElement;
+    this.navbarElement = document.getElementById('navbar') as HTMLElement;
+
 
     // اگر هرکدام وجود نداشت، از ادامه کار خارج شو
     if (!hero || !revealImg || !scanLines || !cursorRing || !cursorDot) {
@@ -116,22 +120,14 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       scanLines.style.opacity = '0';
     });
 
-    // ---- listener اسکرول با تنظیم margin-top ----
 this.scrollListener = () => {
-  if (!this.heroElement) return;
+  if (!this.navbarElement) return;
   const scrollY = window.scrollY || window.pageYOffset || 0;
-  const heroBody = document.querySelector('.hero-body') as HTMLElement;
   
-  if (scrollY > 0) {
-    this.heroElement.classList.add('scrolled');
-    if (heroBody) {
-      heroBody.style.marginTop = 'calc(70vh - 80px)';
-    }
+  if (scrollY > 50) {
+    this.navbarElement.classList.add('scrolled');
   } else {
-    this.heroElement.classList.remove('scrolled');
-    if (heroBody) {
-      heroBody.style.marginTop = '0';
-    }
+    this.navbarElement.classList.remove('scrolled');
   }
 };
 
@@ -177,6 +173,8 @@ window.addEventListener('scroll', this.scrollListener);
     if (this.slideInterval) {
       clearInterval(this.slideInterval);
     }
+
+
   }
 
 

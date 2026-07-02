@@ -1,86 +1,149 @@
-/* تمام استایل‌های مربوط به hero (کپی از کد مستقل) */
-.hero {
-  position: fixed;       /* ثابت در بالای صفحه */
+/* ====== Navbar ====== */
+.navbar {
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 100;
+  z-index: 200;
+  padding: 0.4rem 2rem; 
+  transition: all 0.4s ease;
+  background: rgba(31, 28, 28, 0);
+  /* دیگر display:flex در اینجا نیست تا به .nav-inner بسپاریم */
+}
+.nav-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* space-between باعث می‌شود:
+     - اولین فرزند (دکمه) به چپ برود
+     - آخرین فرزند (لوگو) به راست برود
+  */
+}
+
+.logo {
+  display: inline-block;
+  /* دیگر position:absolute ندارد */
+}
+
+.logo-img {
+  height: 80px;
+  width: auto;
+  filter: drop-shadow(0 0 6px rgba(0,0,0,0.2));
+  border: 10px solid rgba(255,255,255,0.18);
+  border-radius: 10%;
+  transition: filter 0.3s ease;
+}
+
+.login-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 15px;
+  padding: 18px 28px;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.1);
+  color: #0c4a6e;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.18);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+}
+
+/* سایر استایل‌ها به‌قوت خود باقی هستند */
+
+.login-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(103, 232, 249, 0.9), rgba(59, 130, 246, 0.5), rgba(255, 255, 255, 0.15));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.login-btn:hover {
+  transform: translateY(-3px) scale(1.03);
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(103, 232, 249, 0.45);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22), 0 0 22px rgba(34, 211, 238, 0.18);
+}
+
+.login-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.login-btn__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #22d3ee, #2563eb);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 800;
+  box-shadow: 0 0 18px rgba(34, 211, 238, 0.35), inset 0 1px 2px rgba(255, 255, 255, 0.25);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.login-btn:hover .login-btn__icon {
+  transform: translateX(2px) rotate(-8deg);
+  box-shadow: 0 0 22px rgba(34, 211, 238, 0.55), inset 0 1px 2px rgba(255, 255, 255, 0.25);
+}
+
+.login-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.28), 0 14px 34px rgba(0, 0, 0, 0.22);
+}
+
+/* ====== حالت اسکرول شده ====== */
+.navbar.scrolled {
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 2px 24px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(20px);
+  padding: 0.2rem 2rem;
+
+
+  .logo-img {
+    filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.1));
+  }
+
+  .login-btn {
+    background: rgba(12, 74, 110, 0.05);
+    border-color: rgba(12, 74, 110, 0.2);
+    color: #0c4a6e;        /* تغییر رنگ متن به آبی تیره */
+  }
+
+  .login-btn__icon {
+    /* در صورت نیاز تغییرات جزئی */
+  }
+}
+
+/* ====== Hero ====== */
+.hero {
+  position: relative;
   width: 100%;
   height: 70vh;
   min-height: 400px;
   max-height: 700px;
   overflow: hidden;
-  border-radius: 0;      /* در حالت عادی گوشه‌گرد حذف شود تا با placeholder هماهنگ باشد */
+  border-radius: 0;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
   cursor: none;
   background: #0c4a6e;
-  transition: height 0.4s ease, background 0.4s ease, box-shadow 0.4s ease;
+  transition: background 0.4s ease, box-shadow 0.4s ease;
 }
-
-
-.hero-placeholder {
-  height: 70vh;
-  min-height: 400px;
-  max-height: 700px;
-  transition: height 0.4s ease;
-  /* رنگ پس‌زمینه‌ای که با hero هماهنگ باشد (اختیاری) */
-  background: transparent;
-}
-
-/* ====== حالت اسکرول شده ====== */
-.hero.scrolled {
-  background: #ffffff !important;
-  height: 80px;
-  min-height: 80px;
-  max-height: 80px;
-  box-shadow: 0 2px 24px rgba(0, 0, 0, 0.08);
-  cursor: default;
-}
-
-
-
-.hero.scrolled + .hero-placeholder {
-  height: 80px;
-  min-height: 80px;
-  max-height: 80px;
-}
-/* مخفی کردن تصاویر و افکت‌ها در حالت اسکرول */
-.hero.scrolled .hero-img-base,
-.hero.scrolled .hero-img-reveal,
-.hero.scrolled .hero-scanlines,
-.hero.scrolled .cursor-ring,
-.hero.scrolled .cursor-dot,
-.hero.scrolled .hint {
-  opacity: 0 !important;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-/* لوگو و دکمه لاگین در حالت اسکرول */
-.hero.scrolled .logo {
-  filter: drop-shadow(0 0 6px rgba(0,0,0,0.08));
-  /* در صورت نیاز رنگ‌آمیزی مجدد */
-}
-
-.hero.scrolled .login-btn {
-  background: rgba(255, 255, 255, 0.9);
-  border-color: rgba(12, 74, 110, 0.2);
-  color: #0c4a6e;
-  backdrop-filter: blur(8px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-}
-
-.hero.scrolled .login-btn:hover {
-  background: #ffffff;
-  border-color: #0c4a6e;
-}
-
-/* در صورت نیاز، آیکون دکمه نیز تطبیق داده شود */
-.hero.scrolled .login-btn__icon {
-  background: linear-gradient(135deg, #0c4a6e, #0891b2);
-}
-
-
-
 
 .hero-img-base,
 .hero-img-reveal {
@@ -90,6 +153,10 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  box-shadow: 
+    0 18px 45px rgba(0, 0, 0, 0.3),
+    0 6px 18px rgba(8, 145, 178, 0.08);
+  border-radius: 12px; /* اگر می‌خواهید گوشه‌ها گرد شوند (اختیاری) */
 }
 
 .hero-img-base {
@@ -98,7 +165,6 @@
 
 .hero-img-reveal {
   z-index: 1;
-  /* ماسک اولیه (دایره‌ای در مرکز) */
   -webkit-mask-image: radial-gradient(circle 260px at 50% 50%,
       black 0%, black 28%,
       rgba(0, 0, 0, 0.55) 52%,
@@ -186,7 +252,7 @@
   white-space: nowrap;
 }
 
-/* واکنش‌گرا */
+/* ====== واکنش‌گرایی ====== */
 @media (max-width: 600px) {
   .hero {
     height: 50vh;
@@ -200,139 +266,25 @@
     width: 6px;
     height: 6px;
   }
-}
-/* ====== Login Button ====== */
-.login-btn {
-  position: absolute;
-  top: 22px;
-  left: 22px;
-  z-index: 30;
-
-  display: inline-flex;
-  align-items: center;
-  gap: 15px; /* Increased gap */
-
-  padding: 16px 30px; /* Increased padding */
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
-  color:#0c4a6e;
-  font-size: 1.2rem; /* Increased font size */
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  cursor: pointer;
-
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-
-  box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
-
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease,
-    background 0.25s ease,
-    border-color 0.25s ease;
-}
-
-.login-btn::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(135deg, rgba(103, 232, 249, 0.9), rgba(59, 130, 246, 0.5), rgba(255, 255, 255, 0.15));
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-}
-
-.login-btn:hover {
-  transform: translateY(-3px) scale(1.03); /* Adjusted transform */
-  background: rgba(255, 255, 255, 0.16);
-  border-color: rgba(103, 232, 249, 0.45);
-  box-shadow:
-    0 14px 34px rgba(0, 0, 0, 0.22),
-    0 0 22px rgba(34, 211, 238, 0.18);
-}
-
-.login-btn:active {
-  transform: translateY(0) scale(0.97); /* Adjusted transform */
-}
-
-.login-btn__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 36px; /* Increased icon width */
-  height: 36px; /* Increased icon height */
-  border-radius: 50%;
-
-  background: linear-gradient(135deg, #22d3ee, #2563eb);
-  color: #fff;
-  font-size: 1.1rem; /* Increased icon font size */
-  font-weight: 800;
-
-  box-shadow:
-    0 0 18px rgba(34, 211, 238, 0.35),
-    inset 0 1px 2px rgba(255, 255, 255, 0.25);
-
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.login-btn:hover .login-btn__icon {
-  transform: translateX(2px) rotate(-8deg);
-  box-shadow:
-    0 0 22px rgba(34, 211, 238, 0.55),
-    inset 0 1px 2px rgba(255, 255, 255, 0.25);
-}
-
-.login-btn:focus-visible {
-  outline: none;
-  box-shadow:
-    0 0 0 3px rgba(34, 211, 238, 0.28),
-    0 14px 34px rgba(0, 0, 0, 0.22);
-}
-
-/* موبایل */
-@media (max-width: 600px) {
   .login-btn {
-    top: 14px;
-    left: 14px;
-    padding: 12px 20px; /* Adjusted padding for mobile */
-    font-size: 1rem; /* Adjusted font size for mobile */
-    gap: 10px; /* Adjusted gap for mobile */
+    padding: 12px 20px;
+    font-size: 1rem;
+    gap: 10px;
   }
-
   .login-btn__icon {
-    width: 30px; /* Adjusted icon width for mobile */
-    height: 30px; /* Adjusted icon height for mobile */
-    font-size: 0.95rem; /* Adjusted icon font size for mobile */
+    width: 30px;
+    height: 30px;
+    font-size: 0.95rem;
+  }
+  .logo-img {
+    height: 40px;
   }
 }
-.logo{
-  position: absolute;
-  top: 22px;
-  right: 22px;
-  z-index: 30;
 
-  width: 150px; 
-  height: auto; 
-
-  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
-
-border-radius: 10%; 
-}
-
-/// ===== Hero Body (زیر تصویر) =====
+/* ====== Hero Body ====== */
 .hero-body {
   background: white;
-  padding: 1.2rem 2rem 3rem;   // padding-top از 2.8rem به 1.2rem کاهش یافت
+  padding: 1.2rem 2rem 3rem;
   text-align: center;
   border-top: 1px solid rgba(8, 145, 178, 0.08);
 }
@@ -342,16 +294,15 @@ border-radius: 10%;
   margin: 0 auto;
 }
 
-// ===== نوشته‌های داخل name =====
 .name {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.1rem;   // فاصله‌ی بسیار کم بین آیتم‌ها
+  gap: 0.1rem;
 }
 
 .name-title {
-  font-size: 3.6rem;        // افزایش اندازه (قبلاً 2.8rem)
+  font-size: 3.6rem;
   font-weight: 900;
   color: #0c4a6e;
   letter-spacing: -0.02em;
@@ -359,22 +310,21 @@ border-radius: 10%;
 }
 
 .name-sub {
-  font-size: 2.6rem;        // افزایش (قبلاً 2rem)
+  font-size: 2.6rem;
   font-weight: 700;
   color: #0891b2;
   letter-spacing: -0.01em;
 }
 
 .name-desc {
-  font-size: 1.5rem;        // افزایش (قبلاً 1.2rem)
+  font-size: 1.5rem;
   font-weight: 400;
   color: #64748b;
-  max-width: 600px;         // افزایش عرض برای نمایش بهتر
-  margin-top: 0.3rem;       // کاهش فاصله از بالا
+  max-width: 600px;
+  margin-top: 0.3rem;
   line-height: 1.6;
 }
 
-// واکنش‌گرا برای موبایل
 @media (max-width: 600px) {
   .name-title {
     font-size: 2.4rem;
@@ -390,13 +340,12 @@ border-radius: 10%;
   }
 }
 
-
-// ===== اسلایدر =====
+/* ====== اسلایدر ====== */
 .slider-container {
   position: relative;
   width: 100%;
-  max-width: 800px;   // حداکثر عرض دلخواه
-  margin: 1.5rem auto 0; // فاصله از نوشته‌ها
+  max-width: 800px;
+  margin: 1.5rem auto 0;
   overflow: hidden;
   border-radius: 20px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
@@ -405,7 +354,7 @@ border-radius: 10%;
 .slider-track {
   position: relative;
   width: 100%;
-  height: 350px;      // ارتفاع ثابت (می‌توانید تغییر دهید)
+  height: 350px;
 }
 
 .slide {
@@ -427,11 +376,10 @@ border-radius: 10%;
 .slide img {
   width: 100%;
   height: 100%;
-  object-fit: cover;   // تصویر را بدون تغییر نسبت پر می‌کند
+  object-fit: cover;
   display: block;
 }
 
-// ===== نقاط راهنما =====
 .dots {
   position: absolute;
   bottom: 16px;
@@ -463,10 +411,9 @@ border-radius: 10%;
   transform: scale(1.1);
 }
 
-// ===== واکنش‌گرایی =====
 @media (max-width: 600px) {
   .slider-track {
-    height: 200px;    // ارتفاع کمتر در موبایل
+    height: 200px;
   }
   .dots {
     bottom: 10px;

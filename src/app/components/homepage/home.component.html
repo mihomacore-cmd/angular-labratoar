@@ -1,18 +1,28 @@
-<!-- بخش Hero (فقط تصویر و افکت‌ها) -->
-<div class="hero" id="hero" style="background: #0c4a6e;">
-  <button class="login-btn" (click)="goToLogin()">
-    <span class="login-btn__icon">→</span>
-    <span>Login</span>
-  </button>
-  <img src="/logo.png" alt="لوگو" class="logo">
+
+<nav id="navbar" class="navbar">
+<div class="nav-inner">
+    <!-- لوگو -->
+    <!-- دکمه لاگین -->
+    <button class="login-btn" (click)="goToLogin()">
+      <span class="login-btn__icon">→</span>
+      <span>ورود</span>
+    </button>
+        <!-- لوگو -->
+     <a href="#" class="logo">
+      <img src="/logo.png" alt="لوگو" class="logo-img">
+    </a>
+  </div>
+</nav>
+
+
+
+<div class="hero" id="hero">
   <img src="/befor.png" alt="زمینه" class="hero-img-base">
   <img src="/after2.png" alt="رویی" class="hero-img-reveal" id="revealImg">
   <div class="hero-scanlines" id="scanLines"></div>
   <div class="cursor-ring" id="cursorRing"></div>
   <div class="cursor-dot" id="cursorDot"></div>
 </div>
-
-<div class="hero-placeholder"></div>
 
 <!-- بخش جدید برای نوشته‌ها (زیر تصویر) -->
 <section class="hero-body">
