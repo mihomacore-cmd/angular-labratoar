@@ -1,21 +1,29 @@
 import { Component, AfterViewInit, OnDestroy, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common'; 
+import { ChangeDetectorRef } from '@angular/core';
+
 
 @Component({
   selector: 'app-home',
+  standalone : true,
+  imports : [CommonModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements AfterViewInit, OnDestroy {
 
  images: string[] = [
-    'assets/D1.PNG',
-    'assets/D2.PNG',
-    'assets/D3.PNG',
-    'assets/D4.PNG'
+    'D1.PNG',
+    'D2.PNG',
+    'D3.PNG',
+    'D4.PNG'
   ];
   currentIndex = 0;
   private slideInterval: any;
+
+  private cdr = inject(ChangeDetectorRef);
+
 
   private R = 270; // شعاع دایره ماسک
   router = inject(Router);
@@ -29,6 +37,16 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
+
+      setTimeout(() => {
+    this.startSlideShow();
+  }, 0);
+
+
+    this.startSlideShow();
+
+
+
     // تمام المان‌ها را با getElementById دریافت می‌کنیم (مشابه کد مستقل)
     const hero = document.getElementById('hero') as HTMLElement;
     const revealImg = document.getElementById('revealImg') as HTMLImageElement;
@@ -141,27 +159,34 @@ window.addEventListener('scroll', this.scrollListener);
     }, 50);
 
 
-    this.startSlideShow();
   }
 
  
 
     startSlideShow(): void {
+    if (this.slideInterval) {
+      clearInterval(this.slideInterval);
+      this.slideInterval = null;
+    }
+
     this.slideInterval = setInterval(() => {
       this.nextSlide();
-    }, 1500); // ۱.۵ ثانیه
+    }, 2000); // ۱.۵ ثانیه
   }
   nextSlide(): void {
     this.currentIndex = (this.currentIndex + 1) % this.images.length;
+    this.cdr.detectChanges(); // <-- این خط را اضافه کن
+
   }
 
   goToSlide(index: number): void {
     this.currentIndex = index;
     // ریست تایمر با کلیک روی نقطه
-    clearInterval(this.slideInterval);
-    this.startSlideShow();
-  }
+    this.startSlideShow();  }
 
+  trackByFn(index: number, item: string): number {
+  return index;
+}
 
 
    ngOnDestroy(): void {

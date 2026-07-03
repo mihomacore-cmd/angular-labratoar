@@ -38,9 +38,11 @@
 
   <div class="slider-container">
       <div class="slider-track">
-        <div class="slide" *ngFor="let img of images; let i = index" [class.active]="i === currentIndex">
-          <img [src]="img" alt="اسلاید {{i+1}}">
-        </div>
+        <div class="slide" 
+     *ngFor="let img of images; let i = index; trackBy: trackByFn" 
+     [class.active]="i === currentIndex">
+  <img [src]="img" alt="اسلاید {{i+1}}">
+</div>
       </div>
       <div class="dots">
         <span class="dot" *ngFor="let img of images; let i = index" 
