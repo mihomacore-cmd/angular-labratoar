@@ -424,3 +424,661 @@
     height: 10px;
   }
 }
+
+/* ====== تنظیمات پایه برای کل بخش ====== */
+.info-cards {
+  padding: 3rem 0;
+  background: #f8fafc;
+  font-family: 'Vazirmatn', 'IRANSansX', 'Tahoma', sans-serif;
+  direction: rtl; /* راست‌چین کردن کل بخش */
+  text-align: right;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* ====== شبکه کارت‌ها ====== */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* ====== استایل کارت‌های کوچک ====== */
+.info-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1.8rem 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-top: 5px solid transparent;
+  display: flex;
+  flex-direction: column;
+}
+
+.info-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* رنگ‌های هدر کارت‌ها */
+.card-profile { border-top-color: #4A90D9; }
+.card-service { border-top-color: #27AE60; }
+.card-delivery { border-top-color: #F39C12; }
+.card-time { border-top-color: #E74C3C; }
+
+/* آیکون */
+.card-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+/* تیتر کارت‌ها */
+.info-card h3 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin-bottom: 0.6rem;
+  color: #1e293b;
+  letter-spacing: -0.02em; /* کمی فشرده‌تر برای زیبایی */
+}
+
+/* متن پاراگراف */
+.info-card p {
+  font-size: 0.95rem;
+  line-height: 1.9; /* فاصله خطوط مناسب برای متن فارسی */
+  color: #475569;
+  margin: 0 0 0.5rem 0;
+  font-weight: 400;
+}
+
+/* لیست‌ها */
+.info-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0 0;
+}
+.info-card ul li {
+  font-size: 0.95rem;
+  line-height: 2;
+  color: #475569;
+  padding: 0.1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.info-card ul li::before {
+  content: "•";
+  color: #F39C12;
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+/* نشان (بج) تجربه */
+.badge {
+  display: inline-block;
+  background: #eef2ff;
+  color: #4F46E5;
+  padding: 0.3rem 1rem;
+  border-radius: 30px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-top: 0.5rem;
+  align-self: flex-start; /* در راست‌چین، این یعنی خودش را به راست می‌چسباند */
+}
+
+/* ====== بخش زمان تحویل ====== */
+.time-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.5rem 0 0.25rem 0;
+}
+.time-item {
+  background: #f1f5f9;
+  padding: 0.3rem 1rem;
+  border-radius: 30px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #1e293b;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+.time-item small {
+  font-weight: 400;
+  font-size: 0.7rem;
+  color: #64748b;
+}
+.time-item.highlight {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+.note {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-top: 0.3rem;
+  font-weight: 400;
+}
+
+/* ====== کارت بزرگ دیجیتال (راست‌چین شده) ====== */
+.card-digital {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  border-radius: 24px;
+  padding: 2rem 2.5rem;
+  color: #ffffff;
+  margin-top: 0.5rem;
+  box-shadow: 0 8px 40px rgba(15, 23, 42, 0.3);
+}
+
+.digital-content {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.digital-icon {
+  font-size: 3.5rem;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.card-digital h2 {
+  font-size: 1.8rem;
+  font-weight: 900;
+  margin: 0 0 0.2rem 0;
+  letter-spacing: -0.03em;
+  color: #facc15; /* رنگ طلایی برای به‌زودی */
+}
+.card-digital p {
+  font-size: 1rem;
+  line-height: 1.8;
+  opacity: 0.9;
+  margin: 0 0 0.75rem 0;
+  font-weight: 300;
+}
+
+.progress-badge {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+.progress-badge span {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.3rem 1.2rem;
+  border-radius: 30px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.progress-bar {
+  flex: 1;
+  min-width: 120px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  width: 85%;
+  background: linear-gradient(90deg, #facc15, #f59e0b);
+  border-radius: 10px;
+}
+
+/* ====== ریسپانسیو (موبایل و تبلت) ====== */
+@media (max-width: 992px) {
+  .card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .digital-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  .digital-icon {
+    width: 70px;
+    height: 70px;
+    font-size: 3rem;
+  }
+  .progress-badge {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .info-cards {
+    padding: 2rem 0;
+  }
+  .card-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .info-card {
+    padding: 1.2rem;
+  }
+  .card-digital {
+    padding: 1.5rem;
+  }
+  .card-digital h2 {
+    font-size: 1.5rem;
+  }
+  .digital-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 2.5rem;
+  }
+}
+
+
+
+
+/* ====== بخش گالری سه عکس ====== */
+.gallery-section {
+  padding: 3rem 0 2rem 0;
+  background: #ffffff;
+}
+
+.gallery-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.gallery-header h2 {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #1E40AF; /* آبی تیره */
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+  font-family: 'Vazirmatn', 'IRANSansX', sans-serif;
+}
+
+.gallery-header p {
+  font-size: 1.1rem;
+  color: #3B82F6; /* آبی روشن‌تر */
+  font-weight: 500;
+  font-family: 'Vazirmatn', 'IRANSansX', sans-serif;
+}
+
+/* ====== شبکه گالری ====== */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+/* ====== هر آیتم ====== */
+.gallery-item {
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column; /* هدر بالا، عکس پایین */
+}
+
+.gallery-item:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+}
+
+/* ====== هدر آیتم (بالای عکس) ====== */
+.gallery-item-header {
+  padding: 1rem 1.2rem 0.75rem 1.2rem;
+  background: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.item-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #1E40AF; /* آبی تیره */
+  font-family: 'Vazirmatn', 'IRANSansX', sans-serif;
+  line-height: 1.4;
+}
+
+.item-subtitle {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #3B82F6; /* آبی روشن */
+  font-family: 'Vazirmatn', 'IRANSansX', sans-serif;
+  margin-top: 2px;
+}
+
+/* ====== عکس ====== */
+.gallery-item img {
+  width: 100%;
+  height: 220px; /* ارتفاع ثابت برای هماهنگی */
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s ease;
+}
+
+.gallery-item:hover img {
+  transform: scale(1.03);
+}
+
+/* ====== لایت‌باکس ====== */
+.lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.lightbox-content {
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+  background: #fff;
+  border-radius: 16px;
+  padding: 0.5rem;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
+}
+
+.lightbox-content img {
+  max-width: 100%;
+  max-height: 85vh;
+  display: block;
+  border-radius: 12px;
+  object-fit: contain;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: -40px;
+  right: -10px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 2.2rem;
+  font-weight: 300;
+  cursor: pointer;
+  transition: transform 0.2s;
+  line-height: 1;
+}
+
+.lightbox-close:hover {
+  transform: scale(1.2);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ====== ریسپانسیو ====== */
+@media (max-width: 992px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .gallery-section {
+    padding: 2rem 0;
+  }
+  .gallery-grid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+  .gallery-item img {
+    height: 200px;
+  }
+  .gallery-item-header {
+    padding: 0.8rem 1rem;
+  }
+  .item-title {
+    font-size: 1rem;
+  }
+  .item-subtitle {
+    font-size: 0.8rem;
+  }
+  .gallery-header h2 {
+    font-size: 1.6rem;
+  }
+}
+
+/* ====== باکس اخطار قیمت (زیر گالری) ====== */
+.price-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2.5rem;
+  padding: 1rem 2rem;
+  background: #fffbeb;
+  border: 1.5px dashed #f59e0b;
+  border-radius: 16px;
+  font-family: 'Vazirmatn', 'IRANSansX', 'Tahoma', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #78350f;
+  text-align: center;
+  line-height: 1.8;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 12px rgba(245, 158, 11, 0.1);
+}
+
+.price-note:hover {
+  border-color: #d97706;
+  background: #fef3c7;
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.15);
+  transform: translateY(-2px);
+}
+
+.price-note i {
+  font-size: 1.6rem;
+  color: #f59e0b;
+  flex-shrink: 0; /* جلوگیری از کوچک شدن آیکون */
+}
+
+.price-note span {
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap; /* جلوگیری از شکستن متن به دو خط */
+}
+
+/* ====== واکنش‌گرایی (موبایل) ====== */
+@media (max-width: 600px) {
+  .price-note {
+    padding: 0.8rem 1.2rem;
+    font-size: 0.85rem;
+    gap: 0.5rem;
+    margin-top: 1.8rem;
+    flex-wrap: nowrap; /* جلوگیری از رفتن به خط بعد */
+  }
+  .price-note i {
+    font-size: 1.3rem;
+  }
+  .price-note span {
+    white-space: normal; /* در موبایل اجازه بده متن در صورت نیاز به خط بعد برود ولی همچنان در یک ردیف با آیکون باشد */
+  }
+}
+
+
+
+/* ====== فوتر اصلی ====== */
+.main-footer {
+  background: linear-gradient(145deg, #0a1e3d, #0b2a4a); /* آبی پررنگ و تیره */
+  color: #e0e8f0;
+  padding: 3rem 0 1.5rem 0;
+  font-family: 'Vazirmatn', 'IRANSansX', 'Tahoma', sans-serif;
+  direction: rtl;
+  text-align: right;
+  margin-top: 3rem;
+  border-top: 4px solid #1e4a7a;
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* ====== شبکه ستون‌ها ====== */
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ====== هر ستون ====== */
+.footer-col h4 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+.footer-col h4::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 40px;
+  height: 3px;
+  background: #3b82f6;
+  border-radius: 4px;
+}
+
+.footer-col p {
+  font-size: 0.95rem;
+  line-height: 1.9;
+  color: #b8c9e0;
+  margin-bottom: 1.2rem;
+}
+
+/* ====== آیکون‌های شبکه‌های اجتماعی ====== */
+.footer-social {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+.footer-social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: #dce6f0;
+  font-size: 1.3rem;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.footer-social a:hover {
+  background: #3b82f6;
+  color: #fff;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+  border-color: #3b82f6;
+}
+/* رنگ‌های اختصاصی برای هر شبکه (اختیاری) */
+.footer-social a:hover .fa-whatsapp { color: #25D366; }
+.footer-social a:hover .fa-telegram-plane { color: #26A5E4; }
+.footer-social a:hover .fa-instagram { color: #E4405F; }
+.footer-social a:hover .fa-envelope { color: #EA4335; }
+.footer-social a:hover .fa-aparat { color: #E60023; }
+
+/* ====== لیست تماس و لینک‌ها ====== */
+.footer-contact, .footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.footer-contact li, .footer-links li {
+  font-size: 0.95rem;
+  line-height: 2.2;
+  color: #b8c9e0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.footer-contact li i {
+  width: 1.5rem;
+  color: #3b82f6;
+  font-size: 1rem;
+}
+.footer-links li a {
+  color: #b8c9e0;
+  text-decoration: none;
+  transition: color 0.3s, padding-right 0.3s;
+  display: inline-block;
+}
+.footer-links li a:hover {
+  color: #ffffff;
+  padding-right: 6px;
+}
+
+/* ====== بخش پایین فوتر (کپی‌رایت) ====== */
+.footer-bottom {
+  text-align: center;
+  padding-top: 1.5rem;
+  font-size: 0.9rem;
+  color: #8aa3c9;
+}
+.footer-bottom strong {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* ====== واکنش‌گرایی ====== */
+@media (max-width: 992px) {
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .main-footer {
+    padding: 2rem 0 1rem;
+  }
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 1.8rem;
+    padding-bottom: 1.5rem;
+  }
+  .footer-col h4 {
+    font-size: 1.1rem;
+  }
+  .footer-col p, .footer-contact li, .footer-links li {
+    font-size: 0.9rem;
+  }
+  .footer-social a {
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
+}

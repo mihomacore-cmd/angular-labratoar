@@ -21,7 +21,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   ];
   currentIndex = 0;
   private slideInterval: any;
-
+  selectedImage : string | null = null;
   private cdr = inject(ChangeDetectorRef);
 
 
@@ -187,6 +187,20 @@ window.addEventListener('scroll', this.scrollListener);
   trackByFn(index: number, item: string): number {
   return index;
 }
+
+
+
+  openLightbox(imageSrc: string): void {
+    this.selectedImage = imageSrc;
+    document.body.style.overflow = 'hidden'; // جلوگیری از اسکرول
+  }
+
+  closeLightbox(): void {
+    this.selectedImage = null;
+    document.body.style.overflow = 'auto';
+  }
+
+
 
 
    ngOnDestroy(): void {

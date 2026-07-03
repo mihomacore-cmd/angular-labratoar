@@ -1,4 +1,7 @@
 
+<!-- اضافه کردن فونت وزیرمتن از CDN -->
+<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+
 <nav id="navbar" class="navbar">
 <div class="nav-inner">
     <!-- لوگو -->
@@ -38,17 +41,197 @@
 
   <div class="slider-container">
       <div class="slider-track">
-        <div class="slide" 
-     *ngFor="let img of images; let i = index; trackBy: trackByFn" 
-     [class.active]="i === currentIndex">
-  <img [src]="img" alt="اسلاید {{i+1}}">
-</div>
+        <div class="slide" *ngFor="let img of images; let i = index; trackBy: trackByFn"  [class.active]="i === currentIndex">
+        <img [src]="img" alt="اسلاید {{i+1}}">
+  </div>
+
+
       </div>
       <div class="dots">
         <span class="dot" *ngFor="let img of images; let i = index" 
               [class.active]="i === currentIndex"
               (click)="goToSlide(i)"></span>
       </div>
-    </div>
+      </div>
 
 </section>
+
+
+<!-- بخش کارت‌های زیر اسلایدر -->
+<section class="info-cards"  id="services"  >
+  <div class="container">
+    <div class="card-grid">
+      
+      <!-- کارت ۱: معرفی مدیر -->
+      <div class="info-card card-profile">
+        <div class="card-icon">👩‍⚕️</div>
+        <h3>مدیریت مجموعه</h3>
+        <p>توسط سرکار خانم کریمی، فارغ‌التحصیل رشته پروترهای دندانی مدیریت و اداره می‌گردد.</p>
+        <span class="badge">بیش از ۱۰ سال تجربه</span>
+      </div>
+
+      <!-- کارت ۲: خدمات ویژه -->
+      <div class="info-card card-service">
+        <div class="card-icon">🆓</div>
+        <h3>امانت ست بند رایگان</h3>
+        <p>جهت سهولت در امر قالب‌گیری و کوتاه شدن مراحل درمان و جلوگیری از ارسال مجدد</p>
+      </div>
+
+      <!-- کارت ۳: ارسال و همکاری -->
+      <div class="info-card card-delivery">
+        <div class="card-icon">🚚</div>
+        <h3>ارسال و همکاری</h3>
+        <ul>
+          <li>✔ دو پیک در اصفهان (دریافت و تحویل)</li>
+          <li>✔ همکاری با تعاونی‌ها، پست، تیپاکس در سراسر کشور</li>
+        </ul>
+      </div>
+
+      <!-- کارت ۴: زمان تحویل -->
+      <div class="info-card card-time">
+        <div class="card-icon">⏱️</div>
+        <h3>زمان تحویل</h3>
+        <div class="time-items">
+          <span class="time-item">۳-۵ روز <small>عادی</small></span>
+          <span class="time-item">۵-۸ روز <small>فانکشنال</small></span>
+          <span class="time-item highlight">۱-۲ روز <small>فوری*</small></span>
+        </div>
+        <p class="note">* همراه با افزایش قیمت نسبت به لیست</p>
+      </div>
+
+    </div>
+
+    <!-- کارت بزرگ: ارتودنسی دیجیتال -->
+    <div class="card-digital">
+      <div class="digital-content">
+        <div class="digital-icon">💻</div>
+        <div>
+          <h2>به زودی...</h2>
+          <p>راه‌اندازی اولین و کارآمدترین لابراتوار دیجیتال استان اصفهان</p>
+          <div class="progress-badge">
+            <span>۱۰۰+ کیس آزمایش شده</span>
+            <div class="progress-bar"><div class="progress-fill" style="width:85%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+
+
+
+<!-- ====== بخش گالری سه عکس ====== -->
+<section class="gallery-section"   id="prices">
+  <div class="container">
+    <div class="gallery-header">
+      <h2>تعرفه‌های پروتزهای دندان</h2>
+      <p>کیفیت و دقت در ساخت، اولویت اصلی مجموعه نگاره لبخند</p>
+    </div>
+
+    <div class="gallery-grid">
+      <!-- آیتم اول -->
+      <div class="gallery-item" (click)="openLightbox('f1.png')">
+        <div class="gallery-item-header">
+          <span class="item-title">پروتز ارتودنسی</span>
+          <span class="item-subtitle">ساخت با بالاترین دقت</span>
+        </div>
+        <img src="f1.png" alt="پروتز ارتودنسی">
+      </div>
+
+      <!-- آیتم دوم -->
+      <div class="gallery-item" (click)="openLightbox('f2.png')">
+        <div class="gallery-item-header">
+          <span class="item-title">پروتز زیبایی</span>
+          <span class="item-subtitle">هماهنگ با رنگ و فرم دندان</span>
+        </div>
+        <img src="f2.png" alt="پروتز زیبایی">
+      </div>
+
+      <!-- آیتم سوم -->
+      <div class="gallery-item" (click)="openLightbox('f3.png')">
+        <div class="gallery-item-header">
+          <span class="item-title">پروتز پیشگیری (اطفال)</span>
+          <span class="item-subtitle">مناسب برای سنین رشد</span>
+        </div>
+        <img src="f3.png" alt="پروتز پیشگیری (اطفال)">
+      </div>
+    </div>
+
+       <div class="price-note">
+         <i class="fas fa-info-circle"></i>
+         <span> .توجه: قیمت تمامی اپلاینس‌های درج شده قیمت پایه هستند بدون احتساب بند فضا نگهدار از جانب لابراتوار می‌باشد</span>
+         </div>
+
+
+  </div>
+</section>
+
+<!-- ====== لایت‌باکس ====== -->
+<div class="lightbox" *ngIf="selectedImage" (click)="closeLightbox()">
+  <div class="lightbox-content" (click)="$event.stopPropagation()">
+    <button class="lightbox-close" (click)="closeLightbox()">✕</button>
+    <img [src]="selectedImage" alt="تصویر بزرگ‌شده">
+  </div>
+</div>
+
+
+
+
+
+<!-- ====== فوتر ====== -->
+<footer class="main-footer"  id="contact">
+  <div class="container">
+    <div class="footer-grid">
+      
+      <!-- ستون اول: درباره مجموعه -->
+      <div class="footer-col">
+        <h4>نگاره لبخند</h4>
+        <p>
+          مجموعه تخصصی ارتودنسی و پروتزهای دندانی با بیش از یک دهه تجربه درخشان در خدمت شما عزیزان.
+        </p>
+
+
+
+<div class="footer-social">
+  <a href="#" target="_blank" aria-label="واتساپ">📱</a>
+  <a href="#" target="_blank" aria-label="ایتا">💬</a>
+  <a href="#" target="_blank" aria-label="تلگرام">✈️</a>
+</div>
+
+
+
+      </div>
+
+      <!-- ستون دوم: تماس با ما -->
+      <div class="footer-col">
+        <h4>تماس با ما</h4>
+        <ul class="footer-contact">
+          <li><i class="fas fa-phone-alt"></i> ۰۳۱-۳۳۳۳۳۳۳</li>
+          <li><i class="fas fa-mobile-alt"></i> ۰۹۱۲۱۲۳۴۵۶۷</li>
+          <li><i class="fas fa-envelope"></i> info@negahe-labkhand.ir</li>
+          <li><i class="fas fa-map-marker-alt"></i> اصفهان، خیابان اصلی، نبش کوچه ۱۲</li>
+        </ul>
+      </div>
+
+      <!-- ستون سوم: لینک‌های سریع -->
+      <div class="footer-col">
+        <h4>دسترسی سریع</h4>
+        <ul class="footer-links">
+          <li><a href="#hero">صفحه اصلی</a></li>
+          <li><a href="#services">خدمات</a></li>
+          <li><a href="#prices">تعرفه‌ها</a></li>
+          <li><a href="#contact">تماس با ما</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- خط جداکننده و کپی‌رایت -->
+    <div class="footer-bottom">
+      <p>© ۱۴۰۴ تمامی حقوق محفوظ است. طراحی و توسعه توسط <strong>نگاره لبخند</strong></p>
+    </div>
+  </div>
+</footer>
