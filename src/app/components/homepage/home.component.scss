@@ -424,218 +424,616 @@
     height: 10px;
   }
 }
+ .info-cards {
+      padding: 3rem 0;
+      background: #f8fafc;
+      font-family: 'Vazirmatn', 'IRANSansX', 'Tahoma', sans-serif;
+      direction: rtl;
+      text-align: right;
+    }
 
-/* ====== تنظیمات پایه برای کل بخش ====== */
-.info-cards {
-  padding: 3rem 0;
-  background: #f8fafc;
-  font-family: 'Vazirmatn', 'IRANSansX', 'Tahoma', sans-serif;
-  direction: rtl; /* راست‌چین کردن کل بخش */
-  text-align: right;
-}
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
-}
+    /* ====== شبکه کارت‌ها ====== */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
 
-/* ====== شبکه کارت‌ها ====== */
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
+    /* ====== استایل کارت‌ها ====== */
+    .info-card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 1.8rem 1.5rem 1.2rem 1.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border-top: 5px solid transparent;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
 
-/* ====== استایل کارت‌های کوچک ====== */
-.info-card {
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 1.8rem 1.5rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border-top: 5px solid transparent;
-  display: flex;
-  flex-direction: column;
-}
+    .info-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+    }
 
-.info-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
-}
+    /* رنگ‌های هدر کارت‌ها */
+    .card-profile {
+      border-top-color: #4A90D9;
+    }
+    .card-service {
+      border-top-color: #27AE60;
+    }
+    .card-delivery {
+      border-top-color: #F39C12;
+    }
+    .card-time {
+      border-top-color: #E74C3C;
+    }
 
-/* رنگ‌های هدر کارت‌ها */
-.card-profile { border-top-color: #4A90D9; }
-.card-service { border-top-color: #27AE60; }
-.card-delivery { border-top-color: #F39C12; }
-.card-time { border-top-color: #E74C3C; }
+    .card-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.75rem;
+      display: block;
+    }
 
-/* آیکون */
-.card-icon {
-  font-size: 2.5rem;
-  margin-bottom: 0.75rem;
-  display: block;
-}
+    .info-card h3 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      margin-bottom: 0.6rem;
+      color: #1e293b;
+      letter-spacing: -0.02em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-/* تیتر کارت‌ها */
-.info-card h3 {
-  font-size: 1.2rem;
-  font-weight: 800;
-  margin-bottom: 0.6rem;
-  color: #1e293b;
-  letter-spacing: -0.02em; /* کمی فشرده‌تر برای زیبایی */
-}
+    .info-card p {
+      font-size: 0.95rem;
+      line-height: 1.9;
+      color: #475569;
+      margin: 0 0 0.5rem 0;
+      font-weight: 400;
+    }
 
-/* متن پاراگراف */
-.info-card p {
-  font-size: 0.95rem;
-  line-height: 1.9; /* فاصله خطوط مناسب برای متن فارسی */
-  color: #475569;
-  margin: 0 0 0.5rem 0;
-  font-weight: 400;
-}
+    .info-card ul {
+      list-style: none;
+      padding: 0;
+      margin: 0.5rem 0 0 0;
+    }
+    .info-card ul li {
+      font-size: 0.95rem;
+      line-height: 2;
+      color: #475569;
+      padding: 0.1rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .info-card ul li::before {
+      content: "•";
+      color: #F39C12;
+      font-weight: bold;
+      font-size: 1.5rem;
+    }
 
-/* لیست‌ها */
-.info-card ul {
-  list-style: none;
-  padding: 0;
-  margin: 0.5rem 0 0 0;
-}
-.info-card ul li {
-  font-size: 0.95rem;
-  line-height: 2;
-  color: #475569;
-  padding: 0.1rem 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-.info-card ul li::before {
-  content: "•";
-  color: #F39C12;
-  font-weight: bold;
-  font-size: 1.5rem;
-}
+    .badge {
+      display: inline-block;
+      background: #eef2ff;
+      color: #4F46E5;
+      padding: 0.3rem 1rem;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-top: 0.5rem;
+      align-self: flex-start;
+    }
 
-/* نشان (بج) تجربه */
-.badge {
-  display: inline-block;
-  background: #eef2ff;
-  color: #4F46E5;
-  padding: 0.3rem 1rem;
-  border-radius: 30px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  margin-top: 0.5rem;
-  align-self: flex-start; /* در راست‌چین، این یعنی خودش را به راست می‌چسباند */
-}
-
-/* ====== بخش زمان تحویل ====== */
-.time-items {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 0.5rem 0 0.25rem 0;
-}
-.time-item {
-  background: #f1f5f9;
-  padding: 0.3rem 1rem;
-  border-radius: 30px;
-  font-weight: 700;
-  font-size: 0.9rem;
-  color: #1e293b;
-  display: inline-flex;
-  align-items: baseline;
-  gap: 4px;
-}
-.time-item small {
-  font-weight: 400;
-  font-size: 0.7rem;
-  color: #64748b;
-}
-.time-item.highlight {
-  background: #fee2e2;
-  color: #b91c1c;
-}
-.note {
-  font-size: 0.75rem;
+    /* ====== بخش زمان تحویل ====== */
+    .time-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 0.5rem 0 0.25rem 0;
+    }
+    .time-item {
+      background: #f1f5f9;
+      padding: 0.3rem 1rem;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #1e293b;
+      display: inline-flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+    .time-item small {
+      font-weight: 400;
+      font-size: 0.7rem;
+      color: #64748b;
+    }
+    .time-item.highlight {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+    .note {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-top: 0.3rem;
+      font-weight: 400;
+    }
+/* ====== دکمه بیشتر ====== */
+.more-btn {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
   color: #94a3b8;
-  margin-top: 0.3rem;
-  font-weight: 400;
-}
-
-/* ====== کارت بزرگ دیجیتال (راست‌چین شده) ====== */
-.card-digital {
-  background: linear-gradient(135deg, #0f172a, #1e293b);
-  border-radius: 24px;
-  padding: 2rem 2.5rem;
-  color: #ffffff;
-  margin-top: 0.5rem;
-  box-shadow: 0 8px 40px rgba(15, 23, 42, 0.3);
-}
-
-.digital-content {
-  display: flex;
+  padding: 0 0.4rem;
+  transition: all 0.3s ease;
+  line-height: 1;
+  display: inline-flex;
   align-items: center;
-  gap: 2rem;
+  position: relative; /* برای قرارگیری tooltip */
+  gap: 2px;
 }
 
-.digital-icon {
-  font-size: 3.5rem;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 50%;
-  width: 80px;
-  height: 80px;
+.more-btn:hover {
+  color: #1e293b;
+  transform: scale(1.1);
+}
+
+.more-btn .arrow {
+  font-size: 2rem;
+  font-weight: 900;
+  transition: transform 0.3s ease;
+}
+
+.more-btn:hover .arrow {
+  transform: scale(1.15);
+}
+
+/* ====== Tooltip سفارشی ====== */
+.more-btn .tooltip-text {
+  position: absolute;
+  bottom: calc(100% + 8px); /* بالای دکمه */
+  left: 50%;
+  transform: translateX(-50%) scale(0.8);
+  background: #1e293b;
+  color: #ffffff;
+  padding: 0.3rem 0.9rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none; /* جلوگیری از تداخل کلیک */
+  transition: all 0.25s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  letter-spacing: 0.3px;
+}
+
+/* فلش کوچک پایین tooltip */
+.more-btn .tooltip-text::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #1e293b;
+}
+
+/* نمایش tooltip هنگام هاور */
+.more-btn:hover .tooltip-text {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
+    /* ====== محتوای اضافی (توضیحات تکمیلی) ====== */
+    .extra-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease, opacity 0.4s ease, margin 0.3s ease;
+      opacity: 0;
+      margin-top: 0;
+      border-top: 1px solid transparent;
+    }
+    .extra-content.open {
+      max-height: 2500px;  /* به اندازه کافی بزرگ برای متن طولانی */
+      opacity: 1;
+      margin-top: 1.2rem;
+      border-top-color: #e2e8f0;
+    }
+
+    .extra-inner {
+      padding-top: 1rem;
+      font-size: 0.95rem;
+      line-height: 2;
+      color: #334155;
+    }
+
+    .extra-inner h4 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 1rem 0 0.3rem 0;
+      border-right: 4px solid #F39C12;
+      padding-right: 0.75rem;
+    }
+    .extra-inner h4:first-of-type {
+      margin-top: 0;
+    }
+    .extra-inner ul {
+      list-style: none;
+      padding: 0;
+      margin: 0.3rem 0 0.8rem 0;
+    }
+    .extra-inner ul li {
+      padding: 0.15rem 0 0.15rem 1.5rem;
+      position: relative;
+      color: #475569;
+    }
+    .extra-inner ul li::before {
+      content: "▫️";
+      position: absolute;
+      right: 0;
+      color: #F39C12;
+    }
+    .extra-inner .highlight-box {
+      background: #fef9e7;
+      border-radius: 12px;
+      padding: 0.8rem 1.2rem;
+      margin: 0.8rem 0;
+      border-right: 4px solid #f59e0b;
+    }
+
+    /* ====== کارت بزرگ دیجیتال ====== */
+    .card-digital {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      border-radius: 24px;
+      padding: 2rem 2.5rem;
+      color: #ffffff;
+      margin-top: 0.5rem;
+      box-shadow: 0 8px 40px rgba(15, 23, 42, 0.3);
+    }
+
+    .digital-content {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .digital-icon {
+      font-size: 3.5rem;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .card-digital h2 {
+      font-size: 1.8rem;
+      font-weight: 900;
+      margin: 0 0 0.2rem 0;
+      letter-spacing: -0.03em;
+      color: #facc15;
+    }
+    .card-digital p {
+      font-size: 1rem;
+      line-height: 1.8;
+      opacity: 0.9;
+      margin: 0 0 0.75rem 0;
+      font-weight: 300;
+    }
+
+    .progress-badge {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+    }
+    .progress-badge span {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 0.3rem 1.2rem;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .progress-bar {
+      flex: 1;
+      min-width: 120px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 85%;
+      background: linear-gradient(90deg, #facc15, #f59e0b);
+      border-radius: 10px;
+    }
+
+/* ====== مودال دیالوگ ====== */
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  z-index: 9999;
+  padding: 1.5rem;
+  animation: fadeIn 0.3s ease;
+}
+.dialog-box {
+  background: #ffffff;
+  border-radius: 28px;
+  max-width: 750px;
+  width: 100%;
+  max-height: 85vh;
+  padding: 0;                    /* حذف padding قبلی */
+  position: relative;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
+  animation: slideUp 0.4s ease;
+  direction: rtl;
+  text-align: right;
+  font-family: 'Vazirmatn', 'IRANSansX', 'Tahoma', sans-serif;
+  display: flex;
+  flex-direction: column;        /* برای چیدمان ستونی */
 }
 
-.card-digital h2 {
-  font-size: 1.8rem;
-  font-weight: 900;
-  margin: 0 0 0.2rem 0;
-  letter-spacing: -0.03em;
-  color: #facc15; /* رنگ طلایی برای به‌زودی */
-}
-.card-digital p {
-  font-size: 1rem;
-  line-height: 1.8;
-  opacity: 0.9;
-  margin: 0 0 0.75rem 0;
-  font-weight: 300;
-}
-
-.progress-badge {
+/* ====== هدر دیالوگ (sticky) ====== */
+.dialog-header {
   display: flex;
   align-items: center;
   gap: 1.2rem;
-  flex-wrap: wrap;
+  padding: 1.5rem 2.5rem 1.2rem 2.5rem;  /* padding بالا و اطراف */
+  border-bottom: 2px solid #e2e8f0;
+  background: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-radius: 28px 28px 0 0;  /* هماهنگی با گوشه‌های دیالوگ */
+  flex-shrink: 0;                /* جلوگیری از کوچک شدن */
 }
-.progress-badge span {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 0.3rem 1.2rem;
-  border-radius: 30px;
-  font-weight: 700;
-  font-size: 0.9rem;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+
+/* دکمه بستن - داخل هدر و در سمت چپ */
+.dialog-close {
+  background: #f1f5f9;
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 1.6rem;
+  cursor: pointer;
+  color: #475569;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: auto;           /* چپ‌چین کردن دکمه */
+  flex-shrink: 0;
 }
-.progress-bar {
+.dialog-close:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+  transform: rotate(90deg);
+}
+
+/* آیکون و عنوان */
+.dialog-icon {
+  font-size: 3.2rem;
+  flex-shrink: 0;
+}
+.dialog-header h2 {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -0.02em;
   flex: 1;
-  min-width: 120px;
-  height: 6px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
-  overflow: hidden;
 }
-.progress-fill {
-  height: 100%;
-  width: 85%;
-  background: linear-gradient(90deg, #facc15, #f59e0b);
+
+/* ====== بدنه دیالوگ (محتوای قابل اسکرول) ====== */
+.dialog-body {
+  padding: 1.5rem 2.5rem 2.5rem 2.5rem;  /* padding اطراف بدنه */
+  font-size: 1.15rem;
+  line-height: 2.3;
+  color: #1e293b;
+  font-weight: 400;
+  flex: 1;
+  overflow-y: auto;             /* در صورت نیاز اسکرول */
+}
+
+/* بقیه استایل‌های dialog-body مانند قبل保持不变 */
+
+.dialog-body h4 {
+  font-size: 1.35rem;          /* بزرگ‌تر از قبل (1.05rem → 1.35rem) */
+  font-weight: 800;
+  color: #0f172a;
+  margin: 1.5rem 0 0.5rem 0;
+  border-right: 5px solid #F39C12;
+  padding-right: 1rem;
+}
+.dialog-body h4:first-of-type {
+  margin-top: 0;
+}
+
+.dialog-body p {
+  font-size: 1.15rem;
+  line-height: 2.3;
+  margin: 0.5rem 0 1rem 0;
+  color: #1e293b;
+}
+
+.dialog-body ul {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 1rem 0;
+}
+.dialog-body ul li {
+  font-size: 1.15rem;
+  line-height: 2.3;
+  padding: 0.25rem 0 0.25rem 2rem;
+  position: relative;
+  color: #1e293b;
+}
+.dialog-body ul li::before {
+  content: "▫️";
+  position: absolute;
+  right: 0;
+  color: #F39C12;
+  font-size: 1.2rem;
+}
+
+.dialog-body .highlight-box {
+  background: #fef9e7;
+  border-radius: 14px;
+  padding: 1rem 1.5rem;
+  margin: 1rem 0 1.2rem 0;
+  border-right: 5px solid #f59e0b;
+}
+.dialog-body .highlight-box strong {
+  font-size: 1.15rem;
+  color: #0f172a;
+}
+.dialog-body .highlight-box p {
+  margin: 0.3rem 0 0 0;
+  font-size: 1.1rem;
+  line-height: 2.2;
+}
+
+/* استایل شماره تلفن (قسمت آخر متن) */
+.dialog-body p:last-of-type {
+  background: #eef2ff;
+  padding: 0.8rem 1.2rem;
+  border-radius: 14px;
+  color: #1e293b;
+  font-weight: 500;
+  font-size: 1.15rem;
+  margin-top: 1.2rem;
+}
+
+/* انیمیشن‌ها */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* اسکرول‌بار دیالوگ */
+.dialog-box::-webkit-scrollbar {
+  width: 6px;
+}
+.dialog-box::-webkit-scrollbar-track {
+  background: #f1f5f9;
   border-radius: 10px;
 }
+.dialog-box::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+/* واکنش‌گرایی */
+@media (max-width: 640px) {
+  .dialog-box {
+    padding: 1.5rem 1.2rem;
+    max-height: 90vh;
+  }
+  .dialog-header h2 {
+    font-size: 1.6rem;
+  }
+  .dialog-icon {
+    font-size: 2.5rem;
+  }
+  .dialog-body {
+    font-size: 1.05rem;
+    line-height: 2.1;
+  }
+  .dialog-body h4 {
+    font-size: 1.2rem;
+  }
+  .dialog-body p,
+  .dialog-body ul li {
+    font-size: 1.05rem;
+  }
+}
+
+/* انیمیشن‌ها */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* اسکرول‌بار دیالوگ (اختیاری) */
+.dialog-box::-webkit-scrollbar {
+  width: 6px;
+}
+.dialog-box::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+.dialog-box::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+/* واکنش‌گرایی */
+@media (max-width: 640px) {
+  .dialog-box {
+    padding: 1.5rem 1rem;
+    max-height: 90vh;
+  }
+  .dialog-header h2 {
+    font-size: 1.3rem;
+  }
+  .dialog-icon {
+    font-size: 2rem;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* ====== ریسپانسیو (موبایل و تبلت) ====== */
 @media (max-width: 992px) {

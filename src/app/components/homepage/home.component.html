@@ -21,7 +21,7 @@
 
 <div class="hero" id="hero">
   <img src="/befor.png" alt="زمینه" class="hero-img-base">
-  <img src="/after2.png" alt="رویی" class="hero-img-reveal" id="revealImg">
+  <img src="/after4.jpg" alt="رویی" class="hero-img-reveal" id="revealImg">
   <div class="hero-scanlines" id="scanLines"></div>
   <div class="cursor-ring" id="cursorRing"></div>
   <div class="cursor-dot" id="cursorDot"></div>
@@ -57,51 +57,47 @@
 </section>
 
 
-<!-- بخش کارت‌های زیر اسلایدر -->
-<section class="info-cards"  id="services"  >
+<!-- ====== بخش کارت‌های اطلاعاتی ====== -->
+<section class="info-cards" id="services">
   <div class="container">
     <div class="card-grid">
-      
-      <!-- کارت ۱: معرفی مدیر -->
-      <div class="info-card card-profile">
-        <div class="card-icon">👩‍⚕️</div>
-        <h3>مدیریت مجموعه</h3>
-        <p>توسط سرکار خانم کریمی، فارغ‌التحصیل رشته پروترهای دندانی مدیریت و اداره می‌گردد.</p>
-        <span class="badge">بیش از ۱۰ سال تجربه</span>
-      </div>
 
-      <!-- کارت ۲: خدمات ویژه -->
-      <div class="info-card card-service">
-        <div class="card-icon">🆓</div>
-        <h3>امانت ست بند رایگان</h3>
-        <p>جهت سهولت در امر قالب‌گیری و کوتاه شدن مراحل درمان و جلوگیری از ارسال مجدد</p>
-      </div>
+      <div class="info-card" 
+           *ngFor="let card of cards; let i = index; trackBy: trackByCard"
+           [class]="card.extraClass">
 
-      <!-- کارت ۳: ارسال و همکاری -->
-      <div class="info-card card-delivery">
-        <div class="card-icon">🚚</div>
-        <h3>ارسال و همکاری</h3>
-        <ul>
-          <li>✔ دو پیک در اصفهان (دریافت و تحویل)</li>
-          <li>✔ همکاری با تعاونی‌ها، پست، تیپاکس در سراسر کشور</li>
+        <div class="card-icon">{{ card.icon }}</div>
+
+        <h3>
+          {{ card.title }}
+          <button class="more-btn" (click)="openDialog(i)">
+            <span class="arrow">▾</span>
+            <span class="tooltip-text">بیشتر</span>
+          </button>
+        </h3>
+
+        <p *ngIf="card.summary">{{ card.summary }}</p>
+
+        <ul *ngIf="card.customList">
+          <li *ngFor="let item of card.customList">{{ item }}</li>
         </ul>
-      </div>
 
-      <!-- کارت ۴: زمان تحویل -->
-      <div class="info-card card-time">
-        <div class="card-icon">⏱️</div>
-        <h3>زمان تحویل</h3>
-        <div class="time-items">
-          <span class="time-item">۳-۵ روز <small>عادی</small></span>
-          <span class="time-item">۵-۸ روز <small>فانکشنال</small></span>
-          <span class="time-item highlight">۱-۲ روز <small>فوری*</small></span>
+        <span class="badge" *ngIf="card.badge">{{ card.badge }}</span>
+
+        <div *ngIf="card.timeItems" class="time-items">
+          <span class="time-item" 
+                *ngFor="let item of card.timeItems"
+                [class.highlight]="item.highlight">
+            {{ item.label }} <small>{{ item.sub }}</small>
+          </span>
         </div>
-        <p class="note">* همراه با افزایش قیمت نسبت به لیست</p>
+        <p *ngIf="card.note" class="note">{{ card.note }}</p>
+
       </div>
 
     </div>
 
-    <!-- کارت بزرگ: ارتودنسی دیجیتال -->
+    <!-- کارت بزرگ دیجیتال (بدون تغییر) -->
     <div class="card-digital">
       <div class="digital-content">
         <div class="digital-icon">💻</div>
@@ -119,6 +115,22 @@
   </div>
 </section>
 
+<!-- ====== مودال دیالوگ ====== -->
+<div class="dialog-overlay" *ngIf="selectedCard" (click)="closeDialog()">
+  <div class="dialog-box" (click)="$event.stopPropagation()">
+    <!-- دکمه بستن -->
+    <button class="dialog-close" (click)="closeDialog()">✕</button>
+
+    <!-- عنوان و آیکون -->
+    <div class="dialog-header">
+      <span class="dialog-icon">{{ selectedCard.icon }}</span>
+      <h2>{{ selectedCard.title }}</h2>
+    </div>
+
+    <!-- محتوای اصلی (detail) -->
+    <div class="dialog-body" [innerHTML]="selectedCard.detail"></div>
+  </div>
+</div>
 
 
 
@@ -138,7 +150,7 @@
           <span class="item-title">پروتز ارتودنسی</span>
           <span class="item-subtitle">ساخت با بالاترین دقت</span>
         </div>
-        <img src="f1.png" alt="پروتز ارتودنسی">
+        <img src="f2.png" alt="پروتز ارتودنسی">
       </div>
 
       <!-- آیتم دوم -->
@@ -147,7 +159,7 @@
           <span class="item-title">پروتز زیبایی</span>
           <span class="item-subtitle">هماهنگ با رنگ و فرم دندان</span>
         </div>
-        <img src="f2.png" alt="پروتز زیبایی">
+        <img src="f1.png" alt="پروتز زیبایی">
       </div>
 
       <!-- آیتم سوم -->

@@ -2,6 +2,10 @@ import { Component, AfterViewInit, OnDestroy, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common'; 
 import { ChangeDetectorRef } from '@angular/core';
+import { CARDS_DATA } from './cards-data';
+import { Card } from './card.model';
+
+
 
 
 @Component({
@@ -19,6 +23,9 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     'D3.PNG',
     'D4.PNG'
   ];
+
+  selectedCard: Card | null = null; 
+  cards: Card[] = CARDS_DATA;
   currentIndex = 0;
   private slideInterval: any;
   selectedImage : string | null = null;
@@ -200,8 +207,20 @@ window.addEventListener('scroll', this.scrollListener);
     document.body.style.overflow = 'auto';
   }
 
+openDialog(index: number): void {
+    this.selectedCard = this.cards[index];
+    document.body.style.overflow = 'hidden'; // جلوگیری از اسکرول پس‌زمینه
+  }
+    closeDialog(): void {
+    this.selectedCard = null;
+    document.body.style.overflow = 'auto';
+  }
 
-
+  // ====== trackBy ======
+  trackByCard(index: number, card: Card): number {
+    return card.id;
+  }
+ 
 
    ngOnDestroy(): void {
     // حذف listener اسکرول هنگام نابودی کامپوننت
