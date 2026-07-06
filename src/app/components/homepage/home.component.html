@@ -97,20 +97,31 @@
 
     </div>
 
-    <!-- کارت بزرگ دیجیتال (بدون تغییر) -->
-    <div class="card-digital">
-      <div class="digital-content">
-        <div class="digital-icon">💻</div>
-        <div>
-          <h2>به زودی...</h2>
-          <p>راه‌اندازی اولین و کارآمدترین لابراتوار دیجیتال استان اصفهان</p>
-          <div class="progress-badge">
-            <span>۱۰۰+ کیس آزمایش شده</span>
-            <div class="progress-bar"><div class="progress-fill" style="width:85%"></div></div>
-          </div>
+  <div class="card-digital">
+  <div class="digital-content">
+
+    <!-- ویدیو به جای آیکون -->
+    <div class="digital-icon">
+      <video autoplay loop muted playsinline>
+        <source src="v1.mp4" type="video/mp4" />
+        مرورگر شما ویدیو را پشتیبانی نمی‌کند.
+      </video>
+    </div>
+
+    <!-- بخش نوشته‌ها (دقیقاً مثل قبل) -->
+    <div>
+      <h2 id="dynamicTitle">به زودی...</h2>
+      <p id="dynamicDesc">راه‌اندازی اولین و کارآمدترین لابراتوار دیجیتال استان اصفهان</p>
+      <div class="progress-badge">
+        <span id="dynamicCount">۱۰۰+ کیس آزمایش شده</span>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill" style="width:85%"></div>
         </div>
       </div>
     </div>
+
+  </div>
+</div>
 
   </div>
 </section>
