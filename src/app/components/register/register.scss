@@ -1,0 +1,298 @@
+// ============================================
+//  متغیرها
+// ============================================
+$primary-blue: #0ea5e9;
+$primary-dark: #0c4a6e;
+$bg-light: #f8fafc;
+$text-dark: #1e293b;
+$text-muted: #64748b;
+$error-red: #dc3545;
+$border-color: #e2e8f0;
+$shadow: 0 8px 30px rgba(14, 165, 233, 0.12);
+
+// ============================================
+//  کانتینر (وسط‌چین)
+// ============================================
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+// ============================================
+//  کارت فرم
+// ============================================
+.register-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 28px;
+  padding: 24px 28px 20px;  // کاهش padding داخلی
+  width: 100%;
+  max-width: 520px;
+  box-shadow: $shadow;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  font-family: 'MyCustomFont', 'Vazirmatn', 'IRANSans', 'Tahoma', sans-serif;
+  max-height: 98vh;
+  overflow-y: auto;
+
+  &:hover {
+    box-shadow: 0 12px 40px rgba(14, 165, 233, 0.18);
+    transform: translateY(-2px);
+  }
+}
+
+// ============================================
+//  عنوان (کمی کوچک‌تر)
+// ============================================
+h2 {
+  font-size: 1.7rem;          // کاهش از 2rem به 1.7rem
+  font-weight: 700;
+  color: $primary-dark;
+  text-align: center;
+  margin-bottom: 16px;        // کاهش فاصله
+  letter-spacing: -0.3px;
+  line-height: 1.3;
+  background: linear-gradient(135deg, $primary-dark 0%, $primary-blue 80%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+// ============================================
+//  فرم با دو ستون
+// ============================================
+form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;             // کاهش gap
+}
+
+// ============================================
+//  گروه‌های ورودی
+// ============================================
+.form-group {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+
+  // آیتم‌های تمام‌عرض (نام کلینیک)
+  &.full-width {
+    grid-column: 1 / -1;
+  }
+
+  // برچسب‌ها (کوچک‌تر)
+  label {
+    display: block;
+    margin-bottom: 3px;
+    font-weight: 600;
+    font-size: 0.85rem;       // کاهش از 0.95rem به 0.85rem
+    color: $text-dark;
+    letter-spacing: 0.2px;
+    line-height: 1.3;
+  }
+
+  // ورودی‌ها (کوچک‌تر)
+  input {
+    width: 100%;
+    padding: 10px 14px;       // کاهش padding
+    font-size: 0.9rem;        // کاهش از 1rem به 0.9rem
+    font-family: inherit;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1.5px solid $border-color;
+    border-radius: 10px;      // کاهش گردی
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    color: $text-dark;
+    outline: none;
+    box-sizing: border-box;
+    line-height: 1.4;
+
+    &::placeholder {
+      color: #94a3b8;
+      font-weight: 300;
+      font-size: 0.8rem;      // کوچک‌تر
+    }
+
+    &:focus {
+      border-color: $primary-blue;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+      background: white;
+    }
+
+    &.ng-invalid.ng-touched {
+      border-color: $error-red;
+      box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.12);
+    }
+  }
+}
+
+// ============================================
+//  پیام‌های خطا (کوچک‌تر)
+// ============================================
+.error-message {
+  color: $error-red;
+  font-size: 0.75rem;         // کاهش از 0.8rem
+  margin-top: 3px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  line-height: 1.2;
+
+  &::before {
+    content: '⚠️';
+    font-size: 0.75rem;
+    margin-left: 3px;
+  }
+}
+
+.server-error {
+  grid-column: 1 / -1;
+  margin-top: 6px;
+  padding: 6px 10px;
+  background: rgba(220, 53, 69, 0.08);
+  border-radius: 8px;
+  border: 1px solid rgba(220, 53, 69, 0.15);
+  text-align: center;
+  font-size: 0.85rem;         // کاهش
+}
+
+// ============================================
+//  دکمه ثبت‌نام (تمام عرض، کمی کوچک‌تر)
+// ============================================
+.btn-primary {
+  grid-column: 1 / -1;
+  width: 100%;
+  padding: 12px 18px;         // کاهش padding
+  background: linear-gradient(135deg, $primary-blue, #0284c7);
+  color: white;
+  border: none;
+  border-radius: 35px;        // کاهش گردی
+  font-size: 1rem;            // کاهش از 1.1rem
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.3s ease, background 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(14, 165, 233, 0.3);
+  margin-top: 4px;
+  line-height: 1.4;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #0284c7, #0369a1);
+    transform: scale(1.02);
+    box-shadow: 0 6px 22px rgba(14, 165, 233, 0.4);
+  }
+
+  &:disabled {
+    background: #cbd5e1;
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+    opacity: 0.7;
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 18px;              // کوچک‌تر
+    height: 18px;
+    border: 2.5px solid rgba(255, 255, 255, 0.25);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .loading-text {
+    font-size: 0.9rem;        // کاهش
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ============================================
+//  فوتر (لینک‌ها) – کوچک‌تر
+// ============================================
+.form-footer {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  flex-wrap: wrap;
+
+  .link {
+    color: $primary-dark;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.85rem;       // کاهش از 0.95rem
+    transition: color 0.2s ease, text-decoration 0.2s ease;
+    letter-spacing: 0.2px;
+    line-height: 1.3;
+
+    &:hover {
+      color: $primary-blue;
+      text-decoration: underline;
+    }
+  }
+
+  .divider {
+    color: #94a3b8;
+    font-weight: 300;
+    font-size: 0.9rem;        // کاهش
+    user-select: none;
+  }
+}
+
+// ============================================
+//  ریسپانسیو موبایل (تک‌ستونی)
+// ============================================
+@media (max-width: 560px) {
+  .register-card {
+    padding: 18px 14px 16px;
+    max-width: 100%;
+  }
+
+  form {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .form-group {
+    &.full-width {
+      grid-column: 1;
+    }
+  }
+
+  h2 {
+    font-size: 1.4rem;
+    margin-bottom: 14px;
+  }
+
+  .btn-primary {
+    padding: 10px 14px;
+    font-size: 0.95rem;
+  }
+
+  .form-footer {
+    flex-direction: column;
+    gap: 4px;
+    .link {
+      font-size: 0.8rem;
+    }
+  }
+}

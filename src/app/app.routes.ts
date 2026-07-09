@@ -12,7 +12,7 @@ export const routes: Routes = [
       ),
   },
 
-  // Authentication layout
+  // Authentication layout (ورود و ثبت‌نام)
   {
     path: '',
     component: AuthLayOut,
@@ -24,10 +24,19 @@ export const routes: Routes = [
             (m) => m.LoginPage
           ),
       },
+      // ========== اضافه کردن مسیر ثبت‌نام ==========
+      {
+        path: 'register',
+        loadComponent: () =>
+          import('./components/register/register').then(
+            (m) => m.RegisterComponent
+          ),
+      },
+      // ============================================
     ],
   },
 
-  // Main application layout
+  // Main application layout (پس از ورود)
   {
     path: '',
     component: MasterLayOut,

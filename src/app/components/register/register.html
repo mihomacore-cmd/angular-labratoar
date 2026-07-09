@@ -1,0 +1,115 @@
+<div class="register-container">
+  <div class="register-card">
+    <h2>ثبت‌نام</h2>
+
+    <form (ngSubmit)="onSubmit()" [formGroup]="registerForm">
+      <!-- نام -->
+      <div class="form-group">
+        <label for="firstName">نام</label>
+        <input
+          id="firstName"
+          type="text"
+          formControlName="firstName"
+          placeholder="نام خود را وارد کنید"
+          required
+        />
+        <div *ngIf="getError('firstName', 'required')" class="error-message">
+          نام اجباری است
+        </div>
+      </div>
+
+      <!-- نام خانوادگی -->
+      <div class="form-group">
+        <label for="lastName">نام خانوادگی</label>
+        <input
+          id="lastName"
+          type="text"
+          formControlName="lastName"
+          placeholder="نام خانوادگی خود را وارد کنید"
+          required
+        />
+        <div *ngIf="getError('lastName', 'required')" class="error-message">
+          نام خانوادگی اجباری است
+        </div>
+      </div>
+
+      <!-- نام کلینیک -->
+      <div class="form-group">
+        <label for="clinicName">نام کلینیک</label>
+        <input
+          id="clinicName"
+          type="text"
+          formControlName="clinicName"
+          placeholder="نام کلینیک را وارد کنید"
+          required
+        />
+        <div *ngIf="getError('clinicName', 'required')" class="error-message">
+          نام کلینیک اجباری است
+        </div>
+      </div>
+
+      <!-- شماره همراه -->
+      <div class="form-group">
+        <label for="phone">شماره همراه</label>
+        <input
+          id="phone"
+          type="text"
+          formControlName="phone"
+          placeholder="مثلاً ۰۹۱۲۳۴۵۶۷۸۹"
+          required
+        />
+        <div *ngIf="getError('phone', 'required')" class="error-message">
+          شماره همراه اجباری است
+        </div>
+        <div *ngIf="getError('phone', 'pattern')" class="error-message">
+          شماره همراه باید ۱۱ رقم باشد (۰۹۱۲۳۴۵۶۷۸۹)
+        </div>
+      </div>
+
+      <!-- کد ملی -->
+      <div class="form-group">
+        <label for="nationalCode">کد ملی</label>
+        <input
+          id="nationalCode"
+          type="text"
+          formControlName="nationalCode"
+          placeholder="کد ملی ۱۰ رقمی"
+          required
+        />
+        <div *ngIf="getError('nationalCode', 'required')" class="error-message">
+          کد ملی اجباری است
+        </div>
+        <div *ngIf="getError('nationalCode', 'pattern')" class="error-message">
+          کد ملی باید ۱۰ رقم باشد
+        </div>
+        <div *ngIf="getError('nationalCode', 'minlength') || getError('nationalCode', 'maxlength')" class="error-message">
+          کد ملی دقیقاً ۱۰ رقم است
+        </div>
+      </div>
+
+      <!-- دکمه ثبت‌نام -->
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="registerForm.invalid || isLoading()"
+      >
+        <ng-container *ngIf="!isLoading(); else loadingTpl">
+          <span>ثبت‌نام</span>
+        </ng-container>
+
+        <ng-template #loadingTpl>
+          <span class="spinner"></span>
+          <span class="loading-text">در حال ثبت...</span>
+        </ng-template>
+      </button>
+
+      <div *ngIf="registerError()" class="error-message server-error">
+        {{ registerError() }}
+      </div>
+    </form>
+
+    <div class="form-footer">
+      <a routerLink="/login" class="link">قبلاً ثبت‌نام کرده‌اید؟ ورود</a>
+    </div>
+  </div>
+</div>
