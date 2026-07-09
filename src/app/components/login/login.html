@@ -1,27 +1,38 @@
 <div class="login-container">
   <div class="login-card">
-    <h2>Login</h2>
+    <h2>ورود به حساب</h2>
+
     <form (ngSubmit)="onSubmit()" [formGroup]="loginForm">
       <!-- Username Input -->
       <div class="form-group">
-        <label for="username">Username</label>
-        <input id="username" type="text" formControlName="username" placeholder="Enter your username" required>
-        <!-- از CommonModule برای *ngIf استفاده می‌شود -->
+        <label for="username">نام کاربری</label>
+        <input
+          id="username"
+          type="text"
+          formControlName="username"
+          placeholder="لطفاً نام کاربری خود را وارد کنید"
+          required
+        />
         <div *ngIf="getError('username', 'required')" class="error-message">
-          Username is required.
+          نام کاربری اجباری است
         </div>
       </div>
 
       <!-- Password Input -->
       <div class="form-group">
-        <label for="password">Password</label>
-        <input id="password" type="password" formControlName="password" placeholder="Enter your password" required>
-        <!-- از CommonModule برای *ngIf استفاده می‌شود -->
+        <label for="password">گذرواژه</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="لطفاً رمز عبور خود را وارد کنید"
+          required
+        />
         <div *ngIf="getError('password', 'required')" class="error-message">
-          Password is required.
+          گذرواژه اجباری است
         </div>
         <div *ngIf="getError('password', 'minlength')" class="error-message">
-          Password must be at least 6 characters long.
+          رمز عبور باید حداقل ۶ کاراکتر باشد
         </div>
       </div>
 
@@ -29,10 +40,10 @@
       <button
         type="submit"
         class="btn btn-primary"
-        [disabled]="loginForm.invalid || isLoading()">
-
+        [disabled]="loginForm.invalid || isLoading()"
+      >
         <ng-container *ngIf="!isLoading(); else loadingTpl">
-          <span>Login</span>
+          <span>ورود</span>
         </ng-container>
 
         <ng-template #loadingTpl>
@@ -40,6 +51,16 @@
           <span class="loading-text">در حال ورود...</span>
         </ng-template>
       </button>
+
+      <div *ngIf="loginError()" class="error-message server-error">
+        {{ loginError() }}
+      </div>
     </form>
+
+    <div class="form-footer">
+      <a href="#" class="link">فراموشی رمز عبور؟</a>
+      <span class="divider">|</span>
+      <a href="#" class="link">ثبت نام</a>
+    </div>
   </div>
 </div>

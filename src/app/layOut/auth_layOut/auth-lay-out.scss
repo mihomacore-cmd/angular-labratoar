@@ -1,42 +1,317 @@
-/* auth-layout.component.css */
+/* ---------- ریست و پایه ---------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:host {
+  display: block;
+  font-family: inherit;
+  height: 100vh; /* ← کل ویوپورت */
+  background: linear-gradient(145deg, #e0f2fe 0%, #ffffff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden; /* ← جلوگیری از اسکرول در خود کامپوننت */
+}
+
+/* ---------- دکوراسیون پس‌زمینه ---------- */
+.bg-decor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.bg-decor .wave {
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 30% 50%, rgba(56, 189, 248, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: floatWave 18s ease-in-out infinite alternate;
+}
+
+.bg-decor .wave:nth-child(2) {
+  background: radial-gradient(circle at 70% 30%, rgba(14, 165, 233, 0.06) 0%, transparent 60%);
+  animation-duration: 22s;
+  animation-delay: -5s;
+  width: 250%;
+  height: 250%;
+}
+
+.bg-decor .tooth-icon {
+  position: absolute;
+  font-size: 4rem;
+  opacity: 0.08;
+  animation: floatTooth 12s ease-in-out infinite alternate;
+}
+
+.bg-decor .tooth-icon:nth-child(3) {
+  top: 8%;
+  left: 5%;
+  animation-delay: -2s;
+}
+.bg-decor .tooth-icon:nth-child(4) {
+  bottom: 12%;
+  right: 3%;
+  animation-duration: 14s;
+  font-size: 5rem;
+}
+.bg-decor .tooth-icon:nth-child(5) {
+  top: 45%;
+  left: 80%;
+  animation-duration: 16s;
+  font-size: 3.5rem;
+}
+
+@keyframes floatWave {
+  0% {
+    transform: translate(-10%, -10%) scale(1) rotate(0deg);
+  }
+  100% {
+    transform: translate(10%, 10%) scale(1.1) rotate(8deg);
+  }
+}
+
+@keyframes floatTooth {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  100% {
+    transform: translateY(-30px) rotate(10deg);
+  }
+}
+
+/* ---------- کانتینر اصلی ---------- */
 .auth-layout {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1200px;
+  height: 90vh; /* ← ارتفاع ۹۰٪ ویوپورت */
+  max-height: 900px;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: 48px;
+  box-shadow: 0 30px 80px rgba(14, 165, 233, 0.15),
+              inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* حداقل ارتفاع کل صفحه */
-  width: 100%;
+  overflow: hidden;
+  animation: fadeSlideUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: center bottom;
+  opacity: 0;
+  transform: translateY(40px);
 }
 
+@keyframes fadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- هدر ---------- */
 .header {
-  background-color: #4ca1af;
-  color: white;
-  padding: 1rem 2rem;
-  text-align: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  flex-shrink: 0; /* اجازه نده هدر کوچک شود */
+  padding: 5px 36px; /* کمی فشرده‌تر */
+  border-bottom: 1px solid rgba(56, 189, 248, 0.15);
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  flex-direction: row-reverse;
+  flex-shrink: 0; /* جلوگیری از جمع شدن هدر */
 }
 
+.header h1 {
+  font-weight: 500;
+  font-size: 1.4rem;
+  color: #0c4a6e;
+  letter-spacing: -0.3px;
+  background: linear-gradient(135deg, #0c4a6e 0%, #38bdf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmerTitle 4s ease-in-out infinite alternate;
+  margin: 0;
+}
+
+@keyframes shimmerTitle {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+/* ===== لوگو ===== */
+.logo {
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.logo-img {
+  height: 90px; /* کمی کوچک‌تر برای جا شدن بهتر */
+  width: auto;
+  filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.2));
+  border: 8px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10%;
+  transition: filter 0.3s ease;
+}
+
+.logo-img:hover {
+  filter: drop-shadow(0 0 12px rgba(14, 165, 233, 0.5));
+}
+
+/* ---------- محتوای اصلی ---------- */
 .main-content {
-  display: flex; /* برای اینکه بتواند محتوای درونش را مدیریت کند */
-  flex-grow: 1; /* این باعث می‌شود فضای خالی بین هدر و فوتر را بگیرد */
-  flex-direction: column; /* اگر محتوای شما (app-login) خودش column باشد */
-  /* یا flex-direction: row; اگر میخواهید ابعاد کلی صفحه را بگیرد */
-  width: 100%; /* عرض کامل */
+  flex: 1;
+  padding: 16px 36px 16px; /* کاهش padding عمودی */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+  overflow: hidden; /* ← مهم: جلوگیری از اسکرول */
 }
 
+.welcome-message {
+  max-width: 640px;
+  animation: fadeUp 1s 0.3s both;
+}
+
+.welcome-message h2 {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #0c4a6e;
+  margin-bottom: 2px;
+  background: linear-gradient(135deg, #0c4a6e 0%, #38bdf8 70%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+.welcome-message p {
+  font-size: 0.95rem;
+  color: #475569;
+  font-weight: 400;
+  margin-top: 0;
+  opacity: 0.85;
+}
+
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- router-outlet ---------- */
+router-outlet {
+  display: block;
+  width: 100%;
+  max-width: 460px;
+  margin: 0 auto;
+  animation: fadeUp 1s 0.6s both;
+}
+
+/* ---------- فوتر ---------- */
 .footer {
-  background-color: #151515;
-  color: #ddd;
-  padding: 15px 30px;
+  padding: 10px 36px;
+  border-top: 1px solid rgba(56, 189, 248, 0.1);
   text-align: center;
-  font-size: 13px;
-  border-top: 1px solid rgba(255,255,255,0.1);
-  flex-shrink: 0; /* اجازه نده فوتر کوچک شود */
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(4px);
+  flex-shrink: 0;
 }
 
-/* استایل‌های اضافی برای .main-content که ممکن است نیاز باشد */
-.main-content {
-  /* اگر میخواهید محتوای داخل main-content (یعنی app-login) را هم center کنید */
-  justify-content: center; /* عمودی */
-  align-items: center;     /* افقی */
-  padding: 1rem; /* اضافه کردن مقداری padding به اطراف main-content */
+.footer p {
+  color: #64748b;
+  font-weight: 300;
+  font-size: 0.8rem;
+  letter-spacing: 0.3px;
+  margin: 0;
+}
+
+/* ---------- ریسپانسیو ---------- */
+@media (max-width: 768px) {
+  .auth-layout {
+    border-radius: 28px;
+    height: 92vh;
+    max-height: none;
+  }
+
+  .header {
+    padding: 14px 24px;
+  }
+
+  .header h1 {
+    font-size: 1.1rem;
+  }
+
+  .logo-img {
+    height: 70px;
+    border-width: 6px;
+  }
+
+  .main-content {
+    padding: 12px 20px 12px;
+  }
+
+  .welcome-message h2 {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 10px 16px;
+  }
+
+  .header h1 {
+    font-size: 0.95rem;
+  }
+
+  .logo-img {
+    height: 55px;
+    border-width: 5px;
+  }
+
+  .welcome-message h2 {
+    font-size: 1.4rem;
+  }
+
+  .main-content {
+    padding: 10px 16px 10px;
+  }
+
+  .auth-layout {
+    height: 95vh;
+    border-radius: 20px;
+  }
 }

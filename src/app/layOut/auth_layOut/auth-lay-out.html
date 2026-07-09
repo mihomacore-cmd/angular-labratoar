@@ -1,17 +1,35 @@
-<!-- auth-layout.component.html -->
+<!-- دکوراسیون پس‌زمینه (امواج و دندان‌های شناور) -->
+<div class="bg-decor">
+  <div class="wave"></div>
+  <div class="wave"></div>
+  <div class="tooth-icon">🦷</div>
+  <div class="tooth-icon">🦷</div>
+  <div class="tooth-icon">🦷</div>
+</div>
+
+<!-- ========== Auth Layout ========== -->
 <div class="auth-layout">
+
+  <!-- هدر -->
   <header class="header">
-    <!-- محتوای هدر شما -->
-    <h1>به اپلیکیشن خوش آمدید</h1>
+    <!-- لوگو در سمت راست بالا (با استایل‌های داده‌شده) -->
+    <a href="#" class="logo">
+      <img src="logo.png" alt="لوگو" class="logo-img">
+    </a>
   </header>
 
+  <!-- محتوای اصلی -->
   <main class="main-content">
-    <!-- اینجا محتوایی که از بیرون می‌آید نمایش داده می‌شود -->
-     <router-outlet> </router-outlet>
+    <!-- پیام خوش‌آمدگویی در وسط صفحه -->
+    <div class="welcome-message">
+    </div>
+
+    <!-- جایگاه router-outlet (فرم‌های لاگین/ثبت‌نام شما) -->
+    <router-outlet></router-outlet>
   </main>
 
+  <!-- فوتر -->
   <footer class="footer">
-    <!-- محتوای فوتر شما -->
-    <p>&copy; 2024 شرکت من</p>
+    
   </footer>
 </div>
