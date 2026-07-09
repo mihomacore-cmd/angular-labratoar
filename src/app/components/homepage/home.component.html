@@ -97,10 +97,10 @@
 
     </div>
 
-  <div class="card-digital">
+<div class="card-digital">
   <div class="digital-content">
 
-    <!-- ویدیو به جای آیکون -->
+    <!-- ویدیو -->
     <div class="digital-icon">
       <video autoplay loop muted playsinline>
         <source src="v1.mp4" type="video/mp4" />
@@ -108,20 +108,38 @@
       </video>
     </div>
 
-    <!-- بخش نوشته‌ها (دقیقاً مثل قبل) -->
+    <!-- بخش نوشته‌ها -->
     <div>
       <h2 id="dynamicTitle">به زودی...</h2>
+      <div class="title-divider"></div>
       <p id="dynamicDesc">راه‌اندازی اولین و کارآمدترین لابراتوار دیجیتال استان اصفهان</p>
-      <div class="progress-badge">
-        <span id="dynamicCount">۱۰۰+ کیس آزمایش شده</span>
-        <div class="progress-bar">
-          <div class="progress-fill" id="progressFill" style="width:85%"></div>
+
+      <!-- ===== پیشرفت با نوار و متن کنار هم ===== -->
+      <div class="progress-wrapper">
+        <div class="progress-label">
+          <i class="fas fa-vial icon-vial"></i> <!-- یا هر آیکون دیگه -->
+          <span class="progress-text" id="dynamicCount">۱۰۰+ کیس آزمایش شده</span>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width:85%"></div>
+          </div>
+          <span class="progress-percent">۸۵٪</span>
         </div>
       </div>
-    </div>
 
+    </div>
   </div>
 </div>
+
+
+
+
+
+
+    
+  
+
 
   </div>
 </section>
