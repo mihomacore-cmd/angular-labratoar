@@ -32,6 +32,25 @@ export const routes: Routes = [
             (m) => m.RegisterComponent
           ),
       },
+
+
+      {
+       path: 'forgetPassword',
+       loadComponent: () =>
+         import('./components/forgetPassword/forgetPassword').then(
+      (m) => m.ForgetPasswordComponent
+    ),
+      },
+       
+      {
+             path: 'changePassword',
+       loadComponent: () =>
+         import('./components/changPassword/changPassword').then(
+      (m) => m.ChangePasswordComponent
+    ),
+
+      }
+
       // ============================================
     ],
   },

@@ -3,6 +3,21 @@
     <h2>ثبت‌نام</h2>
 
     <form (ngSubmit)="onSubmit()" [formGroup]="registerForm">
+
+     <div class="form-group">
+        <label for="lastName">نام خانوادگی</label>
+        <input
+          id="lastName"
+          type="text"
+          formControlName="lastName"
+          placeholder="نام خانوادگی خود را وارد کنید"
+          required
+        />
+        <div *ngIf="getError('lastName', 'required')" class="error-message">
+          نام خانوادگی اجباری است
+        </div>
+      </div>
+
       <!-- نام -->
       <div class="form-group">
         <label for="firstName">نام</label>
@@ -19,19 +34,7 @@
       </div>
 
       <!-- نام خانوادگی -->
-      <div class="form-group">
-        <label for="lastName">نام خانوادگی</label>
-        <input
-          id="lastName"
-          type="text"
-          formControlName="lastName"
-          placeholder="نام خانوادگی خود را وارد کنید"
-          required
-        />
-        <div *ngIf="getError('lastName', 'required')" class="error-message">
-          نام خانوادگی اجباری است
-        </div>
-      </div>
+    
 
       <!-- نام کلینیک -->
       <div class="form-group">
