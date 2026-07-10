@@ -1,0 +1,118 @@
+<div class="page-container">
+  <div class="details-card">
+    
+    <!-- سربرگ -->
+    <div class="card-header">
+      <h2>جزئیات سفارش</h2>
+      <span class="status-badge">وضعیت: {{ orderInfo.status }}</span>
+    </div>
+
+    <!-- اطلاعات کلی -->
+    <div class="info-grid">
+      <div class="info-item">
+        <label>نام کلینیک</label>
+        <span>{{ orderInfo.clinicName }}</span>
+      </div>
+      <div class="info-item">
+        <label>نام پزشک</label>
+        <span>{{ orderInfo.doctorName }}</span>
+      </div>
+      <div class="info-item">
+        <label>نام بیمار</label>
+        <span>{{ orderInfo.patientName }}</span>
+      </div>
+      <div class="info-item">
+        <label>نوع فاکتور</label>
+        <span>{{ orderInfo.invoiceType }}</span>
+      </div>
+      <div class="info-item">
+        <label>تاریخ ورود</label>
+        <span>{{ orderInfo.entryDate }}</span>
+      </div>
+      <div class="info-item">
+        <label>تاریخ خروج</label>
+        <span>{{ orderInfo.exitDate }}</span>
+      </div>
+    </div>
+
+    <!-- فایل آپلود شده (فقط دکمه) -->
+    <div class="upload-section">
+      <label>فایل آپلود شده</label>
+      <button type="button" class="upload-btn">
+        <span>📎</span> آپلود فایل (تصویر / PDF)
+      </button>
+      <span class="upload-note">* فعلاً فقط نمایش دکمه</span>
+    </div>
+
+    <hr class="divider">
+
+    <!-- جدول آیتم‌های سفارش -->
+    <div class="table-section">
+      <div class="table-toolbar">
+        <h2>آیتم‌های سفارش</h2>
+        <button type="button" class="add-row-btn" (click)="addItem()">+ افزودن آیتم</button>
+      </div>
+
+      <div class="table-wrapper">
+        <table id="orderTable">
+          <thead>
+            <tr>
+              <th>نوع</th>
+              <th>شماره دندان</th>
+              <th>تعداد</th>
+              <th>قیمت واحد (ریال)</th>
+              <th>مجموع (ریال)</th>
+              <th>حذف</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of items; track i; let i = $index) {
+              <tr>
+                <td>
+                  <input type="text" class="table-input" [value]="item.serviceType" (input)="item.serviceType = $any($event.target).value" placeholder="نوع خدمات">
+                </td>
+                <td>
+                  <input type="text" class="table-input" [value]="item.toothNumber" (input)="item.toothNumber = $any($event.target).value" placeholder="مثلاً ۱۲">
+                </td>
+                <td>
+                  <input type="number" class="table-input" [value]="item.quantity" (input)="item.quantity = $any($event.target).value" min="1">
+                </td>
+                <td>
+                  <input type="number" class="table-input" [value]="item.unitPrice" (input)="item.unitPrice = $any($event.target).value" min="0">
+                </td>
+                <td class="price-cell">{{ formatMoney(rowTotal(i)) }}</td>
+                <td>
+                  <button type="button" class="delete-row-btn" (click)="removeItem(i)">✕</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- جمع‌بندی مبالغ و دکمه تایید -->
+    <div class="summary-wrapper">
+      <div class="summary-section">
+        <div class="summary-item">
+          <label>مبلغ کل</label>
+          <span class="price-total">{{ formatMoney(totalAmount) }}</span>
+        </div>
+        <div class="summary-item">
+          <label>مبلغ تخفیف</label>
+          <span class="price-discount">- {{ formatMoney(discountAmount) }}</span>
+        </div>
+        <div class="summary-item">
+          <label>مبلغ نهایی</label>
+          <span class="price-final">{{ formatMoney(finalAmount) }}</span>
+        </div>
+      </div>
+
+      <!-- دکمه تایید که با CSS آن را فوق‌العاده زیبا کرده‌ایم -->
+      <div class="action-footer">
+        <button type="button" class="submit-btn" (click)="submitOrder()">تایید و ثبت تغییرات</button>
+      </div>
+    </div>
+
+  </div>
+</div>

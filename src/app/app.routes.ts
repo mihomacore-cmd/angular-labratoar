@@ -82,6 +82,13 @@ export const routes: Routes = [
             (m) => m.KanbanBoardComponent
           ),
       },
+      {
+        path: 'orderDetail',
+        loadComponent: () =>
+          import('./components/orderDetail/orderDetail').then(
+            (m) => m.OrderDetailsComponent
+          ),
+      },
     ],
   },
 

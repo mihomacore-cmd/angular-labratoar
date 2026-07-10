@@ -1,0 +1,120 @@
+<div class="page-container">
+  <div class="list-card">
+    
+    <!-- عنوان و تعداد کل -->
+    <div class="list-header">
+      <h2>لیست سفارشات</h2>
+      <div class="total-count">
+        تعداد کل سفارشات: {{ orders.length }} مورد
+      </div>
+    </div>
+
+    <!-- بخش فیلتر جستجو -->
+    <div class="filter-section">
+      <div class="filter-row">
+        
+        <div class="form-group">
+          <label>کلینیک</label>
+          <select>
+            <option>همه کلینیک‌ها</option>
+            <option>تخصصی قلب</option>
+            <option>آرامش</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>پزشک</label>
+          <select>
+            <option>همه پزشکان</option>
+            <option>دکتر احمدی</option>
+            <option>دکتر کیانی</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>بیمار</label>
+          <input type="text" placeholder="نام بیمار را وارد کنید">
+        </div>
+
+        <!-- بازه تاریخی -->
+        <div class="form-group date-group">
+          <label>بازه تاریخی</label>
+          <div class="date-input-wrapper">
+            <input type="text" placeholder="از تاریخ">
+            <span class="date-separator">-</span>
+            <input type="text" placeholder="تا تاریخ">
+          </div>
+        </div>
+
+        <!-- رادیو دکمه وضعیت -->
+        <div class="form-group radio-group">
+          <label>وضعیت</label>
+          <div class="radio-wrapper">
+            <label class="custom-radio">
+              <input type="radio" name="status" value="entry">
+              <span class="radio-label radio-green">ورود</span>
+            </label>
+            <label class="custom-radio">
+              <input type="radio" name="status" value="exit">
+              <span class="radio-label radio-gray">خروج</span>
+            </label>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- دکمه‌های عملیات -->
+      <div class="filter-actions">
+        <button class="btn btn-secondary" (click)="resetSearch()">بازنشانی</button>
+        <button class="btn btn-primary" (click)="searchOrders()">جستجو</button>
+      </div>
+    </div>
+
+    <!-- جدول لیست سفارشات -->
+    <div class="table-wrapper">
+      <table id="orderListTable">
+        <thead>
+          <tr>
+            <th>کلینیک</th>
+            <th>سربرگ</th>
+            <th>نام پزشک</th>
+            <th>نام بیمار</th>
+            <th>تاریخ ورود</th>
+            <th>تاریخ خروج</th>
+            <th>نوع محصول</th>
+            <th>مقدار</th>
+            <th>مبلغ واحد (ریال)</th>
+            <th>مبلغ کل (ریال)</th>
+            <th>مبلغ تخفیف (ریال)</th>
+            <th>وضعیت پرداخت</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (order of orders; track i; let i = $index) {
+            <tr>
+              <td>{{ order.clinic }}</td>
+              <td>{{ order.section }}</td>
+              <td>{{ order.doctor }}</td>
+              <td>{{ order.patient }}</td>
+              <td>{{ order.entryDate }}</td>
+              <td>{{ order.exitDate }}</td>
+              <td>{{ order.product }}</td>
+              <td>{{ order.quantity }}</td>
+              <td>{{ formatMoney(order.unitPrice) }}</td>
+              <td>{{ formatMoney(order.total) }}</td>
+              <td>{{ formatMoney(order.discount) }}</td>
+              <td>
+                <!-- بج وضعیت پرداخت (با کلاس داینامیک) -->
+                <div class="status-badge" [class.badge-green]="order.status === 'پرداخت شده'" [class.badge-blue]="order.status === 'در انتظار'" [class.badge-orange]="order.status === 'تاخیر شده'">
+                  <span class="badge-text">{{ order.status }}</span>
+                  <span class="badge-value">{{ formatMoney(order.discount) }}</span>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
