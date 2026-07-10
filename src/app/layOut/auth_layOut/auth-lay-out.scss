@@ -184,16 +184,17 @@
 /* ---------- محتوای اصلی ---------- */
 .main-content {
   flex: 1;
-  padding: 16px 36px 16px; /* کاهش padding عمودی */
+  padding: 16px 36px 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: center;   /* ← برای صفحات کوتاه مانند لاگین، وسط‌چین می‌ماند */
   text-align: center;
   gap: 12px;
-  overflow: hidden; /* ← مهم: جلوگیری از اسکرول */
+  overflow-y: auto;          /* ← اسکرول عمودی فعال */
+  overflow-x: hidden;        /* ← جلوگیری از اسکرول افقی */
+  /* حذف overflow: hidden */
 }
-
 .welcome-message {
   max-width: 640px;
   animation: fadeUp 1s 0.3s both;
