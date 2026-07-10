@@ -5,8 +5,8 @@ import { CommonModule } from '@angular/common';
   selector: 'app-order-list',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './order-list.component.html',
-  styleUrls: ['./order-list.component.scss']
+  templateUrl: './orderList.html',
+  styleUrls: ['./orderList.scss']
 })
 export class OrderListComponent {
   // داده‌های نمونه بر اساس تصویر ارسالی

@@ -104,10 +104,9 @@
               <td>{{ formatMoney(order.total) }}</td>
               <td>{{ formatMoney(order.discount) }}</td>
               <td>
-                <!-- بج وضعیت پرداخت (با کلاس داینامیک) -->
+                <!-- بج وضعیت (فقط متن وضعیت) -->
                 <div class="status-badge" [class.badge-green]="order.status === 'پرداخت شده'" [class.badge-blue]="order.status === 'در انتظار'" [class.badge-orange]="order.status === 'تاخیر شده'">
-                  <span class="badge-text">{{ order.status }}</span>
-                  <span class="badge-value">{{ formatMoney(order.discount) }}</span>
+                  <span>{{ order.status }}</span>
                 </div>
               </td>
             </tr>

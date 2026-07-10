@@ -67,7 +67,7 @@ $status-orange: #f59e0b;
 
   .filter-row {
     display: grid;
-    grid-template-columns: repeat(4, 1fr) 1.2fr; // 4 ستون معمولی + ۱ ستون تاریخ بزرگتر
+    grid-template-columns: repeat(4, 1fr) 1.2fr;
     gap: 1.5rem;
     align-items: end;
     margin-bottom: 1.5rem;
@@ -174,7 +174,6 @@ $status-orange: #f59e0b;
           }
         }
 
-        // وقتی رادیو دکمه انتخاب می‌شود
         input:checked + .radio-label.radio-green {
           background: $status-green;
           color: white;
@@ -229,13 +228,13 @@ $status-orange: #f59e0b;
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 1200px; // پهن برای نمایش همه ستون‌ها
+  min-width: 1200px;
   font-size: 0.95rem;
 
   th, td {
     padding: 1rem 0.8rem;
     text-align: center;
-    border-left: 1px solid #e9edf2; // خطوط عمودی جداکننده ستون‌ها
+    border-left: 1px solid #e9edf2;
     vertical-align: middle;
     white-space: nowrap;
   }
@@ -256,26 +255,20 @@ table {
     border-bottom: 1px solid #f1f5f9;
   }
 
-  // بج وضعیت پرداخت (دکمه رنگی)
+  // ============================================
+  // بج وضعیت پرداخت (اصلاح شده - بدون مبلغ تخفیف)
+  // ============================================
   .status-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.8rem;
-    padding: 0.4rem 0.8rem 0.4rem 1.2rem;
+    padding: 0.4rem 1.5rem;
     border-radius: 8px;
     color: white;
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
+    min-width: 80px; // عرض متناسب برای کلمات کوتاه و بلند
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    min-width: 100px;
-
-    .badge-value {
-      background: rgba(255,255,255,0.2);
-      padding: 0.2rem 0.6rem;
-      border-radius: 4px;
-      font-weight: 500;
-    }
 
     &.badge-green { background: $status-green; }
     &.badge-blue { background: $status-blue; }
