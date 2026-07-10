@@ -1,41 +1,58 @@
 <div class="app-layout">
-  <!-- Header -->
-  <header class="app-header">
-    <a routerLink="/" class="header-logo">MyApp</a>
-    <nav class="header-nav">
-      <!-- Example: Login/Settings links -->
-      <a href="#">Settings</a>
-      <a href="#">Logout</a>
-    </nav>
-  </header>
 
-  <!-- Main Area (Sidebar + Content) -->
+  <!-- ===== دکوراسیون پس‌زمینه ===== -->
+  <div class="bg-decor">
+    <div class="wave"></div>
+    <div class="wave"></div>
+    <div class="tooth-icon">🦷</div>
+    <div class="tooth-icon">🦷</div>
+    <div class="tooth-icon">🦷</div>
+  </div>
+
+<header class="app-header">
+
+  <!-- بخش چپ: دکمه‌های ناوبری -->
+  <nav class="header-nav">
+    <a href="#" class="nav-btn profile-btn">
+      <span class="icon">👤</span> پروفایل
+    </a>
+    <a href="#" class="nav-btn settings-btn">
+      <span class="icon">⚙️</span> تنظیمات
+    </a>
+    <a href="#" class="nav-btn logout-btn">
+      <span class="icon">🚪</span> خروج
+    </a>
+  </nav>
+
+  <!-- بخش راست: لوگو -->
+  <a routerLink="/" class="logo">
+    <img src="logo.png" alt="لوگو" class="logo-img">
+  </a>
+
+</header>
+
+  <!-- ===== بخش اصلی (سایدبار راست + محتوا) ===== -->
   <div class="main-area">
-    <!-- Sidebar -->
-    <aside class="sidebar">
 
+    <!-- محتوای اصلی (چپ) -->
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+
+    <!-- سایدبار (راست) -->
+    <aside class="sidebar">
       <nav>
         <ul>
           <li><a [routerLink]="['/addOrder']" routerLinkActive="active-link">ثبت سفارش جدید</a></li>
-          <li><a routerLink="/users" routerLinkActive="active-link">Users</a></li>
-          <li><a routerLink="/products" routerLinkActive="active-link">Products</a></li>
-          <li><a routerLink="/reports" routerLinkActive="active-link">Reports</a></li>
+          <!-- آیتم‌های دیگر -->
         </ul>
       </nav>
     </aside>
 
-    <!-- Main Content -->
-    <main class="main-content">
-      <router-outlet></router-outlet>
-    </main>
   </div>
 
-  <!-- Footer -->
+  <!-- ===== فوتر ===== -->
   <footer class="app-footer">
-    <p>© 2026 MyApp. All rights reserved.</p>
-    <div class="footer-links">
-      <a href="/privacy">Privacy Policy</a>
-      <a href="/terms">Terms of Service</a>
-    </div>
+    <p>تمامی حقوق محفوظ است © ۱۴۰۵</p>
   </footer>
 </div>
