@@ -75,6 +75,13 @@ export const routes: Routes = [
             (m) => m.AddOrderComponent
           ),
       },
+       {
+        path: 'kenbanBoard',
+        loadComponent: () =>
+          import('./components/kenbanBoard/kenbanBoard').then(
+            (m) => m.KanbanBoardComponent
+          ),
+      },
     ],
   },
 

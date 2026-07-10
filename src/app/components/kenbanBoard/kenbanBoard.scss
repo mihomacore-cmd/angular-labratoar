@@ -1,0 +1,303 @@
+// تنظیمات فونت فارسی (میتوانید ایمپورت کنید یا در index.html لینک دهید)
+// @import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css');
+
+$bg-color: #f0f2f5;
+$text-color: #333;
+$border-color: #e5e7eb;
+
+// Color Palettes
+$green-main: #2bcd70;
+$green-dark: #1ca35a;
+$blue-main: #389ef2;
+$blue-dark: #329ced;
+$red-main: #f05252;
+$red-dark: #d63a3a;
+
+.page-container {
+  direction: rtl;
+  text-align: right;
+  font-family: 'Vazirmatn', Tahoma, sans-serif;
+  background-color: $bg-color;
+  padding: 2rem;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+// Header Styles
+.page-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  
+  h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: $text-color;
+    margin: 0 0 0.25rem 0;
+  }
+  
+  .subtitle {
+    color: #6b7280;
+    font-size: 0.9rem;
+  }
+}
+
+// Filter Section
+.filter-section {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+
+  .filter-header {
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #4b5563;
+  }
+
+  .filter-body {
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .filter-row {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .form-group {
+    flex: 1;
+    min-width: 150px;
+    
+    label {
+      display: block;
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-bottom: 0.4rem;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.6rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+      
+      &::placeholder {
+        color: #9ca3af;
+      }
+      
+      &:focus {
+        border-color: $blue-main;
+      }
+    }
+  }
+
+  .filter-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    justify-content: flex-end;
+  }
+
+  .filter-footer {
+    text-align: left; // In RTL this is the left side
+    font-size: 0.85rem;
+    color: #6b7280;
+  }
+}
+
+// Button Styles
+// Button Styles (Modernized & Beautiful)
+.btn {
+  padding: 0.5rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+// افکت فشرده شدن دکمه موقع کلیک
+.btn:active {
+  transform: scale(0.95);
+}
+
+// دکمه اصلی جستجو
+.btn-primary {
+  background: linear-gradient(135deg, lighten($blue-main, 10%), $blue-main);
+  &:hover {
+    background: linear-gradient(135deg, $blue-main, $blue-dark);
+    box-shadow: 0 8px 15px rgba($blue-main, 0.4);
+    transform: translateY(-2px);
+  }
+}
+
+// دکمه بازنشانی
+.btn-outline {
+  background-color: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  box-shadow: none;
+  &:hover {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
+    transform: translateY(-2px);
+  }
+}
+
+// دکمه‌های کوچک داخل جدول (عملیات)
+.btn-sm {
+  padding: 0.35rem 1.1rem;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+// دکمه "نمایش" (رنگ سبز)
+.btn-sm.btn-success {
+  background: linear-gradient(135deg, lighten($green-main, 10%), $green-main);
+  &:hover {
+    background: linear-gradient(135deg, $green-main, $green-dark);
+    box-shadow: 0 6px 12px rgba($green-main, 0.4);
+    transform: translateY(-2px);
+  }
+}
+
+// دکمه "انتقال" (رنگ آبی)
+.btn-sm.btn-primary {
+  background: linear-gradient(135deg, lighten($blue-main, 15%), $blue-main);
+  &:hover {
+    background: linear-gradient(135deg, $blue-main, $blue-dark);
+    box-shadow: 0 6px 12px rgba($blue-main, 0.4);
+    transform: translateY(-2px);
+  }
+}
+
+// Kanban Board Styles
+.kanban-board {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.kanban-col {
+  flex: 1;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+
+  .col-header {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 0;
+    color: white;
+    position: relative;
+
+    .col-badge {
+      background-color: rgba(0,0,0,0.15);
+      padding: 0.5rem 1rem;
+      font-weight: bold;
+      font-size: 1rem;
+      min-width: 2.5rem;
+      text-align: center;
+    }
+
+    .col-title {
+      padding: 0 1rem;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    &.col-green {
+      background-color: $green-main;
+      .col-badge { background-color: $green-dark; }
+    }
+    &.col-blue {
+      background-color: $blue-main;
+      .col-badge { background-color: $blue-dark; }
+    }
+    &.col-red {
+      background-color: $red-main;
+      .col-badge { background-color: $red-dark; }
+    }
+  }
+
+  .col-content {
+    padding: 0;
+    // Table Styling
+    .kanban-table {
+      width: 100%;
+      border-collapse: collapse;
+      
+      thead {
+        tr {
+          border-bottom: 2px solid #f3f4f6;
+        }
+        th {
+          padding: 0.75rem 1rem;
+          text-align: right;
+          font-weight: bold;
+          color: #4b5563;
+          font-size: 0.85rem;
+          background-color: #f9fafb;
+        }
+      }
+      
+      tbody {
+        tr {
+          border-bottom: 1px solid #f3f4f6;
+          transition: background 0.1s ease;
+          &:last-child {
+            border-bottom: none;
+          }
+          &:hover {
+            background-color: #fcfcfd;
+          }
+        }
+        td {
+          padding: 0.8rem 1rem;
+          color: #374151;
+          font-size: 0.9rem;
+        }
+      }
+
+        .action-cell {
+        display: flex;
+        align-items: center;
+        gap: 6px; // فاصله کم بین دکمه‌ها
+        flex-wrap: nowrap; // این یعنی دکمه‌ها را مجبور کن در یک ردیف بمانند
+        white-space: nowrap; // جلوگیری از شکستن متن داخل دکمه‌ها
+      }
+    }
+  }
+}
+
+// Responsive handling
+@media (max-width: 992px) {
+  .kanban-board {
+    flex-direction: column;
+  }
+  .filter-row {
+    flex-direction: column;
+  }
+}

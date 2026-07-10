@@ -1,0 +1,154 @@
+<div class="page-container">
+  
+  <!-- هدر صفحه -->
+  <div class="page-header">
+    <h2>تخته کانبان دندانپزشکی</h2>
+    <span class="subtitle">سیستم پیگیری مراحل ساخت پروتزهای دندانپزشکی (سه مرحله)</span>
+  </div>
+
+  <!-- بخش جستجوی پیشرفته -->
+  <div class="filter-section">
+    <div class="filter-header">جستجوی پیشرفته</div>
+    <div class="filter-body">
+      <div class="filter-row">
+        <div class="form-group">
+          <label>نام بیمار</label>
+          <input type="text" placeholder="نام بیمار را وارد کنید...">
+        </div>
+        <div class="form-group">
+          <label>نام پزشک</label>
+          <input type="text" placeholder="نام پزشک را وارد کنید...">
+        </div>
+        <div class="form-group">
+          <label>نام کلینیک</label>
+          <input type="text" placeholder="نام کلینیک را وارد کنید...">
+        </div>
+        <div class="form-group">
+          <label>وضعیت</label>
+          <select>
+            <option>همه وضعیت‌ها</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="filter-actions">
+        <button class="btn btn-primary">جستجو</button>
+        <button class="btn btn-outline">بازنشانی</button>
+      </div>
+    </div>
+    <div class="filter-footer">
+      <span>نتیجه جستجو: ۷ مورد یافت شد</span>
+    </div>
+  </div>
+
+  <!-- تخته کانبان -->
+  <div class="kanban-board">
+    
+    <!-- ستون اول: تحویل داده شده -->
+    <div class="kanban-col">
+      <div class="col-header col-green">
+        <div class="col-badge">1</div>
+        <div class="col-title">تحویل داده شده</div>
+      </div>
+      <div class="col-content">
+        <table class="kanban-table">
+          <thead>
+            <tr>
+              <th>ردیف</th>
+              <th>نام کلینیک</th>
+              <th>نام پزشک</th>
+              <th>نام بیمار</th>
+              <th>عملیات</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- استفاده از @for جدید -->
+            @for (item of deliveredItems; track item.id) {
+              <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.clinicName }}</td>
+                <td>{{ item.doctorName }}</td>
+                <td>{{ item.patientName }}</td>
+                <td class="action-cell">
+                  <button class="btn-sm btn-success">نمایش</button>
+                  <button class="btn-sm btn-primary">انتقال</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ستون دوم: در حال ساخت -->
+    <div class="kanban-col">
+      <div class="col-header col-blue">
+        <div class="col-badge">4</div>
+        <div class="col-title">در حال ساخت</div>
+      </div>
+      <div class="col-content">
+        <table class="kanban-table">
+          <thead>
+            <tr>
+              <th>ردیف</th>
+              <th>نام کلینیک</th>
+              <th>نام پزشک</th>
+              <th>نام بیمار</th>
+              <th>عملیات</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of buildingItems; track item.id) {
+              <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.clinicName }}</td>
+                <td>{{ item.doctorName }}</td>
+                <td>{{ item.patientName }}</td>
+                <td class="action-cell">
+                  <button class="btn-sm btn-success">نمایش</button>
+                  <button class="btn-sm btn-primary">انتقال</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ستون سوم: انتظار پرداخت -->
+    <div class="kanban-col">
+      <div class="col-header col-red">
+        <div class="col-badge">2</div>
+        <div class="col-title">انتظار پرداخت</div>
+      </div>
+      <div class="col-content">
+        <table class="kanban-table">
+          <thead>
+            <tr>
+              <th>ردیف</th>
+              <th>نام کلینیک</th>
+              <th>نام پزشک</th>
+              <th>نام بیمار</th>
+              <th>عملیات</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of paymentItems; track item.id) {
+              <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.clinicName }}</td>
+                <td>{{ item.doctorName }}</td>
+                <td>{{ item.patientName }}</td>
+                <td class="action-cell">
+                  <button class="btn-sm btn-success">نمایش</button>
+                  <button class="btn-sm btn-primary">انتقال</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
