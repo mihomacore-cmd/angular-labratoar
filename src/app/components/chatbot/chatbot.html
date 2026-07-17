@@ -1,0 +1,41 @@
+<!-- دکمه‌ی شناور چت (فقط یک عدد) -->
+<div class="chat-toggle" (click)="toggleChat()">
+  <span class="robot-icon">🤖</span>
+</div>
+
+<!-- پنجره‌ی گفتگو -->
+<div class="chat-window" *ngIf="isOpen" [@slideUp]>
+  <div class="chat-header">
+    <div class="header-content">
+      <span class="robot-icon">🤖</span>
+      <span>پشتیبانی لابراتوار</span>
+    </div>
+    <button class="close-btn" (click)="closeChat()" aria-label="بستن">
+      <span class="close-icon">✖️</span>
+    </button>
+  </div>
+
+  <!-- پیام‌ها -->
+  <div class="chat-messages" #messageContainer>
+    <div *ngFor="let msg of messages"
+         class="message"
+         [class.sent]="msg.sender === 'user'"
+         [class.received]="msg.sender === 'bot'">
+      <div class="bubble">{{ msg.text }}</div>
+    </div>
+    <div *ngIf="loading" class="typing-indicator">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <!-- ورودی -->
+  <div class="chat-input">
+    <input type="text"
+           [(ngModel)]="newMessage"
+           (keyup.enter)="sendMessage()"
+           placeholder="پیام خود را بنویسید…">
+    <button (click)="sendMessage()" [disabled]="!newMessage.trim()">
+      <i class="fas fa-paper-plane">⮜</i>  <!-- فلش اضافی حذف شد -->
+    </button>
+  </div>
+</div>

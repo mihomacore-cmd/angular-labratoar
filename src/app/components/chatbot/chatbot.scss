@@ -1,0 +1,366 @@
+
+$sky-blue: #4FC3F7;
+$primary-blue: #1E88E5;
+$dark-blue: #0D47A1;
+$light-bg: #F0F8FF;
+$text-dark: #1A1A1A;
+
+$shadow-light: 0 8px 32px rgba(0, 0, 0, 0.12);
+$shadow-heavy: 0 16px 48px rgba(0, 0, 0, 0.18);
+$radius-lg: 24px;
+$radius-sm: 18px;
+
+.robot-icon {
+  font-size: 36px;
+  line-height: 1;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+
+.close-btn {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: #fff;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+  padding: 0;
+  font-size: 0;  /* برای حذف فضای اضافی */
+
+  &:hover {
+    background: rgba(255,255,255,0.35);
+    transform: rotate(90deg);
+  }
+
+  .close-icon {
+    font-size: 22px;
+    line-height: 1;
+    display: inline-block;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover .close-icon {
+    transform: scale(1.1);
+  }
+}
+
+/* دکمه شناور - با پس‌زمینه آبی آسمونی */
+.chat-toggle {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: $sky-blue;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(79, 195, 247, 0.5);
+  z-index: 1000;
+  font-size: 32px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+  outline: none;
+
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 10px 30px rgba(79, 195, 247, 0.7);
+    
+    i {
+      animation: spin 0.8s ease-in-out; /* چرخش آیکون */
+    }
+  }
+
+  i {
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+    transition: transform 0.3s ease;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+}
+
+/* پنجره چت */
+.chat-window {
+  position: fixed;
+  bottom: 100px;
+  right: 28px;
+  width: 380px;
+  max-height: 520px;
+  background: #ffffff;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-heavy;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  overflow: hidden;
+  font-family: 'IRANSans', 'Tahoma', sans-serif;
+  direction: rtl;
+  animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  transform-origin: bottom right;
+
+  @keyframes slideUp {
+    0% {
+      opacity: 0;
+      transform: scale(0.85) translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+}
+.tooth-icon {
+  font-size: 32px;
+  line-height: 1;
+  display: inline-block;
+}
+
+.chat-toggle {
+  /* ... سایر استایل‌ها ... */
+  .tooth-icon {
+    font-size: 36px;   /* بزرگتر در دکمه شناور */
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+  }
+
+  &:hover .tooth-icon {
+    animation: spin 0.8s ease-in-out;
+  }
+}
+
+.chat-header .tooth-icon {
+  font-size: 24px;    /* کوچکتر در هدر */
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+/* هدر - با آبی سرمه‌ای */
+.chat-header {
+  background: $dark-blue;
+  color: #fff;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+
+    i {
+      font-size: 22px;
+    }
+  }
+
+  .close-btn {
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: #fff;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 18px;
+
+    &:hover {
+      background: rgba(255,255,255,0.3);
+    }
+  }
+}
+
+/* محوطه پیام‌ها - پس‌زمینه آبی بسیار روشن */
+.chat-messages {
+  flex: 1;
+  padding: 16px 18px;
+  overflow-y: auto;
+  max-height: 340px;
+  background: $light-bg;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  /* اسکرول بار اختصاصی */
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #d4e3f0;
+    border-radius: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #90b4d1;
+    border-radius: 8px;
+  }
+
+  .message {
+    display: flex;
+    max-width: 82%;
+
+    &.sent {
+      align-self: flex-end;
+      .bubble {
+        background: $primary-blue;
+        color: #fff;  /* متن سفید برای کنتراست بالا */
+        border-bottom-left-radius: 4px;
+        box-shadow: 0 2px 8px rgba(30, 136, 229, 0.25);
+      }
+    }
+
+    &.received {
+      align-self: flex-start;
+      .bubble {
+        background: #ffffff;
+        color: $text-dark;  /* مشکی تیره */
+        border-bottom-right-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        border: 1px solid #d4e3f0;
+      }
+    }
+
+    .bubble {
+      padding: 10px 16px;
+      border-radius: $radius-sm;
+      font-size: 14px;
+      line-height: 1.6;
+      word-break: break-word;
+      transition: all 0.2s;
+    }
+  }
+
+  /* نشانگر تایپ */
+  .typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 0;
+    align-self: flex-start;
+
+    span {
+      width: 8px;
+      height: 8px;
+      background: $primary-blue;
+      border-radius: 50%;
+      animation: typing 1.4s infinite both;
+
+      &:nth-child(2) { animation-delay: 0.2s; }
+      &:nth-child(3) { animation-delay: 0.4s; }
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-8px); opacity: 1; }
+    }
+  }
+}
+
+/* ورودی - با تم آبی */
+.chat-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid #d4e3f0;
+  background: #ffffff;
+
+  input {
+    flex: 1;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 40px;
+    background: #f0f7fe;
+    font-size: 14px;
+    outline: none;
+    transition: background 0.2s, box-shadow 0.2s;
+    font-family: inherit;
+    direction: rtl;
+    color: $text-dark;  /* مشکی تیره */
+
+    &:focus {
+      background: #ffffff;
+      box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.3);
+    }
+
+    &::placeholder {
+      color: #7a8b9f;
+      font-weight: 300;
+    }
+  }
+
+  button {
+    background: $primary-blue;
+    color: #fff;
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 12px rgba(30, 136, 229, 0.3);
+    padding: 0; /* حتماً padding را صفر کنید */
+    font-size: 0; /* برای حذف فضای اضافی ناشی از فونت */
+
+    i {
+      font-size: 20px;
+      line-height: 1; /* مهم برای جلوگیری از ارتفاع اضافی */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: rotate(-20deg);
+    }
+
+    &:hover:not(:disabled) {
+      transform: scale(1.05);
+      box-shadow: 0 6px 16px rgba(30, 136, 229, 0.45);
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+  }
+}
+
+/* واکنش‌گرایی برای موبایل */
+@media (max-width: 480px) {
+  .chat-window {
+    width: 92vw;
+    right: 4vw;
+    bottom: 90px;
+    max-height: 70vh;
+    border-radius: 20px;
+  }
+
+  .chat-toggle {
+    width: 56px;
+    height: 56px;
+    bottom: 20px;
+    right: 20px;
+    font-size: 28px;
+  }
+}
