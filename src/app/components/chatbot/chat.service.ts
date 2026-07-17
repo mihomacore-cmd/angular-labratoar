@@ -7,7 +7,7 @@ import {environment} from '../../../environments/environment'
 @Injectable({ providedIn: 'root' })
 export class ChatService {
   private apiUrl = 'https://api.groq.com/openai/v1/chat/completions';
-private apiKey = environment.groqApiKey;
+private apiKey = 'api ';
   private systemPrompt = `
     شما یک دستیار مجازی متخصص در حوزه **لابراتوار پروتزهای دندانی** هستید.
     وظیفه شما پاسخگویی به سوالات مرتبط با:
