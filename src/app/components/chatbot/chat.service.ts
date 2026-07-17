@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import {environment} from '../../../environments/environment'
 
 @Injectable({ providedIn: 'root' })
 export class ChatService {
   private apiUrl = 'https://api.groq.com/openai/v1/chat/completions';
-  private apiKey = 'REMOVED';
-
+private apiKey = environment.groqApiKey;
   private systemPrompt = `
     شما یک دستیار مجازی متخصص در حوزه **لابراتوار پروتزهای دندانی** هستید.
     وظیفه شما پاسخگویی به سوالات مرتبط با:
