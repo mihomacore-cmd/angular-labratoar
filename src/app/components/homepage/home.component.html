@@ -1,4 +1,3 @@
-
 <!-- اضافه کردن فونت وزیرمتن از CDN -->
 <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
 
@@ -132,40 +131,104 @@
   </div>
 </div>
 
-
-
-
-
-
-    
-  
-
-
   </div>
 </section>
 
-<!-- ====== مودال دیالوگ ====== -->
+<!-- ====== مودال دیالوگ (کارت‌های اطلاعاتی) ====== -->
 <div class="dialog-overlay" *ngIf="selectedCard" (click)="closeDialog()">
   <div class="dialog-box" (click)="$event.stopPropagation()">
-    <!-- دکمه بستن -->
     <button class="dialog-close" (click)="closeDialog()">✕</button>
-
-    <!-- عنوان و آیکون -->
     <div class="dialog-header">
       <span class="dialog-icon">{{ selectedCard.icon }}</span>
       <h2>{{ selectedCard.title }}</h2>
     </div>
-
-    <!-- محتوای اصلی (detail) -->
     <div class="dialog-body" [innerHTML]="selectedCard.detail"></div>
   </div>
 </div>
 
+<!-- ====== دیالوگ محصول (گالری با دسته‌بندی و جستجو) ====== -->
+<div class="dialog-overlay" *ngIf="selectedProduct" (click)="closeProductDialog()">
+  <div class="dialog-box dialog-product" (click)="$event.stopPropagation()">
+    <button class="dialog-close" (click)="closeProductDialog()">✕</button>
+    <div class="dialog-header">
+      <span class="dialog-icon">🦷</span>
+      <h2>{{ selectedProduct.title }}</h2>
+    </div>
+    <div class="dialog-body">
+      <!-- نوار جستجو -->
+      <div class="gallery-toolbar">
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="جستجو در تصاویر..." 
+          [value]="searchText"
+          (input)="searchText = $any($event.target).value"
+        />
+      </div>
+      <!-- دکمه‌های دسته‌بندی -->
+      <div class="category-tabs">
+        <button 
+          *ngFor="let cat of categories" 
+          class="category-btn"
+          [class.active]="selectedCategory === cat"
+          (click)="setCategory(cat)"
+        >
+          {{ cat }}
+        </button>
+      </div>
+      <!-- گالری تصاویر -->
+      <div class="image-grid">
+        <div 
+          class="image-item" 
+          *ngFor="let img of filteredImages; trackBy: trackByProductImage"
+          (click)="openLightbox(img.src)"
+        >
+          <img [src]="img.src" [alt]="img.title" loading="lazy">
+          <div class="image-caption">{{ img.title }}</div>
+        </div>
+        <div *ngIf="filteredImages.length === 0" class="no-result">
+          ⚠️ تصویری با این دسته‌بندی یا جستجو یافت نشد.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
+<!-- ========================================================= -->
+<!-- ====== بخش محصولات (نمایش نمونه پروتزها) ====== -->
+<!-- ====== این بخش قبل از تعرفه‌ها قرار گرفته ====== -->
+<!-- ========================================================= -->
+<section class="products-section" id="products">
+  <div class="container">
+    <div class="products-header">
+      <h2>محصولات ما</h2>
+      <p>نمونه‌ای از پروتزهای ساخته‌شده با بالاترین کیفیت</p>
+    </div>
 
+    <div class="products-grid">
+      <div 
+        class="product-card" 
+        *ngFor="let product of products; let i = index; trackBy: trackByProduct"
+        (click)="openProductDialog(i)"
+      >
+        <div class="product-image">
+          <img [src]="product.image" [alt]="product.title">
+          <div class="product-overlay">
+            <span class="view-btn">مشاهده جزئیات</span>
+          </div>
+        </div>
+        <div class="product-info">
+          <h3>{{ product.title }}</h3>
+          <p>{{ product.summary }}</p>
+          <span class="product-tag">{{ product.tag }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-<!-- ====== بخش گالری سه عکس ====== -->
-<section class="gallery-section"   id="prices">
+<!-- ====== بخش گالری سه عکس (تعرفه‌ها) ====== -->
+<section class="gallery-section" id="prices">
   <div class="container">
     <div class="gallery-header">
       <h2>تعرفه‌های پروتزهای دندان</h2>
@@ -201,11 +264,10 @@
       </div>
     </div>
 
-       <div class="price-note">
-         <i class="fas fa-info-circle"></i>
-         <span> .توجه: قیمت تمامی اپلاینس‌های درج شده قیمت پایه هستند بدون احتساب بند فضا نگهدار از جانب لابراتوار می‌باشد</span>
-         </div>
-
+    <div class="price-note">
+      <i class="fas fa-info-circle"></i>
+      <span> .توجه: قیمت تمامی اپلاینس‌های درج شده قیمت پایه هستند بدون احتساب بند فضا نگهدار از جانب لابراتوار می‌باشد</span>
+    </div>
 
   </div>
 </section>
@@ -218,12 +280,8 @@
   </div>
 </div>
 
-
-
-
-
 <!-- ====== فوتر ====== -->
-<footer class="main-footer"  id="contact">
+<footer class="main-footer" id="contact">
   <div class="container">
     <div class="footer-grid">
       
@@ -233,17 +291,11 @@
         <p>
           مجموعه تخصصی ارتودنسی و پروتزهای دندانی با بیش از یک دهه تجربه درخشان در خدمت شما عزیزان.
         </p>
-
-
-
-<div class="footer-social">
-  <a href="#" target="_blank" aria-label="واتساپ">📱</a>
-  <a href="#" target="_blank" aria-label="ایتا">💬</a>
-  <a href="#" target="_blank" aria-label="تلگرام">✈️</a>
-</div>
-
-
-
+        <div class="footer-social">
+          <a href="#" target="_blank" aria-label="واتساپ">📱</a>
+          <a href="#" target="_blank" aria-label="ایتا">💬</a>
+          <a href="#" target="_blank" aria-label="تلگرام">✈️</a>
+        </div>
       </div>
 
       <!-- ستون دوم: تماس با ما -->
@@ -263,6 +315,7 @@
         <ul class="footer-links">
           <li><a href="#hero">صفحه اصلی</a></li>
           <li><a href="#services">خدمات</a></li>
+          <li><a href="#products">محصولات</a></li>  <!-- لینک جدید -->
           <li><a href="#prices">تعرفه‌ها</a></li>
           <li><a href="#contact">تماس با ما</a></li>
         </ul>
@@ -270,7 +323,6 @@
 
     </div>
 
-    <!-- خط جداکننده و کپی‌رایت -->
     <div class="footer-bottom">
       <p>© ۱۴۰۴ تمامی حقوق محفوظ است. طراحی و توسعه توسط <strong>نگاره لبخند</strong></p>
     </div>

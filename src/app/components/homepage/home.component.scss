@@ -1544,6 +1544,353 @@
   }
 }
 
+/*          ============            ====== بخش محصولات ======              ==================                       */
+.products-section {
+  padding: 3rem 0 4rem 0;
+  background: #f9fafc;
+}
+
+.products-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.products-header h2 {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #0c4a6e;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.products-header p {
+  font-size: 1.1rem;
+  color: #64748b;
+  font-weight: 400;
+}
+
+/* شبکه محصولات */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+/* کارت محصول */
+.product-card {
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.4s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+/* تاخیر در انیمیشن برای هر کارت */
+.product-card:nth-child(1) { animation-delay: 0.1s; }
+.product-card:nth-child(2) { animation-delay: 0.2s; }
+.product-card:nth-child(3) { animation-delay: 0.3s; }
+
+.product-card:hover {
+  transform: translateY(-10px) scale(1.01);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+}
+
+/* بخش تصویر */
+.product-image {
+  position: relative;
+  overflow: hidden;
+  height: 220px;
+  background: #eef2f6;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.product-card:hover .product-image img {
+  transform: scale(1.05);
+}
+
+/* اوورلای روی تصویر */
+.product-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(12, 74, 110, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.product-card:hover .product-overlay {
+  opacity: 1;
+}
+
+.view-btn {
+  background: white;
+  color: #0c4a6e;
+  padding: 0.6rem 1.8rem;
+  border-radius: 40px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  transform: translateY(20px);
+  transition: transform 0.4s ease, box-shadow 0.3s;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.product-card:hover .view-btn {
+  transform: translateY(0);
+}
+
+/* بخش اطلاعات */
+.product-info {
+  padding: 1.2rem 1.5rem 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-info h3 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #0c4a6e;
+  margin-bottom: 0.4rem;
+}
+
+.product-info p {
+  font-size: 0.95rem;
+  color: #475569;
+  line-height: 1.6;
+  margin-bottom: 0.8rem;
+  flex: 1;
+}
+
+.product-tag {
+  align-self: flex-start;
+  background: #e0f2fe;
+  color: #0284c7;
+  padding: 0.2rem 1rem;
+  border-radius: 30px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+/* انیمیشن fadeInUp */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ====== دیالوگ محصول (بزرگ‌تر و با گالری) ====== */
+.dialog-product .dialog-box {
+  max-width: 900px;
+  width: 95%;
+  max-height: 90vh;
+}
+
+/* ====== نوار ابزار ====== */
+.gallery-toolbar {
+  margin-bottom: 1.2rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.7rem 1.2rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 40px;
+  font-size: 1rem;
+  font-family: 'Vazirmatn', sans-serif;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  background: #f8fafc;
+  direction: rtl;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+}
+
+/* ====== دکمه‌های دسته‌بندی ====== */
+.category-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+}
+
+.category-btn {
+  padding: 0.4rem 1.2rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 40px;
+  background: transparent;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Vazirmatn', sans-serif;
+}
+
+.category-btn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.category-btn.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* ====== گالری تصاویر (شبکه) ====== */
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+  max-height: 50vh;
+  overflow-y: auto;
+  padding: 0.3rem 0.1rem;
+}
+
+.image-item {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: #f1f5f9;
+  aspect-ratio: 4 / 3; /* نسبت ابعاد ثابت */
+}
+
+.image-item:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 2;
+}
+
+.image-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.image-item:hover img {
+  transform: scale(1.05);
+}
+
+.image-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+  color: #fff;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-align: center;
+  direction: rtl;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.image-item:hover .image-caption {
+  opacity: 1;
+}
+
+.no-result {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 2rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* ====== اسکرول‌بار گالری ====== */
+.image-grid::-webkit-scrollbar {
+  width: 6px;
+}
+.image-grid::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+.image-grid::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+
+/* ====== واکنش‌گرایی ====== */
+@media (max-width: 992px) {
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .products-section {
+    padding: 2rem 0;
+  }
+  .products-grid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+  .product-image {
+    height: 180px;
+  }
+  .products-header h2 {
+    font-size: 1.6rem;
+  }
+
+  /* دیالوگ محصول در موبایل */
+  .dialog-product .dialog-box {
+    max-width: 100%;
+    padding: 1rem;
+  }
+  .image-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-height: 40vh;
+  }
+  .category-btn {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.9rem;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 /* ====== فوتر اصلی ====== */
@@ -1707,3 +2054,5 @@
     font-size: 1.1rem;
   }
 }
+
+
