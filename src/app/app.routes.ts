@@ -49,7 +49,14 @@ export const routes: Routes = [
       (m) => m.ChangePasswordComponent
     ),
 
-      }
+      },
+
+     
+
+
+
+
+
 
       // ============================================
     ],
@@ -96,6 +103,26 @@ export const routes: Routes = [
             (m) => m.OrderListComponent
           ),
       },
+
+      {
+        path: 'factorList',
+       loadComponent: () =>
+         import('./components/factorList/factorList').then(
+      (m) => m.ForgetPasswordComponent
+       ),
+      },
+
+      {
+        path: 'myOrder',
+       loadComponent: () =>
+         import('./components/myOrders/myOrder').then(
+      (m) => m.MyOrder
+       ),
+      }
+
+
+
+
     ],
   },
 

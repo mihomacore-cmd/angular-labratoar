@@ -1,0 +1,142 @@
+<div class="page-container">
+  <div class="page-header">
+    <h2>تخته کانبان سفارشات</h2>
+    <span class="subtitle">سیستم پیگیری مراحل سفارشات (سه مرحله)</span>
+  </div>
+
+  <div class="filter-section">
+    <div class="filter-header">جستجوی پیشرفته</div>
+    <div class="filter-body">
+      <div class="filter-row">
+        <div class="form-group">
+          <label>نام پزشک</label>
+          <input type="text" placeholder="نام پزشک را وارد کنید..." [(ngModel)]="searchDoctor">
+        </div>
+        <div class="form-group">
+          <label>نام کلینیک</label>
+          <input type="text" placeholder="نام کلینیک را وارد کنید..." [(ngModel)]="searchClinic">
+        </div>
+        <div class="form-group">
+          <label>وضعیت</label>
+          <select [(ngModel)]="searchStatus">
+            <option value="">همه وضعیت‌ها</option>
+            <option value="pending_payment">در انتظار پرداخت</option>
+            <option value="building">در حال ساخت</option>
+            <option value="delivered">تحویل داده شده</option>
+          </select>
+        </div>
+      </div>
+      <div class="filter-actions">
+        <button class="btn btn-primary" (click)="onSearch()">جستجو</button>
+        <button class="btn btn-outline" (click)="onReset()">بازنشانی</button>
+      </div>
+    </div>
+    <div class="filter-footer">
+      <span>نتیجه جستجو: {{ totalFilteredCount }} مورد یافت شد</span>
+    </div>
+  </div>
+
+  <div class="kanban-board">
+    <!-- ستون در انتظار پرداخت -->
+    <div class="kanban-col">
+      <div class="col-header col-red">
+        <div class="col-badge">{{ pendingItems.length }}</div>
+        <div class="col-title">در انتظار پرداخت</div>
+      </div>
+      <div class="col-content">
+        <table class="kanban-table">
+          <thead>
+            <tr>
+              <th>ردیف</th>
+              <th>نام کلینیک</th>
+              <th>نام پزشک</th>
+              <th>نام بیمار</th>
+              <th>عملیات</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of pendingItems; track trackById($index, item)) {
+              <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.clinicName }}</td>
+                <td>{{ item.doctorName }}</td>
+                <td>{{ item.patientName }}</td>
+                <td class="action-cell">
+                  <button class="btn-sm btn-success" (click)="goToOrderDetail()">نمایش</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ستون در حال ساخت -->
+    <div class="kanban-col">
+      <div class="col-header col-blue">
+        <div class="col-badge">{{ buildingItems.length }}</div>
+        <div class="col-title">در حال ساخت</div>
+      </div>
+      <div class="col-content">
+        <table class="kanban-table">
+          <thead>
+            <tr>
+              <th>ردیف</th>
+              <th>نام کلینیک</th>
+              <th>نام پزشک</th>
+              <th>نام بیمار</th>
+              <th>عملیات</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of buildingItems; track trackById($index, item)) {
+              <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.clinicName }}</td>
+                <td>{{ item.doctorName }}</td>
+                <td>{{ item.patientName }}</td>
+                <td class="action-cell">
+                  <button class="btn-sm btn-success" (click)="goToOrderDetail()">نمایش</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ستون تحویل داده شده -->
+    <div class="kanban-col">
+      <div class="col-header col-green">
+        <div class="col-badge">{{ deliveredItems.length }}</div>
+        <div class="col-title">تحویل داده شده</div>
+      </div>
+      <div class="col-content">
+        <table class="kanban-table">
+          <thead>
+            <tr>
+              <th>ردیف</th>
+              <th>نام کلینیک</th>
+              <th>نام پزشک</th>
+              <th>نام بیمار</th>
+              <th>عملیات</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of deliveredItems; track trackById($index, item)) {
+              <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.clinicName }}</td>
+                <td>{{ item.doctorName }}</td>
+                <td>{{ item.patientName }}</td>
+                <td class="action-cell">
+                  <button class="btn-sm btn-success" (click)="goToOrderDetail()">نمایش</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

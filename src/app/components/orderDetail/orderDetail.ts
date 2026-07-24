@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-order-details',
+  selector: 'orderDetail',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './orderDetail.html',
