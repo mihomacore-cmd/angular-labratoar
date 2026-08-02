@@ -281,63 +281,106 @@
   }
 }
 
-/* ====== Hero Body ====== */
-.hero-body {
-  background: white;
-  padding: 1.2rem 2rem 3rem;
-  text-align: center;
-  border-top: 1px solid rgba(8, 145, 178, 0.08);
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap');
+
+.hero-body{
+    background:#fff;
+    padding:1.5rem 2rem 3rem;
+    text-align:center;
+    border-top:1px solid rgba(8,145,178,.08);
 }
 
-.hero-body-inner {
-  max-width: 860px;
-  margin: 0 auto;
+.hero-body-inner{
+    max-width:1100px;   /* عرض بیشتر */
+    margin:auto;
 }
 
-.name {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.1rem;
+.name{
+    text-align:center;
 }
 
-.name-title {
-  font-size: 3.6rem;
-  font-weight: 900;
-  color: #0c4a6e;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+/* خط اول */
+.name-main{
+    direction:rtl;
+    white-space:nowrap;
+    text-align:center;
+    margin-bottom:1rem;
 }
 
-.name-sub {
-  font-size: 2.6rem;
-  font-weight: 700;
-  color: #0891b2;
-  letter-spacing: -0.01em;
+.main-title{
+    font-family:'Vazirmatn',sans-serif;
+    font-size:4.2rem;
+    font-weight:900;
+    color:#0c4a6e;
+    line-height:1.2;
+    letter-spacing:-0.02em;
+    display:inline;
 }
 
-.name-desc {
-  font-size: 1.5rem;
-  font-weight: 400;
-  color: #64748b;
-  max-width: 600px;
-  margin-top: 0.3rem;
-  line-height: 1.6;
+.main-sub{
+    font-family:'Vazirmatn',sans-serif;
+    font-size:2.8rem;
+    font-weight:600;
+    margin-right:.7rem;
+
+    background:linear-gradient(135deg,#0891b2,#0e7490);
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+
+    display:inline;
 }
 
-@media (max-width: 600px) {
-  .name-title {
-    font-size: 2.4rem;
-  }
-  .name-sub {
-    font-size: 1.8rem;
-  }
-  .name-desc {
-    font-size: 1.1rem;
-  }
-  .hero-body {
-    padding: 1rem 1rem 2rem;
-  }
+/* توضیحات */
+.name-desc{
+    font-family:'Vazirmatn',sans-serif;
+    font-size:1.5rem;
+    font-weight:400;
+    color:#475569;
+    line-height:1.8;
+    max-width:700px;
+    margin:0 auto;
+}
+
+/* تبلت */
+@media (max-width:900px){
+
+    .main-title{
+        font-size:3.2rem;
+    }
+
+    .main-sub{
+        font-size:2.1rem;
+    }
+
+}
+
+/* موبایل */
+@media (max-width:600px){
+
+    .hero-body{
+        padding:1rem;
+    }
+
+    .name-main{
+        white-space:normal;
+    }
+
+    .main-title{
+        display:block;
+        font-size:2.5rem;
+    }
+
+    .main-sub{
+        display:block;
+        margin:0;
+        font-size:1.6rem;
+    }
+
+    .name-desc{
+        font-size:1.1rem;
+    }
+
 }
 
 /* ====== اسلایدر ====== */
