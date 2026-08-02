@@ -210,7 +210,7 @@
   <div class="container">
     <div class="products-header">
       <h2>محصولات ما</h2>
-      <p>نمونه‌ای از پروتزهای ساخته‌شده با بالاترین کیفیت</p>
+      <p>نمونه‌ای از محصولات ساخته‌شده با بالاترین کیفیت</p>
     </div>
 
     <div class="products-grid">
@@ -227,15 +227,13 @@
         </div>
         <div class="product-info">
           <h3>{{ product.title }}</h3>
-          <p>{{ product.summary }}</p>
-          <span class="product-tag">{{ product.tag }}</span>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ====== بخش گالری سه عکس (تعرفه‌ها) ====== -->
+<!-- ====== بخش گالری تعرفه‌ها ====== -->
 <section class="gallery-section" id="prices">
   <div class="container">
     <div class="gallery-header">
@@ -244,47 +242,42 @@
     </div>
 
     <div class="gallery-grid">
-      <!-- آیتم اول -->
-      <div class="gallery-item" (click)="openLightbox('f1.png')">
+            <div 
+          class="gallery-item" 
+          *ngFor="let item of tariffItems; let i = index; trackBy: trackByTariff"
+          (click)="openGalleryLightbox(i)"
+             >
         <div class="gallery-item-header">
-          <span class="item-title">پروتز ارتودنسی</span>
-          <span class="item-subtitle">ساخت با بالاترین دقت</span>
+          <span class="item-title">{{ item.title }}</span>
         </div>
-        <img src="f2.png" alt="پروتز ارتودنسی">
-      </div>
-
-      <!-- آیتم دوم -->
-      <div class="gallery-item" (click)="openLightbox('f2.png')">
-        <div class="gallery-item-header">
-          <span class="item-title">پروتز زیبایی</span>
-          <span class="item-subtitle">هماهنگ با رنگ و فرم دندان</span>
-        </div>
-        <img src="f1.png" alt="پروتز زیبایی">
-      </div>
-
-      <!-- آیتم سوم -->
-      <div class="gallery-item" (click)="openLightbox('f3.png')">
-        <div class="gallery-item-header">
-          <span class="item-title">پروتز پیشگیری (اطفال)</span>
-          <span class="item-subtitle">مناسب برای سنین رشد</span>
-        </div>
-        <img src="f3.png" alt="پروتز پیشگیری (اطفال)">
+        <img [src]="item.images[0]" [alt]="item.title">
       </div>
     </div>
 
     <div class="price-note">
       <i class="fas fa-info-circle"></i>
-      <span> .توجه: قیمت تمامی اپلاینس‌های درج شده قیمت پایه هستند بدون احتساب بند فضا نگهدار از جانب لابراتوار می‌باشد</span>
+      <span>توجه: قیمت تمامی اپلاینس‌های درج شده قیمت پایه هستند بدون احتساب بند فضا نگهدار از جانب لابراتوار می‌باشد</span>
     </div>
-
   </div>
 </section>
 
-<!-- ====== لایت‌باکس ====== -->
-<div class="lightbox" *ngIf="selectedImage" (click)="closeLightbox()">
+<!-- ====== لایت‌باکس اسلایدر ====== -->
+<div class="lightbox" *ngIf="galleryLightboxOpen" (click)="closeGalleryLightbox()">
   <div class="lightbox-content" (click)="$event.stopPropagation()">
-    <button class="lightbox-close" (click)="closeLightbox()">✕</button>
-    <img [src]="selectedImage" alt="تصویر بزرگ‌شده">
+    <!-- دکمه بستن -->
+    <button class="lightbox-close" (click)="closeGalleryLightbox()">✕</button>
+
+    <!-- اسلایدر -->
+    <div class="slider-container">
+      <button class="slider-btn prev" (click)="prevGalleryImage()">‹</button>
+      <img [src]="galleryImages[galleryCurrentIndex]" alt="تصویر گالری">
+      <button class="slider-btn next" (click)="nextGalleryImage()">›</button>
+    </div>
+
+    <!-- شمارنده -->
+    <div class="slider-counter">
+      {{ galleryCurrentIndex + 1 }} / {{ galleryImages.length }}
+    </div>
   </div>
 </div>
 

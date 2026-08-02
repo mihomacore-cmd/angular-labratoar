@@ -17,8 +17,6 @@ interface ProductImage {
 interface Product {
   image: string;          
   title: string;
-  summary: string;
-  tag: string;
   images: ProductImage[];
 }
 
@@ -31,15 +29,42 @@ interface Product {
 })
 export class HomeComponent implements AfterViewInit, OnDestroy {
 
+galleryLightboxOpen = false;
+galleryImages: string[] = [];
+galleryCurrentIndex = 0;
+
+// ====== داده‌های تعرفه‌ها (گالری سه‌تایی) ======
+tariffItems = [
+  {
+    title: 'اتودنسی و فانکشنال',
+    images: [
+      'factorOrtodenci1.png', // یا با پسوند .PNG
+      'factorOrtodenci2.png',
+      'factorOrtodenci3.png',
+      'factorOrtodenci4.png'
+    ]
+  },
+  {
+    title: 'زیبایی',
+    images: [
+      'factorZibaie1.png'
+    ]
+  },
+  {
+    title: 'ارتودنسی پیشگیری (اطفال)',
+    images: [
+      'factorAtfal1.png'
+   
+    ]
+  }
+];
   // ============================================================
   // ====== داده‌های محصولات (با پراپرتی image) ======
   // ============================================================
   products: Product[] = [
     {
       image: 'product/ortodenci1.PNG', // ← تصویر اصلی برای کارت
-      title: 'پروتز ارتودنسی متحرک',
-      summary: 'مناسب برای اصلاح نامرتبی‌های خفیف تا متوسط دندان‌ها',
-      tag: 'پرفروش‌ترین',
+      title: 'اتودنسی و فانکشنال',
       images: [
         { src: 'product/ortodenci1.PNG', title: 'ارتودنسی2', category: 'ارتودنسی1' },
         { src: 'product/ortodenci2.PNG', title: 'ارتودنسی2', category: 'ارتودنسی2' },
@@ -49,9 +74,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     },
     {
       image: 'product/zibaie1.PNG',
-      title: 'پروتز زیبایی (ونیر)',
-      summary: 'لمینت‌های سرامیکی نازک برای لبخندی درخشان',
-      tag: 'زیبایی',
+      title: 'زیبایی',
       images: [
         { src: 'product/zibaie1.PNG', title: 'زیبایی', category: 'زیبایی1' },
         { src: 'product/zibaie2.PNG', title: 'زیبایی', category: 'زیبایی1' },
@@ -61,9 +84,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     },
     {
       image: 'product/atfal1.PNG',
-      title: 'پروتز پیشگیری (اطفال)',
-      summary: 'فضانگهدار و رگولاتور برای سنین رشد',
-      tag: 'کودکان',
+      title: 'ارتودنسی پیشگیری (اطفال) ',
       images: [
         { src: 'product/atfal1.PNG', title: 'اطفال', category: 'اطفال1' },
         { src: 'product/atfal2.PNG', title: 'اطفال', category: 'اطفال3' },
@@ -308,6 +329,49 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   trackByProductImage(index: number, item: ProductImage): number {
     return index;
   }
+
+
+
+// ====== باز کردن لایت‌باکس با دریافت اندیس محصول ======
+openGalleryLightbox(index: number): void {
+  const item = this.tariffItems[index];
+  if (item && item.images.length) {
+    this.galleryImages = item.images; // چون images از نوع string[] است
+    this.galleryCurrentIndex = 0;
+    this.galleryLightboxOpen = true;
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+// ====== بستن لایت‌باکس ======
+closeGalleryLightbox(): void {
+  this.galleryLightboxOpen = false;
+  this.galleryImages = [];
+  this.galleryCurrentIndex = 0;
+  document.body.style.overflow = 'auto';
+}
+
+// ====== رفتن به تصویر قبلی ======
+prevGalleryImage(): void {
+  if (this.galleryImages.length) {
+    this.galleryCurrentIndex = (this.galleryCurrentIndex - 1 + this.galleryImages.length) % this.galleryImages.length;
+  }
+}
+
+// ====== رفتن به تصویر بعدی ======
+nextGalleryImage(): void {
+  if (this.galleryImages.length) {
+    this.galleryCurrentIndex = (this.galleryCurrentIndex + 1) % this.galleryImages.length;
+  }
+}
+
+
+
+trackByTariff(index: number, item: any): number {
+  return index;
+}
+
+
 
   // ============================================================
   // ====== هنگام نابودی ======
