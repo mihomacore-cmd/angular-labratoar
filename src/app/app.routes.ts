@@ -75,7 +75,7 @@ export const routes: Routes = [
             (m) => m.DashboardPage
           ),
       },
-      {
+            {
         path: 'addOrder',
         loadComponent: () =>
           import('./components/addOrder/add-order.component').then(

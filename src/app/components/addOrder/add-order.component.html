@@ -44,38 +44,50 @@
       </div>
     </div>
 
-    
-<div class="field-item">
-  <label>تاریخ ورود</label>
+    <!-- تاریخ ورود با آیکون و پاپ‌آپ -->
+    <div class="field-item">
+      <label>تاریخ ورود</label>
+      <div class="date-wrapper">
+        <input
+          type="text"
+          readonly
+          class="date-input"
+          [value]="form.controls.entryDate.value || ''"
+          placeholder="انتخاب تاریخ"
+          (click)="showEntryCalendar = !showEntryCalendar"
+        />
+        <span class="calendar-icon" (click)="showEntryCalendar = !showEntryCalendar">📅</span>
+        <app-persian-calendar
+          *ngIf="showEntryCalendar"
+          class="calendar-popup"
+          (confirm)="onEntryDateSelected($event)"
+          (cancel)="closeEntryCalendar()"
+        ></app-persian-calendar>
+      </div>
+    </div>
 
-  <mat-form-field appearance="outline" class="date-field">
-    <input
-      matInput
-      [matDatepicker]="entryPicker"
-      formControlName="entryDate"
-      [value]="formatPersianDate(form.controls.entryDate.value)"
-      readonly
-    >
-    <mat-datepicker-toggle matSuffix [for]="entryPicker"></mat-datepicker-toggle>
-    <mat-datepicker #entryPicker (closed)="updateEntryDate()"></mat-datepicker>
-  </mat-form-field>
-</div>
+    <!-- تاریخ خروج با آیکون و پاپ‌آپ -->
+    <div class="field-item">
+      <label>تاریخ خروج</label>
+      <div class="date-wrapper">
+        <input
+          type="text"
+          readonly
+          class="date-input"
+          [value]="form.controls.exitDate.value || ''"
+          placeholder="انتخاب تاریخ"
+          (click)="showExitCalendar = !showExitCalendar"
+        />
+        <span class="calendar-icon" (click)="showExitCalendar = !showExitCalendar">📅</span>
+        <app-persian-calendar
+          *ngIf="showExitCalendar"
+          class="calendar-popup"
+          (confirm)="onExitDateSelected($event)"
+          (cancel)="closeExitCalendar()"
+        ></app-persian-calendar>
+      </div>
+    </div>
 
-<div class="field-item">
-  <label>تاریخ خروج</label>
-
-  <mat-form-field appearance="outline" class="date-field">
-    <input
-      matInput
-      [matDatepicker]="exitPicker"
-      formControlName="exitDate"
-      [value]="formatPersianDate(form.controls.exitDate.value)"
-      readonly
-    >
-    <mat-datepicker-toggle matSuffix [for]="exitPicker"></mat-datepicker-toggle>
-    <mat-datepicker #exitPicker (closed)="updateExitDate()"></mat-datepicker>
-  </mat-form-field>
-</div>
     <div></div>
   </div>
 
@@ -142,8 +154,7 @@
     </div>
 
     <div class="global-file">
-      <label
-      for="attachments">بارگذاری فایل (مدارک، تصاویر)</label>
+      <label for="attachments">بارگذاری فایل (مدارک، تصاویر)</label>
       <input id="attachments" type="file" multiple (change)="onFilesSelected($event)">
       <div class="file-list" *ngIf="selectedFiles.length">
         {{ selectedFiles.length }} فایل انتخاب شد
@@ -183,6 +194,8 @@
     <button class="submit-btn" type="submit">ثبت سفارش</button>
   </div>
 </form>
+
+<!-- مودال خطا -->
 <div *ngIf="showErrorModal" class="error-modal-backdrop">
   <div class="error-modal-content">
     <div class="error-modal-header">

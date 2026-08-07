@@ -1,13 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject } from '@angular/core';
-import { provideNativeDateAdapter } from '@angular/material/core';
-import { MAT_DATE_LOCALE } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { AddOrderService} from '../../servicies/addOrder.service';
 import { ReactiveFormsModule, AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
-
+import { AddOrderService } from '../../servicies/addOrder.service';
+import { PersianCalendarComponent } from '../persianCalender/persianCalender'; // مسیر را تنظیم کنید
 
 export type InvoiceType = 'daily' | 'monthly';
 
@@ -26,14 +21,13 @@ export interface OrderPayload {
   patientName: string;
   invoiceNumber: string;
   invoiceType: InvoiceType;
-  entryDate: string;
-  exitDate: string;
+  entryDate: string;      // شمسی
+  exitDate: string;       // شمسی
   discountAmount: number;
   description: string;
   grossTotal: number;
   netTotal: number;
   items: OrderItemPayload[];
- // attachments: File[];
 }
 
 type OrderItemForm = {
@@ -50,8 +44,8 @@ type OrderFormControls = {
   patientName: FormControl<string>;
   invoiceNumber: FormControl<string>;
   invoiceType: FormControl<InvoiceType>;
-  entryDate: FormControl<Date | null>;
-  exitDate: FormControl<Date | null>;
+  entryDate: FormControl<string | null>;   // تغییر نوع
+  exitDate: FormControl<string | null>;    // تغییر نوع
   discountAmount: FormControl<number>;
   description: FormControl<string>;
   items: FormArray<FormGroup<OrderItemForm>>;
@@ -63,21 +57,18 @@ type OrderFormControls = {
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatDatepickerModule,
-    MatInputModule,
-    MatFormFieldModule,
+    PersianCalendarComponent,  // اضافه شد
   ],
   providers: [
-  provideNativeDateAdapter()
+    // provideNativeDateAdapter()  <-- حذف شد
   ],
   templateUrl: './add-order.component.html',
   styleUrl: './add-order.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddOrderComponent {
-
-  showErrorModal: boolean = false;
-  errorMessage: string = '';
+  showErrorModal = false;
+  errorMessage = '';
 
   private readonly fb = inject(FormBuilder);
   private orderService = inject(AddOrderService);
@@ -85,6 +76,9 @@ export class AddOrderComponent {
 
   selectedFiles: File[] = [];
 
+  // برای نمایش/مخفی کردن تقویم
+  showEntryCalendar = false;
+  showExitCalendar = false;
 
   private readonly invoiceNumberRequiredIfDaily = (
     control: AbstractControl,
@@ -105,8 +99,8 @@ export class AddOrderComponent {
       patientName: this.fb.nonNullable.control('', [Validators.required]),
       invoiceNumber: this.fb.nonNullable.control(''),
       invoiceType: this.fb.nonNullable.control<InvoiceType>('daily'),
-      entryDate: this.fb.control<Date | null>(null, [Validators.required]),
-      exitDate: this.fb.control<Date | null>(null, [Validators.required]),
+      entryDate: this.fb.control<string | null>(null, [Validators.required]),
+      exitDate: this.fb.control<string | null>(null, [Validators.required]),
       discountAmount: this.fb.nonNullable.control(0, [Validators.min(0)]),
       description: this.fb.nonNullable.control(''),
       items: this.fb.array<FormGroup<OrderItemForm>>([this.createItemGroup()]),
@@ -162,16 +156,26 @@ export class AddOrderComponent {
     this.form.markAsUntouched();
   }
 
-  updateEntryDate() {
-  const value = this.form.controls.entryDate.value;
-  this.form.controls.entryDate.setValue(value);
-}
+  // متدهای تقویم
+  onEntryDateSelected(date: string): void {
+    this.form.controls.entryDate.setValue(date);
+    this.showEntryCalendar = false;
+  }
 
-updateExitDate() {
-  const value = this.form.controls.exitDate.value;
-  this.form.controls.exitDate.setValue(value);
-}
+  onExitDateSelected(date: string): void {
+    this.form.controls.exitDate.setValue(date);
+    this.showExitCalendar = false;
+  }
 
+  closeEntryCalendar(): void {
+    this.showEntryCalendar = false;
+  }
+
+  closeExitCalendar(): void {
+    this.showExitCalendar = false;
+  }
+
+  // متدهای قبلی
   onFilesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.selectedFiles = input.files ? Array.from(input.files) : [];
@@ -199,15 +203,6 @@ updateExitDate() {
 
   formatMoney(value: number): string {
     return new Intl.NumberFormat('fa-IR').format(value || 0);
-  }
-
-   formatPersianDate(date: Date | null): string {
-    if (!date) return '';
-    return new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    }).format(date);
   }
 
   onSubmit(): void {
@@ -243,58 +238,44 @@ updateExitDate() {
       patientName: raw.patientName.trim(),
       invoiceNumber: raw.invoiceNumber.trim(),
       invoiceType: raw.invoiceType,
-      entryDate: this.formatPersianDate(raw.entryDate),
-      exitDate: this.formatPersianDate(raw.exitDate),
+      entryDate: raw.entryDate ?? '',
+      exitDate: raw.exitDate ?? '',
       discountAmount,
       description: raw.description.trim(),
       grossTotal,
       netTotal,
       items,
-    //  attachments: [...this.selectedFiles],
     };
 
     this.orderSubmit.emit(payload);
-
-    this.sendOrderToBackend(payload );
-
+    this.sendOrderToBackend(payload);
   }
 
-   private sendOrderToBackend(payload: OrderPayload ): void {
+  private sendOrderToBackend(payload: OrderPayload): void {
     if (this.form.invalid) {
       alert('فرم نامعتبر است.');
-     
       this.errorMessage = 'لطفاً تمام فیلدهای الزامی را به درستی پر کنید.';
       this.showErrorModal = true;
       return;
     }
 
-    // استفاده از سینتکس جدید subscribe
-    this.orderService.submitOrder(payload , this.selectedFiles).subscribe({
+    this.orderService.submitOrder(payload, this.selectedFiles).subscribe({
       next: response => {
-        alert('سفارش با موفقیت ثبت شد!'); // استفاده از alert کمی قدیمی است، شاید بهتر باشد از modal یا snackbar استفاده کنید
+        alert('سفارش با موفقیت ثبت شد!');
         this.form.reset();
         this.selectedFiles = [];
-       
       },
       error: error => {
-       this.errorMessage = 'خطایی رخ داده است مجددا تلاش کنید ';
-       this.showErrorModal = true;
-      }, 
+        this.errorMessage = 'خطایی رخ داده است مجددا تلاش کنید';
+        this.showErrorModal = true;
+      },
     });
   }
 
-
-
- closeErrorModal(): void {
+  closeErrorModal(): void {
     this.showErrorModal = false;
     this.errorMessage = '';
   }
-
-
-
-
-
-
 
   private normalizeNumber(value: number | string | null | undefined): number {
     if (typeof value === 'number') {
