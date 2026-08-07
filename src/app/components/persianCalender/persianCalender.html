@@ -2,157 +2,58 @@
 
   <!-- Header -->
   <div class="calendar-header">
-
-    <button
-      type="button"
-      class="nav-button"
-      (click)="previousMonth()">
-      ❮
-    </button>
-
+    <button type="button" class="nav-button" (click)="previousMonth()">❮</button>
 
     <div class="selectors">
-
-      <select
-        [value]="month()"
-        (change)="changeMonth($any($event.target).value)">
-
+      <!-- انتخاب ماه با استفاده از [selected] -->
+      <select (change)="changeMonth($any($event.target).value)">
         @for (m of months; track $index) {
-          <option
-            [value]="$index + 1">
+          <option 
+            [value]="$index + 1" 
+            [selected]="($index + 1) === month()">
             {{ m }}
           </option>
         }
-
       </select>
 
-
-
-      <select
-        [value]="year()"
-        (change)="changeYear($any($event.target).value)">
-
-        @for (y of years; track y) {
-          <option
-            [value]="y">
-            {{ y }}
-          </option>
+      <!-- انتخاب سال (بدون تغییر) -->
+      <select [value]="year()" (change)="changeYear($any($event.target).value)">
+        @for (y of years(); track y) {
+          <option [value]="y">{{ y }}</option>
         }
-
       </select>
-
     </div>
 
-
-    <button
-      type="button"
-      class="nav-button"
-      (click)="nextMonth()">
-      ❯
-    </button>
-
-
+    <button type="button" class="nav-button" (click)="nextMonth()">❯</button>
   </div>
-
-
 
   <!-- Week Days -->
   <div class="week-days">
-
-    @for (
-      day of weekDays;
-      track $index
-    ) {
-
-      <div class="week-day">
-        {{ day }}
-      </div>
-
+    @for (day of weekDays; track $index) {
+      <div class="week-day">{{ day }}</div>
     }
-
   </div>
-
-
-
 
   <!-- Calendar Days -->
   <div class="days-grid">
-
-
-    @for (
-      item of calendarDays();
-      track $index
-    ) {
-
-
+    @for (item of calendarDays(); track $index) {
       <button
-
         type="button"
-
         class="day"
-
         [class.empty]="item.empty"
-
         [class.today]="item.today"
-
         [class.selected]="item.selected"
-
         [disabled]="item.empty"
-
         (click)="selectDay(item)">
-
-
-        @if (!item.empty) {
-
-          {{ item.day }}
-
-        }
-
-
+        @if (!item.empty) { {{ item.day }} }
       </button>
-
-
     }
-
-
   </div>
-
-
-
 
   <!-- Footer -->
   <div class="calendar-footer">
-
-
-    <button
-
-      type="button"
-
-      class="cancel"
-
-      (click)="close()">
-
-      انصراف
-
-    </button>
-
-
-
-
-    <button
-
-      type="button"
-
-      class="confirm"
-
-      (click)="submit()">
-
-      تایید
-
-    </button>
-
-
+    <button type="button" class="cancel" (click)="close()">انصراف</button>
+    <button type="button" class="confirm" (click)="submit()">تایید</button>
   </div>
-
 
 </div>
