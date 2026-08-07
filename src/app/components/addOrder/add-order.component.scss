@@ -625,3 +625,20 @@ tbody tr:hover td {
     width: calc(100% + 2rem);
   }
 }
+
+
+.warning-text {
+  color: #d4a017; // زرد پررنگ
+  font-size: 0.85rem;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.error-text {
+  color: #dc3545;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+

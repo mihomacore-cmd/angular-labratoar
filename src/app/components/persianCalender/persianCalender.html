@@ -5,7 +5,6 @@
     <button type="button" class="nav-button" (click)="previousMonth()">❮</button>
 
     <div class="selectors">
-      <!-- انتخاب ماه با استفاده از [selected] -->
       <select (change)="changeMonth($any($event.target).value)">
         @for (m of months; track $index) {
           <option 
@@ -16,7 +15,6 @@
         }
       </select>
 
-      <!-- انتخاب سال (بدون تغییر) -->
       <select [value]="year()" (change)="changeYear($any($event.target).value)">
         @for (y of years(); track y) {
           <option [value]="y">{{ y }}</option>
@@ -43,6 +41,7 @@
         [class.empty]="item.empty"
         [class.today]="item.today"
         [class.selected]="item.selected"
+        [class.disabled]="item.disabled"
         [disabled]="item.empty"
         (click)="selectDay(item)">
         @if (!item.empty) { {{ item.day }} }

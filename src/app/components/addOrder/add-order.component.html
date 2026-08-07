@@ -66,28 +66,34 @@
       </div>
     </div>
 
-    <!-- تاریخ خروج با آیکون و پاپ‌آپ -->
-    <div class="field-item">
-      <label>تاریخ خروج</label>
-      <div class="date-wrapper">
-        <input
-          type="text"
-          readonly
-          class="date-input"
-          [value]="form.controls.exitDate.value || ''"
-          placeholder="انتخاب تاریخ"
-          (click)="showExitCalendar = !showExitCalendar"
-        />
-        <span class="calendar-icon" (click)="showExitCalendar = !showExitCalendar">📅</span>
-        <app-persian-calendar
-          *ngIf="showExitCalendar"
-          class="calendar-popup"
-          (confirm)="onExitDateSelected($event)"
-          (cancel)="closeExitCalendar()"
-        ></app-persian-calendar>
-      </div>
-    </div>
-
+<!-- تاریخ خروج با آیکون و پاپ‌آپ -->
+<div class="field-item">
+  <label>تاریخ خروج</label>
+  <div class="date-wrapper">
+    <input
+      type="text"
+      readonly
+      class="date-input"
+      [value]="form.controls.exitDate.value || ''"
+      placeholder="انتخاب تاریخ"
+      (click)="showExitCalendar = !showExitCalendar"
+    />
+    <span class="calendar-icon" (click)="showExitCalendar = !showExitCalendar">📅</span>
+    <app-persian-calendar
+      *ngIf="showExitCalendar"
+      class="calendar-popup"
+      [minDate]="entryDateValue"
+      (confirm)="onExitDateSelected($event)"
+      (cancel)="closeExitCalendar()"
+      (invalidSelection)="onInvalidExitDate()"
+    ></app-persian-calendar>
+  </div>
+  
+  <!-- نمایش خطای اعتبارسنجی (در صورت وجود) -->
+  <div *ngIf="form.controls.exitDate.touched && form.hasError('exitDateInvalid')" class="error-text">
+    تاریخ خروج نباید از تاریخ ورود کوچک‌تر باشد.
+  </div>
+</div>
     <div></div>
   </div>
 
@@ -196,7 +202,7 @@
 </form>
 
 <!-- مودال خطا -->
-<div *ngIf="showErrorModal" class="error-modal-backdrop">
+<div *ngIf="showErrorModal" class="error-modal-backdrop" (click)="$event.stopPropagation()">
   <div class="error-modal-content">
     <div class="error-modal-header">
       <h3>خطا</h3>

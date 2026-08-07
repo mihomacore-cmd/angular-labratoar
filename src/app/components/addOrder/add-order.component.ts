@@ -2,7 +2,8 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject } from '@angular/core';
 import { ReactiveFormsModule, AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { AddOrderService } from '../../servicies/addOrder.service';
-import { PersianCalendarComponent } from '../persianCalender/persianCalender'; // مسیر را تنظیم کنید
+import { PersianCalendarComponent } from '../persianCalender/persianCalender';
+import { Jalali, JalaliDate } from '../persianCalender/jalali';
 
 export type InvoiceType = 'daily' | 'monthly';
 
@@ -21,8 +22,8 @@ export interface OrderPayload {
   patientName: string;
   invoiceNumber: string;
   invoiceType: InvoiceType;
-  entryDate: string;      // شمسی
-  exitDate: string;       // شمسی
+  entryDate: string;
+  exitDate: string;
   discountAmount: number;
   description: string;
   grossTotal: number;
@@ -44,8 +45,8 @@ type OrderFormControls = {
   patientName: FormControl<string>;
   invoiceNumber: FormControl<string>;
   invoiceType: FormControl<InvoiceType>;
-  entryDate: FormControl<string | null>;   // تغییر نوع
-  exitDate: FormControl<string | null>;    // تغییر نوع
+  entryDate: FormControl<string | null>;
+  exitDate: FormControl<string | null>;
   discountAmount: FormControl<number>;
   description: FormControl<string>;
   items: FormArray<FormGroup<OrderItemForm>>;
@@ -57,10 +58,7 @@ type OrderFormControls = {
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    PersianCalendarComponent,  // اضافه شد
-  ],
-  providers: [
-    // provideNativeDateAdapter()  <-- حذف شد
+    PersianCalendarComponent,
   ],
   templateUrl: './add-order.component.html',
   styleUrl: './add-order.component.scss',
@@ -75,20 +73,38 @@ export class AddOrderComponent {
   @Output() readonly orderSubmit = new EventEmitter<OrderPayload>();
 
   selectedFiles: File[] = [];
-
-  // برای نمایش/مخفی کردن تقویم
   showEntryCalendar = false;
   showExitCalendar = false;
 
+  // اعتبارسنجی شماره فاکتور برای نوع روزانه
   private readonly invoiceNumberRequiredIfDaily = (
     control: AbstractControl,
   ): ValidationErrors | null => {
     const invoiceType = control.get('invoiceType')?.value as InvoiceType | null;
     const invoiceNumber = String(control.get('invoiceNumber')?.value ?? '').trim();
-
     return invoiceType === 'daily' && !invoiceNumber
       ? { invoiceNumberRequired: true }
       : null;
+  };
+
+  // اعتبارسنجی سفارشی برای تاریخ خروج
+  private readonly exitDateAfterEntry = (
+    control: AbstractControl,
+  ): ValidationErrors | null => {
+    const entry = control.get('entryDate')?.value as string | null;
+    const exit = control.get('exitDate')?.value as string | null;
+    if (!entry || !exit) return null;
+
+    const entryParts = entry.split('/').map(Number);
+    const exitParts = exit.split('/').map(Number);
+    if (entryParts.length !== 3 || exitParts.length !== 3) return null;
+
+    const entryObj: JalaliDate = { year: entryParts[0], month: entryParts[1], day: entryParts[2] };
+    const exitObj: JalaliDate = { year: exitParts[0], month: exitParts[1], day: exitParts[2] };
+    const entryGreg = Jalali.toGregorian(entryObj.year, entryObj.month, entryObj.day);
+    const exitGreg = Jalali.toGregorian(exitObj.year, exitObj.month, exitObj.day);
+
+    return exitGreg < entryGreg ? { exitDateInvalid: true } : null;
   };
 
   readonly form = this.fb.group(
@@ -105,11 +121,22 @@ export class AddOrderComponent {
       description: this.fb.nonNullable.control(''),
       items: this.fb.array<FormGroup<OrderItemForm>>([this.createItemGroup()]),
     },
-    { validators: [this.invoiceNumberRequiredIfDaily] },
+    { validators: [this.invoiceNumberRequiredIfDaily, this.exitDateAfterEntry] },
   ) as FormGroup<OrderFormControls>;
 
   get items(): FormArray<FormGroup<OrderItemForm>> {
     return this.form.controls.items;
+  }
+
+  // دریافت تاریخ ورود به صورت JalaliDate برای استفاده در minDate تقویم خروج
+  get entryDateValue(): JalaliDate | undefined {
+    const val = this.form.controls.entryDate.value;
+    if (!val) return undefined;
+    const parts = val.split('/').map(Number);
+    if (parts.length === 3 && parts.every(p => !isNaN(p))) {
+      return { year: parts[0], month: parts[1], day: parts[2] };
+    }
+    return undefined;
   }
 
   createItemGroup(): FormGroup<OrderItemForm> {
@@ -151,7 +178,6 @@ export class AddOrderComponent {
       discountAmount: 0,
       description: '',
     });
-
     this.form.markAsPristine();
     this.form.markAsUntouched();
   }
@@ -160,11 +186,32 @@ export class AddOrderComponent {
   onEntryDateSelected(date: string): void {
     this.form.controls.entryDate.setValue(date);
     this.showEntryCalendar = false;
+
+    // اگر تاریخ خروج قبلاً انتخاب شده و از تاریخ ورود جدید کوچک‌تر است، پاک کن
+    const exitVal = this.form.controls.exitDate.value;
+    if (exitVal && this.entryDateValue) {
+      const exitParts = exitVal.split('/').map(Number);
+      if (exitParts.length === 3) {
+        const exitObj: JalaliDate = { year: exitParts[0], month: exitParts[1], day: exitParts[2] };
+        const entryObj = this.entryDateValue;
+        const entryGreg = Jalali.toGregorian(entryObj.year, entryObj.month, entryObj.day);
+        const exitGreg = Jalali.toGregorian(exitObj.year, exitObj.month, exitObj.day);
+        if (exitGreg < entryGreg) {
+          this.form.controls.exitDate.setValue(null);
+        }
+      }
+    }
   }
 
   onExitDateSelected(date: string): void {
     this.form.controls.exitDate.setValue(date);
     this.showExitCalendar = false;
+  }
+
+  // متد جدید برای مدیریت انتخاب نامعتبر در تقویم خروج
+  onInvalidExitDate(): void {
+    this.errorMessage = 'تاریخ خروج نباید از تاریخ ورود کوچک‌تر باشد.';
+    this.showErrorModal = true;
   }
 
   closeEntryCalendar(): void {
@@ -175,7 +222,6 @@ export class AddOrderComponent {
     this.showExitCalendar = false;
   }
 
-  // متدهای قبلی
   onFilesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.selectedFiles = input.files ? Array.from(input.files) : [];
@@ -209,6 +255,10 @@ export class AddOrderComponent {
     this.form.markAllAsTouched();
 
     if (this.form.invalid) {
+      if (this.form.hasError('exitDateInvalid')) {
+        this.errorMessage = 'تاریخ خروج نمی‌تواند از تاریخ ورود کوچک‌تر باشد.';
+        this.showErrorModal = true;
+      }
       return;
     }
 
@@ -217,7 +267,6 @@ export class AddOrderComponent {
     const items: OrderItemPayload[] = raw.items.map((item) => {
       const quantity = this.normalizeNumber(item.quantity);
       const unitPrice = this.normalizeNumber(item.unitPrice);
-
       return {
         serviceType: item.serviceType.trim(),
         toothNumber: item.toothNumber.trim(),
@@ -281,13 +330,11 @@ export class AddOrderComponent {
     if (typeof value === 'number') {
       return Number.isFinite(value) ? value : 0;
     }
-
     const normalized = String(value ?? '')
       .trim()
       .replace(/[,\s]/g, '')
       .replace(/[۰-۹]/g, (digit) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(digit)))
       .replace(/[٠-٩]/g, (digit) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(digit)));
-
     const parsed = Number(normalized);
     return Number.isFinite(parsed) ? parsed : 0;
   }
