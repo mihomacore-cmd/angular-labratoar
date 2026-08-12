@@ -31,4 +31,21 @@ export class KanbanService {
       { headers }
     );
   }
+
+  // ✅ اصلاح شده با responseType: 'text' و cast به Observable<string>
+  updateOrderStatus(orderId: number): Observable<string> {
+    const token = localStorage.getItem('access_token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+
+    return this.http.put(
+      `http://localhost:8080/api/orders/updateStatus/${orderId}`,
+      null,
+      {
+        headers: headers,
+        responseType: 'text' // ← دریافت پاسخ به صورت متن
+      }
+    ) as Observable<string>; // ← cast برای رفع خطای TypeScript
+  }
 }

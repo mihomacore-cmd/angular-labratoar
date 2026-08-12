@@ -9,6 +9,10 @@ $blue-dark: #329ced;
 $red-main: #f05252;
 $red-dark: #d63a3a;
 
+// =====================================================
+// صفحه اصلی
+// =====================================================
+
 .page-container {
   direction: rtl;
   text-align: right;
@@ -78,7 +82,10 @@ $red-dark: #d63a3a;
   &:hover { background-color: #f3f4f6; border-color: #9ca3af; transform: translateY(-2px); }
 }
 
-// ===== Dropdown =====
+// =====================================================
+// Dropdown
+// =====================================================
+
 .dropdown {
   position: relative;
   display: inline-block;
@@ -159,7 +166,10 @@ $red-dark: #d63a3a;
   &:hover { background-color: #f3f4f6; color: #111827; padding-right: 15px; }
   &:active { background-color: #e5e7eb; }
 }
-// ===== پایان Dropdown =====
+
+// =====================================================
+// Kanban Board
+// =====================================================
 
 .kanban-board {
   display: flex;
@@ -298,6 +308,139 @@ $red-dark: #d63a3a;
   font-size: 0.9rem;
 }
 
+// =====================================================
+// Modal
+// =====================================================
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999999;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+  background-color: #ffffff;
+  padding: 24px 32px 20px;
+  border-radius: 12px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 460px;
+  text-align: right;
+  animation: slideDown 0.3s ease-out;
+
+  &.modal-success {
+    border-right: 6px solid #22c55e;
+    .modal-header h3 { color: #22c55e; }
+    .modal-btn.btn-success {
+      background-color: #22c55e;
+      &:hover { background-color: #16a34a; }
+    }
+  }
+
+  &.modal-error {
+    border-right: 6px solid #ef4444;
+    .modal-header h3 { color: #ef4444; }
+    .modal-btn.btn-error {
+      background-color: #ef4444;
+      &:hover { background-color: #dc2626; }
+    }
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+
+  h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
+    color: #9ca3af;
+    padding: 0 4px;
+    transition: color 0.2s ease;
+    &:hover { color: #374151; }
+  }
+}
+
+.modal-body {
+  margin-bottom: 20px;
+  p {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #1f2937;
+    margin: 0;
+  }
+}
+
+.modal-footer {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 16px;
+  text-align: center;
+}
+
+.modal-btn {
+  padding: 10px 28px;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: white;
+  min-width: 100px;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  &:active { transform: scale(0.95); }
+}
+
+// =====================================================
+// Animations
+// =====================================================
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+// =====================================================
+// Responsive
+// =====================================================
+
 @media (max-width: 992px) {
   .kanban-board { flex-direction: column; overflow: visible; }
   .kanban-col { width: 100%; overflow: visible; }
@@ -312,4 +455,14 @@ $red-dark: #d63a3a;
   .kanban-board { gap: 1rem; }
   .col-title { font-size: 0.9rem !important; }
   .dropdown-menu { width: 135px; min-width: 135px; }
+
+  .modal-content {
+    padding: 20px 20px 16px;
+    width: 95%;
+  }
+  .modal-btn {
+    min-width: 80px;
+    padding: 8px 20px;
+    font-size: 0.85rem;
+  }
 }

@@ -1,13 +1,63 @@
-<!-- kenbanBoard.html -->
 <div class="page-container">
-  
-  <!-- هدر صفحه -->
+
+  <!-- =====================================================
+       MODAL
+  ====================================================== -->
+<!-- =====================================================
+     MODAL
+====================================================== -->
+
+<div
+  *ngIf="isModalOpen"
+  class="modal-backdrop"
+  (click)="$event.stopPropagation()"
+>
+  <div
+    class="modal-content"
+    [class.modal-success]="modalType === 'success'"
+    [class.modal-error]="modalType === 'error'"
+  >
+    <div class="modal-header">
+      <h3>{{ modalTitle }}</h3>
+      <button
+        type="button"
+        class="modal-close"
+        (click)="closeModal()"
+      >
+        &times;
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <p>{{ modalMessage }}</p>
+    </div>
+
+    <div class="modal-footer">
+      <button
+        class="modal-btn"
+        [class.btn-success]="modalType === 'success'"
+        [class.btn-error]="modalType === 'error'"
+        (click)="closeModal()"
+      >
+        تایید
+      </button>
+    </div>
+  </div>
+</div>
+
+  <!-- =====================================================
+       هدر صفحه
+  ====================================================== -->
+
   <div class="page-header">
     <h2>تخته کانبان دندانپزشکی</h2>
     <span class="subtitle">سیستم پیگیری مراحل ساخت پروتزهای دندانپزشکی (سه مرحله)</span>
   </div>
 
-  <!-- بخش جستجوی پیشرفته -->
+  <!-- =====================================================
+       بخش جستجوی پیشرفته
+  ====================================================== -->
+
   <div class="filter-section">
     <div class="filter-header">جستجوی پیشرفته</div>
     <div class="filter-body">
@@ -42,7 +92,10 @@
     </div>
   </div>
 
-  <!-- تخته کانبان -->
+  <!-- =====================================================
+       تخته کانبان
+  ====================================================== -->
+
   <div class="kanban-board">
     
     <!-- ستون اول: انتظار پرداخت -->
@@ -65,7 +118,7 @@
           <tbody>
             @for (item of paymentItems; track item.id) {
               <tr>
-                <td>{{ item.id }}</td>
+                <td>{{ $index + 1 }}</td>
                 <td class="col-name" title="{{ item.clinicName }}">{{ item.clinicName }}</td>
                 <td class="col-name" title="{{ item.doctorName }}">{{ item.doctorName }}</td>
                 <td class="col-name" title="{{ item.patientName }}">{{ item.patientName }}</td>
@@ -109,7 +162,7 @@
           <tbody>
             @for (item of buildingItems; track item.id) {
               <tr>
-                <td>{{ item.id }}</td>
+                <td>{{ $index + 1 }}</td>
                 <td class="col-name" title="{{ item.clinicName }}">{{ item.clinicName }}</td>
                 <td class="col-name" title="{{ item.doctorName }}">{{ item.doctorName }}</td>
                 <td class="col-name" title="{{ item.patientName }}">{{ item.patientName }}</td>
@@ -153,7 +206,7 @@
           <tbody>
             @for (item of deliveredItems; track item.id) {
               <tr>
-                <td>{{ item.id }}</td>
+                <td>{{ $index + 1 }}</td>
                 <td class="col-name" title="{{ item.clinicName }}">{{ item.clinicName }}</td>
                 <td class="col-name" title="{{ item.doctorName }}">{{ item.doctorName }}</td>
                 <td class="col-name" title="{{ item.patientName }}">{{ item.patientName }}</td>
