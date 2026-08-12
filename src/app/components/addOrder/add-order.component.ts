@@ -22,8 +22,8 @@ export interface OrderPayload {
   patientName: string;
   invoiceNumber: string;
   invoiceType: InvoiceType;
-  entryDate: string;
-  exitDate: string;
+  entryDate: string;    // میلادی: yyyy-MM-dd
+  exitDate: string;     // میلادی: yyyy-MM-dd
   discountAmount: number;
   description: string;
   grossTotal: number;
@@ -87,7 +87,7 @@ export class AddOrderComponent {
       : null;
   };
 
-  // اعتبارسنجی سفارشی برای تاریخ خروج
+  // اعتبارسنجی سفارشی برای تاریخ خروج (مقایسه شمسی)
   private readonly exitDateAfterEntry = (
     control: AbstractControl,
   ): ValidationErrors | null => {
@@ -104,6 +104,7 @@ export class AddOrderComponent {
     const entryGreg = Jalali.toGregorian(entryObj.year, entryObj.month, entryObj.day);
     const exitGreg = Jalali.toGregorian(exitObj.year, exitObj.month, exitObj.day);
 
+    // مقایسه دو تاریخ میلادی (از نوع Date) با عملگر <
     return exitGreg < entryGreg ? { exitDateInvalid: true } : null;
   };
 
@@ -251,6 +252,26 @@ export class AddOrderComponent {
     return new Intl.NumberFormat('fa-IR').format(value || 0);
   }
 
+  // ============================================================
+  // تبدیل تاریخ شمسی به میلادی (برای ارسال به بک‌اند)
+  // ============================================================
+  private convertPersianToGregorian(persianDate: string): string {
+    if (!persianDate) return '';
+    const parts = persianDate.split('/').map(Number);
+    if (parts.length !== 3 || parts.some(isNaN)) return '';
+    try {
+      // متد toGregorian یک شیء Date برمی‌گرداند
+      const gregorianDate = Jalali.toGregorian(parts[0], parts[1], parts[2]);
+      const year = gregorianDate.getUTCFullYear();
+      const month = gregorianDate.getUTCMonth() + 1; // ماه در Date از 0 شروع می‌شود
+      const day = gregorianDate.getUTCDate();
+      // خروجی به فرمت yyyy-MM-dd (میلادی)
+      return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    } catch {
+      return '';
+    }
+  }
+
   onSubmit(): void {
     this.form.markAllAsTouched();
 
@@ -280,6 +301,7 @@ export class AddOrderComponent {
     const discountAmount = this.normalizeNumber(raw.discountAmount);
     const netTotal = Math.max(grossTotal - discountAmount, 0);
 
+    // ساخت payload با تاریخ‌های میلادی
     const payload: OrderPayload = {
       clinicName: raw.clinicName.trim(),
       doctorName: raw.doctorName.trim(),
@@ -287,8 +309,8 @@ export class AddOrderComponent {
       patientName: raw.patientName.trim(),
       invoiceNumber: raw.invoiceNumber.trim(),
       invoiceType: raw.invoiceType,
-      entryDate: raw.entryDate ?? '',
-      exitDate: raw.exitDate ?? '',
+      entryDate: this.convertPersianToGregorian(raw.entryDate ?? ''),
+      exitDate: this.convertPersianToGregorian(raw.exitDate ?? ''),
       discountAmount,
       description: raw.description.trim(),
       grossTotal,
