@@ -1,3 +1,4 @@
+<!-- kenbanBoard.html -->
 <div class="page-container">
   
   <!-- هدر صفحه -->
@@ -37,43 +38,51 @@
       </div>
     </div>
     <div class="filter-footer">
-      <span>نتیجه جستجو: ۷ مورد یافت شد</span>
+      <span>نتیجه جستجو: {{ totalCount }} مورد یافت شد</span>
     </div>
   </div>
 
   <!-- تخته کانبان -->
   <div class="kanban-board">
     
-    <!-- ستون اول: تحویل داده شده -->
+    <!-- ستون اول: انتظار پرداخت -->
     <div class="kanban-col">
-      <div class="col-header col-green">
-        <div class="col-badge">1</div>
-        <div class="col-title">تحویل داده شده</div>
+      <div class="col-header col-red">
+        <div class="col-badge">{{ paymentItems.length }}</div>
+        <div class="col-title">انتظار پرداخت</div>
       </div>
       <div class="col-content">
         <table class="kanban-table">
           <thead>
             <tr>
-              <th>ردیف</th>
-              <th>نام کلینیک</th>
-              <th>نام پزشک</th>
-              <th>نام بیمار</th>
-              <th>عملیات</th>
+              <th style="width:10%">ردیف</th>
+              <th style="width:30%">نام کلینیک</th>
+              <th style="width:20%">نام پزشک</th>
+              <th style="width:20%">نام بیمار</th>
+              <th style="width:20%">عملیات</th>
             </tr>
           </thead>
           <tbody>
-            <!-- استفاده از @for جدید -->
-            @for (item of deliveredItems; track item.id) {
+            @for (item of paymentItems; track item.id) {
               <tr>
                 <td>{{ item.id }}</td>
-                <td>{{ item.clinicName }}</td>
-                <td>{{ item.doctorName }}</td>
-                <td>{{ item.patientName }}</td>
+                <td class="col-name" title="{{ item.clinicName }}">{{ item.clinicName }}</td>
+                <td class="col-name" title="{{ item.doctorName }}">{{ item.doctorName }}</td>
+                <td class="col-name" title="{{ item.patientName }}">{{ item.patientName }}</td>
                 <td class="action-cell">
-                  <button class="btn-sm btn-success">نمایش</button>
-                  <button class="btn-sm btn-primary">انتقال</button>
+                  <div class="dropdown">
+                    <button class="dropdown-toggle" (click)="toggleDropdown(item.id); $event.stopPropagation();" title="بیشتر">
+                      <span class="dots-vertical">⋮</span>
+                    </button>
+                    <ul class="dropdown-menu" [class.show]="openDropdownId === item.id">
+                      <li><button class="dropdown-item" (click)="viewOrder(item.id)">نمایش</button></li>
+                      <li><button class="dropdown-item" (click)="moveOrder(item.id)">انتقال</button></li>
+                    </ul>
+                  </div>
                 </td>
               </tr>
+            } @empty {
+              <tr><td colspan="5" class="empty-row">هیچ آیتمی در این ستون وجود ندارد</td></tr>
             }
           </tbody>
         </table>
@@ -83,67 +92,85 @@
     <!-- ستون دوم: در حال ساخت -->
     <div class="kanban-col">
       <div class="col-header col-blue">
-        <div class="col-badge">4</div>
+        <div class="col-badge">{{ buildingItems.length }}</div>
         <div class="col-title">در حال ساخت</div>
       </div>
       <div class="col-content">
         <table class="kanban-table">
           <thead>
             <tr>
-              <th>ردیف</th>
-              <th>نام کلینیک</th>
-              <th>نام پزشک</th>
-              <th>نام بیمار</th>
-              <th>عملیات</th>
+              <th style="width:10%">ردیف</th>
+              <th style="width:30%">نام کلینیک</th>
+              <th style="width:20%">نام پزشک</th>
+              <th style="width:20%">نام بیمار</th>
+              <th style="width:20%">عملیات</th>
             </tr>
           </thead>
           <tbody>
             @for (item of buildingItems; track item.id) {
               <tr>
                 <td>{{ item.id }}</td>
-                <td>{{ item.clinicName }}</td>
-                <td>{{ item.doctorName }}</td>
-                <td>{{ item.patientName }}</td>
+                <td class="col-name" title="{{ item.clinicName }}">{{ item.clinicName }}</td>
+                <td class="col-name" title="{{ item.doctorName }}">{{ item.doctorName }}</td>
+                <td class="col-name" title="{{ item.patientName }}">{{ item.patientName }}</td>
                 <td class="action-cell">
-                  <button class="btn-sm btn-success">نمایش</button>
-                  <button class="btn-sm btn-primary">انتقال</button>
+                  <div class="dropdown">
+                    <button class="dropdown-toggle" (click)="toggleDropdown(item.id); $event.stopPropagation();" title="بیشتر">
+                      <span class="dots-vertical">⋮</span>
+                    </button>
+                    <ul class="dropdown-menu" [class.show]="openDropdownId === item.id">
+                      <li><button class="dropdown-item" (click)="viewOrder(item.id)">نمایش</button></li>
+                      <li><button class="dropdown-item" (click)="moveOrder(item.id)">انتقال</button></li>
+                    </ul>
+                  </div>
                 </td>
               </tr>
+            } @empty {
+              <tr><td colspan="5" class="empty-row">هیچ آیتمی در این ستون وجود ندارد</td></tr>
             }
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- ستون سوم: انتظار پرداخت -->
+    <!-- ستون سوم: تحویل داده شده -->
     <div class="kanban-col">
-      <div class="col-header col-red">
-        <div class="col-badge">2</div>
-        <div class="col-title">انتظار پرداخت</div>
+      <div class="col-header col-green">
+        <div class="col-badge">{{ deliveredItems.length }}</div>
+        <div class="col-title">تحویل داده شده</div>
       </div>
       <div class="col-content">
         <table class="kanban-table">
           <thead>
             <tr>
-              <th>ردیف</th>
-              <th>نام کلینیک</th>
-              <th>نام پزشک</th>
-              <th>نام بیمار</th>
-              <th>عملیات</th>
+              <th style="width:10%">ردیف</th>
+              <th style="width:30%">نام کلینیک</th>
+              <th style="width:20%">نام پزشک</th>
+              <th style="width:20%">نام بیمار</th>
+              <th style="width:20%">عملیات</th>
             </tr>
           </thead>
           <tbody>
-            @for (item of paymentItems; track item.id) {
+            @for (item of deliveredItems; track item.id) {
               <tr>
                 <td>{{ item.id }}</td>
-                <td>{{ item.clinicName }}</td>
-                <td>{{ item.doctorName }}</td>
-                <td>{{ item.patientName }}</td>
+                <td class="col-name" title="{{ item.clinicName }}">{{ item.clinicName }}</td>
+                <td class="col-name" title="{{ item.doctorName }}">{{ item.doctorName }}</td>
+                <td class="col-name" title="{{ item.patientName }}">{{ item.patientName }}</td>
                 <td class="action-cell">
-                  <button class="btn-sm btn-success">نمایش</button>
-                  <button class="btn-sm btn-primary">انتقال</button>
+                  <div class="dropdown">
+                    <button class="dropdown-toggle" (click)="toggleDropdown(item.id); $event.stopPropagation();" title="بیشتر">
+                      <span class="dots-vertical">⋮</span>
+                    </button>
+                    <ul class="dropdown-menu" [class.show]="openDropdownId === item.id">
+                      <li><button class="dropdown-item" (click)="viewOrder(item.id)">نمایش</button></li>
+                      <li><button class="dropdown-item" (click)="moveOrder(item.id)">انتقال</button></li>
+                    </ul>
+                  </div>
                 </td>
               </tr>
+            } @empty {
+              <tr><td colspan="5" class="empty-row">هیچ آیتمی در این ستون وجود ندارد</td></tr>
             }
           </tbody>
         </table>

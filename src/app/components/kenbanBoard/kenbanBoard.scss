@@ -1,11 +1,7 @@
-// تنظیمات فونت فارسی (میتوانید ایمپورت کنید یا در index.html لینک دهید)
-// @import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css');
-
 $bg-color: #f0f2f5;
 $text-color: #333;
 $border-color: #e5e7eb;
 
-// Color Palettes
 $green-main: #2bcd70;
 $green-dark: #1ca35a;
 $blue-main: #389ef2;
@@ -23,96 +19,37 @@ $red-dark: #d63a3a;
   box-sizing: border-box;
 }
 
-// Header Styles
 .page-header {
   text-align: center;
   margin-bottom: 2rem;
-  
-  h2 {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: $text-color;
-    margin: 0 0 0.25rem 0;
-  }
-  
-  .subtitle {
-    color: #6b7280;
-    font-size: 0.9rem;
-  }
+  h2 { font-size: 1.5rem; font-weight: bold; color: $text-color; margin: 0 0 0.25rem 0; }
+  .subtitle { color: #6b7280; font-size: 0.9rem; }
 }
 
-// Filter Section
 .filter-section {
   background: white;
   border-radius: 8px;
   padding: 1.5rem;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   margin-bottom: 2rem;
-
-  .filter-header {
-    font-weight: bold;
-    margin-bottom: 1rem;
-    color: #4b5563;
-  }
-
-  .filter-body {
-    border-bottom: 1px solid #e5e7eb;
-    padding-bottom: 1rem;
-    margin-bottom: 1rem;
-  }
-
-  .filter-row {
-    display: flex;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-  }
-
+  .filter-header { font-weight: bold; margin-bottom: 1rem; color: #4b5563; }
+  .filter-body { border-bottom: 1px solid #e5e7eb; padding-bottom: 1rem; margin-bottom: 1rem; }
+  .filter-row { display: flex; gap: 1.5rem; flex-wrap: wrap; }
   .form-group {
-    flex: 1;
-    min-width: 150px;
-    
-    label {
-      display: block;
-      font-size: 0.85rem;
-      color: #6b7280;
-      margin-bottom: 0.4rem;
-    }
-
+    flex: 1; min-width: 150px;
+    label { display: block; font-size: 0.85rem; color: #6b7280; margin-bottom: 0.4rem; }
     input, select {
-      width: 100%;
-      padding: 0.6rem;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-      font-family: inherit;
-      font-size: 0.9rem;
-      outline: none;
-      
-      &::placeholder {
-        color: #9ca3af;
-      }
-      
-      &:focus {
-        border-color: $blue-main;
-      }
+      width: 100%; padding: 0.6rem; border: 1px solid #d1d5db; border-radius: 6px;
+      font-family: inherit; font-size: 0.9rem; outline: none;
+      box-sizing: border-box;
+      &::placeholder { color: #9ca3af; }
+      &:focus { border-color: $blue-main; box-shadow: 0 0 0 2px rgba(56,158,242,0.08); }
     }
   }
-
-  .filter-actions {
-    display: flex;
-    gap: 0.75rem;
-    margin-top: 1rem;
-    justify-content: flex-end;
-  }
-
-  .filter-footer {
-    text-align: left; // In RTL this is the left side
-    font-size: 0.85rem;
-    color: #6b7280;
-  }
+  .filter-actions { display: flex; gap: 0.75rem; margin-top: 1rem; justify-content: flex-end; }
+  .filter-footer { text-align: left; font-size: 0.85rem; color: #6b7280; }
 }
 
-// Button Styles
-// Button Styles (Modernized & Beautiful)
 .btn {
   padding: 0.5rem 1.5rem;
   border: none;
@@ -122,7 +59,7 @@ $red-dark: #d63a3a;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -130,89 +67,127 @@ $red-dark: #d63a3a;
   color: white;
   position: relative;
   overflow: hidden;
+  &:active { transform: scale(0.95); }
 }
-
-// افکت فشرده شدن دکمه موقع کلیک
-.btn:active {
-  transform: scale(0.95);
-}
-
-// دکمه اصلی جستجو
 .btn-primary {
-  background: linear-gradient(135deg, lighten($blue-main, 10%), $blue-main);
-  &:hover {
-    background: linear-gradient(135deg, $blue-main, $blue-dark);
-    box-shadow: 0 8px 15px rgba($blue-main, 0.4);
-    transform: translateY(-2px);
-  }
+  background: linear-gradient(135deg, lighten($blue-main,10%), $blue-main);
+  &:hover { background: linear-gradient(135deg, $blue-main, $blue-dark); box-shadow: 0 8px 15px rgba($blue-main,0.4); transform: translateY(-2px); }
 }
-
-// دکمه بازنشانی
 .btn-outline {
-  background-color: white;
-  color: #374151;
-  border: 1px solid #d1d5db;
-  box-shadow: none;
-  &:hover {
-    background-color: #f3f4f6;
-    border-color: #9ca3af;
-    transform: translateY(-2px);
+  background-color: white; color: #374151; border: 1px solid #d1d5db; box-shadow: none;
+  &:hover { background-color: #f3f4f6; border-color: #9ca3af; transform: translateY(-2px); }
+}
+
+// ===== Dropdown =====
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-toggle {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  color: #6b7280;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  &:hover { background-color: #f3f4f6; color: #111827; }
+  &:active { transform: scale(0.92); }
+  &:focus { outline: none; }
+}
+
+.dots-vertical {
+  font-size: 1.5rem;
+  font-weight: bold;
+  display: inline-flex;
+  line-height: 1;
+  transform: translateY(-2px);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: -8px;
+  width: 145px;
+  padding: 6px;
+  margin: 0;
+  list-style: none;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.12), 0 4px 10px rgba(0,0,0,0.06);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-8px) scale(0.96);
+  transform-origin: top right;
+  transition: opacity 0.18s ease, visibility 0.18s ease, transform 0.18s ease;
+  z-index: 999999;
+  overflow: hidden;
+  &.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+    z-index: 999999;
   }
 }
 
-// دکمه‌های کوچک داخل جدول (عملیات)
-.btn-sm {
-  padding: 0.35rem 1.1rem;
-  font-size: 0.8rem;
-  border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 38px;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  border-radius: 7px;
+  text-align: right;
+  font-family: inherit;
+  font-size: 0.85rem;
   font-weight: 500;
-  letter-spacing: 0.5px;
+  color: #374151;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background-color 0.15s ease, color 0.15s ease, padding-right 0.15s ease;
+  &:hover { background-color: #f3f4f6; color: #111827; padding-right: 15px; }
+  &:active { background-color: #e5e7eb; }
 }
+// ===== پایان Dropdown =====
 
-// دکمه "نمایش" (رنگ سبز)
-.btn-sm.btn-success {
-  background: linear-gradient(135deg, lighten($green-main, 10%), $green-main);
-  &:hover {
-    background: linear-gradient(135deg, $green-main, $green-dark);
-    box-shadow: 0 6px 12px rgba($green-main, 0.4);
-    transform: translateY(-2px);
-  }
-}
-
-// دکمه "انتقال" (رنگ آبی)
-.btn-sm.btn-primary {
-  background: linear-gradient(135deg, lighten($blue-main, 15%), $blue-main);
-  &:hover {
-    background: linear-gradient(135deg, $blue-main, $blue-dark);
-    box-shadow: 0 6px 12px rgba($blue-main, 0.4);
-    transform: translateY(-2px);
-  }
-}
-
-// Kanban Board Styles
 .kanban-board {
   display: flex;
   gap: 1.5rem;
   align-items: flex-start;
+  overflow: visible;
+  position: relative;
 }
 
 .kanban-col {
   flex: 1;
   background: white;
   border-radius: 8px;
-  overflow: hidden;
+  overflow: visible;
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  position: relative;
 
   .col-header {
     display: flex;
     align-items: center;
     padding: 0.75rem 0;
     color: white;
+    border-radius: 8px 8px 0 0;
     position: relative;
-
+    z-index: 1;
     .col-badge {
       background-color: rgba(0,0,0,0.15);
       padding: 0.5rem 1rem;
@@ -221,83 +196,120 @@ $red-dark: #d63a3a;
       min-width: 2.5rem;
       text-align: center;
     }
-
-    .col-title {
-      padding: 0 1rem;
-      font-weight: bold;
-      font-size: 1rem;
-    }
-
-    &.col-green {
-      background-color: $green-main;
-      .col-badge { background-color: $green-dark; }
-    }
-    &.col-blue {
-      background-color: $blue-main;
-      .col-badge { background-color: $blue-dark; }
-    }
-    &.col-red {
-      background-color: $red-main;
-      .col-badge { background-color: $red-dark; }
-    }
+    .col-title { padding: 0 1rem; font-weight: bold; font-size: 1rem; }
+    &.col-green { background-color: $green-main; .col-badge { background-color: $green-dark; } }
+    &.col-blue { background-color: $blue-main; .col-badge { background-color: $blue-dark; } }
+    &.col-red { background-color: $red-main; .col-badge { background-color: $red-dark; } }
   }
 
   .col-content {
     padding: 0;
-    // Table Styling
+    overflow: visible;
+    position: relative;
     .kanban-table {
       width: 100%;
       border-collapse: collapse;
-      
+      table-layout: fixed;
+      position: relative;
+
       thead {
-        tr {
-          border-bottom: 2px solid #f3f4f6;
-        }
+        tr { border-bottom: 2px solid #f3f4f6; }
         th {
-          padding: 0.75rem 1rem;
+          padding: 0.6rem 0.5rem;
           text-align: right;
           font-weight: bold;
           color: #4b5563;
-          font-size: 0.85rem;
+          font-size: 0.75rem;
           background-color: #f9fafb;
-        }
-      }
-      
-      tbody {
-        tr {
-          border-bottom: 1px solid #f3f4f6;
-          transition: background 0.1s ease;
-          &:last-child {
-            border-bottom: none;
-          }
-          &:hover {
-            background-color: #fcfcfd;
-          }
-        }
-        td {
-          padding: 0.8rem 1rem;
-          color: #374151;
-          font-size: 0.9rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       }
 
-        .action-cell {
-        display: flex;
-        align-items: center;
-        gap: 6px; // فاصله کم بین دکمه‌ها
-        flex-wrap: nowrap; // این یعنی دکمه‌ها را مجبور کن در یک ردیف بمانند
-        white-space: nowrap; // جلوگیری از شکستن متن داخل دکمه‌ها
+      tbody {
+        tr {
+          border-bottom: 1px solid #f3f4f6;
+          position: relative;
+          transition: background-color 0.15s ease;
+          &:last-child { border-bottom: none; }
+          &:hover { background-color: #fcfcfd; }
+        }
+        td {
+          padding: 0.4rem 0.5rem;
+          color: #374151;
+          font-size: 0.8rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          vertical-align: middle;
+        }
+      }
+
+      /* ✅ اصلاح اصلی: هر ستون در جای خود */
+      .col-name { max-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+      .action-cell {
+        text-align: center;
+        position: relative;
+        overflow: visible !important;
+        .dropdown {
+          display: inline-block;
+          position: relative;
+          z-index: 1000;
+        }
+      }
+
+      tbody tr:has(.dropdown-menu.show) {
+        position: relative;
+        z-index: 100000;
+      }
+
+      .empty-row {
+        text-align: center;
+        padding: 2rem !important;
+        color: #9ca3af;
+        font-size: 0.9rem;
+        white-space: normal !important;
       }
     }
   }
 }
 
-// Responsive handling
+.action-cell:has(.dropdown-menu.show) { z-index: 100000; }
+.kanban-table tbody tr:has(.dropdown-menu.show) { position: relative; z-index: 100000; }
+.dropdown-menu.show { z-index: 999999; }
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.error-message {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
 @media (max-width: 992px) {
-  .kanban-board {
-    flex-direction: column;
-  }
-  .filter-row {
-    flex-direction: column;
-  }
+  .kanban-board { flex-direction: column; overflow: visible; }
+  .kanban-col { width: 100%; overflow: visible; }
+  .col-content { overflow-x: auto; overflow-y: visible; }
+  .filter-row { flex-direction: column; }
+}
+
+@media (max-width: 576px) {
+  .page-container { padding: 1rem; }
+  .page-header { margin-bottom: 1.5rem; h2 { font-size: 1.25rem; } .subtitle { font-size: 0.8rem; } }
+  .filter-section { padding: 1rem; }
+  .kanban-board { gap: 1rem; }
+  .col-title { font-size: 0.9rem !important; }
+  .dropdown-menu { width: 135px; min-width: 135px; }
 }
