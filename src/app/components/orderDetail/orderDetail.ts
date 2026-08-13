@@ -5,6 +5,19 @@ import { KanbanService, OrderDetailResponse } from '../../servicies/kenbanServic
 import { Jalali, JalaliDate } from '../../components/persianCalender/jalali';
 import { PersianCalendarComponent } from '../../components/persianCalender/persianCalender';
 
+// ============================================================
+// 🔹 تعریف نوع Attachment برای فایل‌های پیوست
+// ============================================================
+interface Attachment {
+  id?: number;               // در صورت وجود = فایل قبلاً در سرور ذخیره شده
+  fileName: string;
+  fileType: string;
+  fileSize: number;
+  fileObject?: File;         // فقط برای فایل‌های جدید (هنوز آپلود نشده)
+  viewUrl?: string;          // لینک نمایش (از سرور)
+  downloadUrl?: string;      // لینک دانلود (از سرور)
+}
+
 @Component({
   selector: 'order-detail',
   standalone: true,
@@ -16,6 +29,10 @@ export class OrderDetailsComponent implements OnInit {
   private kanbanService = inject(KanbanService);
   private cdr = inject(ChangeDetectorRef);
 
+  private originalOrderInfo: any = null;
+  private originalItems: any[] = [];
+  private originalDiscountAmount = 0;
+
   isEditMode = false;
 
   @Input() orderId: number | null = null;
@@ -24,16 +41,18 @@ export class OrderDetailsComponent implements OnInit {
   loading = false;
   errorMessage = '';
 
-  // داده‌های اصلی سفارش
+  // ============================================================
+  // 🔹 داده‌های اصلی سفارش (با نوع Attachment)
+  // ============================================================
   orderInfo = {
     clinicName: '',
     doctorName: '',
     patientName: '',
     status: '',
     invoiceType: '',
-    entryDate: '', // شمسی
-    exitDate: '', // شمسی
-    attachments: [] as any[]
+    entryDate: '',          // شمسی
+    exitDate: '',           // شمسی
+    attachments: [] as Attachment[]
   };
 
   items: any[] = [];
@@ -50,7 +69,14 @@ export class OrderDetailsComponent implements OnInit {
   showValidationModal = false;
   validationErrorMessage = '';
 
-  // مقدار minDate برای تقویم خروج (بر اساس تاریخ ورود)
+  // ============================================================
+  // 🔹 لیست شناسه‌های فایل‌های حذف‌شده (قبلی)
+  // ============================================================
+  private deletedAttachmentIds: number[] = [];
+
+  // ============================================================
+  // مقدار minDate برای تقویم خروج
+  // ============================================================
   get entryDateValue(): JalaliDate | undefined {
     const val = this.orderInfo.entryDate;
     if (!val) return undefined;
@@ -61,6 +87,9 @@ export class OrderDetailsComponent implements OnInit {
     return undefined;
   }
 
+  // ============================================================
+  // چرخه حیات
+  // ============================================================
   ngOnInit(): void {
     if (this.orderId) {
       this.loadOrderDetail(this.orderId);
@@ -70,42 +99,72 @@ export class OrderDetailsComponent implements OnInit {
     }
   }
 
+  // ============================================================
+  // ویرایش / لغو ویرایش
+  // ============================================================
   toggleEditMode(): void {
-    this.isEditMode = true;
+    if (!this.isEditMode) {
+      this.isEditMode = true;
+      return;
+    }
+
+    // لغو ویرایش
+    this.isEditMode = false;
+    this.deletedAttachmentIds = [];   // 🔥 ریست لیست حذف
+
+    this.showEntryDatePicker = false;
+    this.showExitDatePicker = false;
+    this.exitDateInvalid = false;
+    this.showValidationModal = false;
+    this.validationErrorMessage = '';
+
+    if (this.orderId) {
+      this.loadOrderDetail(this.orderId);
+    }
   }
 
+  // ============================================================
+  // بارگذاری جزئیات سفارش از بک‌اند
+  // ============================================================
   loadOrderDetail(orderId: number): void {
     this.loading = true;
     this.errorMessage = '';
+    this.deletedAttachmentIds = [];   // 🔥 ریست لیست حذف هنگام بارگذاری مجدد
 
     this.kanbanService.getOrderById(orderId).subscribe({
       next: (data: OrderDetailResponse) => {
         console.log('📦 داده دریافتی از بک‌اند:', data);
 
-          let invoiceTypeKey = '';
-          if (data.invoiceType === 'روزانه') {
-            invoiceTypeKey = 'daily';
-          } else if (data.invoiceType === 'ماهانه') {
-            invoiceTypeKey = 'monthly';
-          } else if (data.invoiceType === 'نهایی') {
-            invoiceTypeKey = 'final';
-          } else {
-            invoiceTypeKey = data.invoiceType || 'daily'; // مقدار پیش‌فرض
-          }
-
+        let invoiceTypeKey = '';
+        if (data.invoiceType === 'روزانه') {
+          invoiceTypeKey = 'daily';
+        } else if (data.invoiceType === 'ماهانه') {
+          invoiceTypeKey = 'monthly';
+        } else {
+          invoiceTypeKey = data.invoiceType || 'daily';
+        }
 
         const entryDate = data.entryDate ? this.convertToJalali(data.entryDate) : '';
         const exitDate = data.exitDate ? this.convertToJalali(data.exitDate) : '';
 
+        // 🔥 نگاشت attachments با type Attachment
         this.orderInfo = {
           clinicName: data.clinicName || '',
           doctorName: data.doctorName || '',
           patientName: data.patientName || '',
           status: data.status || '',
-          invoiceType: data.invoiceType || '',
+          invoiceType: invoiceTypeKey,
           entryDate: entryDate,
           exitDate: exitDate,
-          attachments: data.attachments || []
+          attachments: (data.attachments || []).map((att: any) => ({
+            id: att.id,
+            fileName: att.fileName,
+            fileType: att.fileType,
+            fileSize: att.fileSize,
+            viewUrl: att.viewUrl,
+            downloadUrl: att.downloadUrl
+            // 🔥 توجه: fileObject ندارد چون فایل قبلاً آپلود شده
+          }))
         };
 
         this.items = (data.items || []).map(item => ({
@@ -133,7 +192,9 @@ export class OrderDetailsComponent implements OnInit {
     });
   }
 
-  // تبدیل تاریخ میلادی به شمسی
+  // ============================================================
+  // تبدیل تاریخ میلادی ↔ شمسی
+  // ============================================================
   private convertToJalali(dateStr: string): string {
     try {
       const parts = dateStr.split('-');
@@ -148,7 +209,6 @@ export class OrderDetailsComponent implements OnInit {
     }
   }
 
-  // تبدیل تاریخ شمسی به میلادی
   private convertToGregorian(jalaliStr: string): string {
     try {
       const parts = jalaliStr.split('/');
@@ -209,10 +269,8 @@ export class OrderDetailsComponent implements OnInit {
     this.orderInfo.entryDate = date;
     this.closeEntryDatePicker();
 
-    // اگر تاریخ خروج قبلاً انتخاب شده بود، اعتبارسنجی مجدد
     if (this.orderInfo.exitDate) {
       this.validateExitDate();
-      // اگر نامعتبر شد، تاریخ خروج را پاک می‌کنیم
       if (this.exitDateInvalid) {
         this.orderInfo.exitDate = '';
         this.exitDateInvalid = false;
@@ -241,14 +299,12 @@ export class OrderDetailsComponent implements OnInit {
     this.closeExitDatePicker();
     this.validateExitDate();
     if (this.exitDateInvalid) {
-      // اگر تاریخ خروج نامعتبر بود، آن را پاک می‌کنیم و پیام خطا نمایش می‌دهیم
       this.orderInfo.exitDate = '';
       this.validationErrorMessage = 'تاریخ خروج نباید از تاریخ ورود کوچک‌تر باشد.';
       this.showValidationModal = true;
     }
   }
 
-  // رویداد invalidSelection از تقویم خروج
   onInvalidExitDate(): void {
     this.validationErrorMessage = 'تاریخ خروج نباید از تاریخ ورود کوچک‌تر باشد.';
     this.showValidationModal = true;
@@ -263,7 +319,7 @@ export class OrderDetailsComponent implements OnInit {
   }
 
   // ============================================================
-  // سایر متدها
+  // مدیریت آیتم‌های سفارش
   // ============================================================
   addItem(): void {
     this.items.push({ serviceType: '', toothNumber: '', quantity: 1, unitPrice: 0 });
@@ -297,13 +353,47 @@ export class OrderDetailsComponent implements OnInit {
     return value.toLocaleString('fa-IR') + ' ریال';
   }
 
+  // ============================================================
+  // مدیریت فایل‌های پیوست
+  // ============================================================
+  onFileSelected(event: any): void {
+    const files = event.target.files;
+    if (!files) return;
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      this.orderInfo.attachments.push({
+        fileName: file.name,
+        fileType: file.type,
+        fileSize: file.size,
+        fileObject: file   // 🔥 فایل جدید
+      });
+    }
+    // ریست input تا امکان انتخاب مجدد فایل‌های تکراری وجود داشته باشد
+    event.target.value = '';
+  }
+
+  removeAttachment(index: number): void {
+    const attachment = this.orderInfo.attachments[index];
+    
+    // اگر فایل دارای ID باشد یعنی قبلاً در سرور ذخیره شده، آن را به لیست حذف اضافه می‌کنیم
+    if (attachment.id) {
+      this.deletedAttachmentIds.push(attachment.id);
+    }
+    // حذف از آرایه نمایشی
+    this.orderInfo.attachments.splice(index, 1);
+  }
+
+  // ============================================================
+  // ثبت نهایی تغییرات (ارسال با FormData)
+  // ============================================================
   submitOrder(): void {
     if (!this.isEditMode) {
       alert('برای ثبت تغییرات، ابتدا دکمه ویرایش را فعال کنید.');
       return;
     }
 
-    // اعتبارسنجی نهایی قبل از ارسال
+    // اعتبارسنجی نهایی
     this.validateExitDate();
     if (this.exitDateInvalid) {
       this.validationErrorMessage = 'تاریخ خروج نباید از تاریخ ورود کوچک‌تر باشد.';
@@ -311,25 +401,53 @@ export class OrderDetailsComponent implements OnInit {
       return;
     }
 
-    // تبدیل تاریخ‌ها به میلادی
+    // ۱. ساخت payload متنی (بدون فایل‌ها)
     const entryDateGreg = this.convertToGregorian(this.orderInfo.entryDate);
     const exitDateGreg = this.convertToGregorian(this.orderInfo.exitDate);
 
     const payload = {
-      ...this.orderInfo,
+      clinicName: this.orderInfo.clinicName,
+      doctorName: this.orderInfo.doctorName,
+      patientName: this.orderInfo.patientName,
+      status: this.orderInfo.status,
+      invoiceType: this.orderInfo.invoiceType,
       entryDate: entryDateGreg,
       exitDate: exitDateGreg,
       items: this.items,
-      discountAmount: this.discountAmount
+      discountAmount: this.discountAmount,
+      deletedAttachmentIds: this.deletedAttachmentIds   // 🔑 لیست فایل‌های حذف‌شده
     };
 
-    console.log('ارسال تغییرات:', payload);
-    alert('تغییرات با موفقیت ثبت شد!');
+    // ۲. ساخت FormData
+    const formData = new FormData();
+    formData.append('data', JSON.stringify(payload));
 
-    this.isEditMode = false;
-    this.closeDialog();
+    // ۳. اضافه کردن فایل‌های جدید (آنهایی که fileObject دارند)
+    this.orderInfo.attachments.forEach((att) => {
+      if (att.fileObject) {
+        formData.append('files', att.fileObject, att.fileName);
+      }
+    });
+
+    // ۴. ارسال به سرویس (نیاز به پیاده‌سازی در KanbanService)
+    this.kanbanService.updateOrderWithFiles(this.orderId!, formData).subscribe({
+      next: (res) => {
+        console.log('✅ سفارش با موفقیت به‌روزرسانی شد', res);
+        alert('تغییرات با موفقیت ثبت شد!');
+        this.isEditMode = false;
+        this.deletedAttachmentIds = [];   // خالی کردن لیست حذف
+        this.closeDialog();
+      },
+      error: (err) => {
+        console.error('❌ خطا در ارسال:', err);
+        this.errorMessage = 'خطا در ثبت تغییرات. لطفاً مجدداً تلاش کنید.';
+      }
+    });
   }
 
+  // ============================================================
+  // بستن دیالوگ
+  // ============================================================
   closeDialog(): void {
     this.closed.emit();
   }

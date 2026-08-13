@@ -21,13 +21,13 @@
         <span class="status-badge">وضعیت: {{ orderInfo.status }}</span>
       </div>
       <div class="header-actions">
-        <button 
-          type="button" 
-          class="edit-toggle-btn" 
+          <button
+          type="button"
+          class="edit-toggle-btn"
           (click)="toggleEditMode()"
           [class.active]="isEditMode"
-        >
-          ✏️ ویرایش
+            >
+          {{ isEditMode ? 'لغو ویرایش' : '✏️ ویرایش' }}
         </button>
       </div>
     </div>
@@ -61,6 +61,22 @@
           [disabled]="!isEditMode"
         >
       </div>
+      
+      <!-- وضعیت سفارش (با گزینه‌های فارسی) -->
+      <div class="info-item">
+        <label>وضعیت</label>
+        <select 
+          class="form-input" 
+          [(ngModel)]="orderInfo.status"
+          [disabled]="!isEditMode"
+        >
+          <option value="در انتظار پرداخت">در انتظار پرداخت</option>
+          <option value="در حال ساخت">در حال ساخت</option>
+          <option value="تحویل داده شده">تحویل داده شده</option>
+        </select>
+      </div>
+
+      <!-- نوع فاکتور (با گزینه‌های انگلیسی، ولی با تبدیل مقدار دریافتی) -->
       <div class="info-item">
         <label>نوع فاکتور</label>
         <select 
@@ -70,6 +86,7 @@
         >
           <option value="daily">روزانه</option>
           <option value="monthly">ماهانه</option>
+          <option value="final">نهایی</option>
         </select>
       </div>
       
@@ -222,21 +239,75 @@
     </div>
 
     <!-- بخش پیوست‌ها -->
-    <div *ngIf="orderInfo.attachments && orderInfo.attachments.length > 0" class="attachments-section">
-      <h3>📎 فایل‌های پیوست</h3>
-      <ul class="attachments-list">
-        <li *ngFor="let file of orderInfo.attachments">
-          <span class="file-icon">📄</span>
-          <span class="file-name">{{ file.fileName }}</span>
-          <span class="file-size">({{ (file.fileSize / 1024) | number:'1.0-0' }} KB)</span>
-          <span class="file-type">[{{ file.fileType }}]</span>
-          <div class="file-actions">
-            <a [href]="file.viewUrl" target="_blank" class="view-link">نمایش</a>
-            <a [href]="file.downloadUrl" download class="download-link">دانلود</a>
-          </div>
-        </li>
-      </ul>
-    </div>
+  <div class="attachments-section">
+
+  <h3>📎 فایل‌های پیوست</h3>
+
+  <div class="upload-wrapper">
+
+    <input
+      type="file"
+      multiple
+      (change)="onFileSelected($event)"
+      [disabled]="!isEditMode"
+    >
+
+  </div>
+
+  <ul class="attachments-list">
+
+    <li *ngFor="let file of orderInfo.attachments; let i = index">
+
+      <span class="file-icon">📄</span>
+
+      <span class="file-name">
+        {{ file.fileName }}
+      </span>
+
+      <span class="file-size">
+        ({{ (file.fileSize / 1024) | number:'1.0-0' }} KB)
+      </span>
+
+      <span class="file-type">
+        [{{ file.fileType }}]
+      </span>
+
+      <div class="file-actions">
+
+        <a
+          *ngIf="file.viewUrl"
+          [href]="file.viewUrl"
+          target="_blank"
+          class="view-link"
+        >
+          نمایش
+        </a>
+
+        <a
+          *ngIf="file.downloadUrl"
+          [href]="file.downloadUrl"
+          download
+          class="download-link"
+        >
+          دانلود
+        </a>
+
+        <button
+          type="button"
+          class="delete-file-btn"
+          (click)="removeAttachment(i)"
+          [disabled]="!isEditMode"
+        >
+          حذف
+        </button>
+
+      </div>
+
+    </li>
+
+  </ul>
+
+</div>
 
     <!-- جمع‌بندی مبالغ -->
     <div class="summary-wrapper">

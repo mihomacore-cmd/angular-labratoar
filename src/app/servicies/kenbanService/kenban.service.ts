@@ -19,7 +19,7 @@ export interface KanbanBoardResponse {
 }
 
 // =====================================================
-// ✅ اینترفیس‌های جدید برای جزئیات سفارش
+// اینترفیس‌های جزئیات سفارش
 // =====================================================
 export interface AttachmentInfo {
   id: number;
@@ -29,9 +29,6 @@ export interface AttachmentInfo {
   viewUrl: string;
   downloadUrl: string;
 }
-
-
-
 
 export interface OrderItemDetail {
   serviceType: string;
@@ -53,8 +50,7 @@ export interface OrderDetailResponse {
   discountAmount: number;
   grossTotal: number;
   netTotal: number;
-  attachments?: AttachmentInfo[]; // اختیاری
-
+  attachments?: AttachmentInfo[];
 }
 
 // =====================================================
@@ -66,55 +62,61 @@ export interface OrderDetailResponse {
 })
 export class KanbanService {
   private http = inject(HttpClient);
+  private baseUrl = 'http://localhost:8080/api/orders';
 
   // =====================================================
   // دریافت تمام سفارش‌ها (کانبان)
   // =====================================================
-
   getAllOrders(): Observable<KanbanBoardResponse> {
     const token = localStorage.getItem('access_token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`
     });
-
-    return this.http.get<KanbanBoardResponse>(
-      'http://localhost:8080/api/orders/getAll',
-      { headers }
-    );
+    return this.http.get<KanbanBoardResponse>(`${this.baseUrl}/getAll`, { headers });
   }
 
   // =====================================================
   // تغییر وضعیت سفارش (انتقال)
   // =====================================================
-
   updateOrderStatus(orderId: number): Observable<string> {
     const token = localStorage.getItem('access_token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`
     });
-
     return this.http.put(
-      `http://localhost:8080/api/orders/updateStatus/${orderId}`,
+      `${this.baseUrl}/updateStatus/${orderId}`,
       null,
-      {
-        headers: headers,
-        responseType: 'text'
-      }
+      { headers, responseType: 'text' }
     ) as Observable<string>;
   }
 
   // =====================================================
-  // ✅ دریافت جزئیات یک سفارش
+  // دریافت جزئیات یک سفارش
   // =====================================================
-
   getOrderById(orderId: number): Observable<OrderDetailResponse> {
     const token = localStorage.getItem('access_token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`
     });
-
     return this.http.get<OrderDetailResponse>(
-      `http://localhost:8080/api/orders/getOrderById/${orderId}`,
+      `${this.baseUrl}/getOrderById/${orderId}`,
+      { headers }
+    );
+  }
+
+  // =====================================================
+  // ✅ به‌روزرسانی کامل سفارش + فایل‌های پیوست (با FormData)
+  // =====================================================
+  updateOrderWithFiles(orderId: number, formData: FormData): Observable<any> {
+    const token = localStorage.getItem('access_token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+      // 🔥 Content-Type را تنظیم نکنید – Angular خودکار multipart/form-data می‌سازد
+    });
+
+    return this.http.put(
+      `${this.baseUrl}/updateOrder/${orderId}`,   // مسیر به‌روزرسانی سفارش
+      formData,
       { headers }
     );
   }
