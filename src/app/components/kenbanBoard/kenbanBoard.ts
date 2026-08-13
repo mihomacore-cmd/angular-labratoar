@@ -1,3 +1,5 @@
+// kenbanBoard.ts
+
 import {
   Component,
   OnInit,
@@ -14,6 +16,9 @@ import {
   KanbanItemDto
 } from '../../servicies/kenbanService/kenban.service';
 
+// ✅ ایمپورت کامپوننت جزئیات
+import { OrderDetailsComponent } from '../orderDetail/orderDetail';
+
 
 export interface KanbanItem {
   id: number;
@@ -28,7 +33,7 @@ export interface KanbanItem {
 
   standalone: true,
 
-  imports: [CommonModule],
+  imports: [CommonModule, OrderDetailsComponent], // ← اضافه کردن OrderDetailsComponent
 
   templateUrl: './kenbanBoard.html',
 
@@ -77,13 +82,21 @@ export class KanbanBoardComponent implements OnInit {
 
 
   // =====================================================
-  // Modal
+  // Modal (برای خطاها)
   // =====================================================
 
   isModalOpen = false;
   modalTitle = '';
   modalMessage = '';
   modalType: 'success' | 'error' = 'success';
+
+
+  // =====================================================
+  // ✅ دیالوگ نمایش جزئیات سفارش
+  // =====================================================
+
+  isOrderDialogOpen = false;
+  selectedOrderId: number | null = null;
 
 
   // =====================================================
@@ -215,25 +228,34 @@ export class KanbanBoardComponent implements OnInit {
 
 
   // =====================================================
-  // نمایش سفارش
+  // ✅ نمایش جزئیات سفارش در دیالوگ (جایگزین viewOrder قدیمی)
   // =====================================================
 
   viewOrder(id: number): void {
-
-    console.log('نمایش سفارش با ID:', id);
+    console.log('نمایش جزئیات سفارش با ID:', id);
 
     this.openDropdownId = null;
 
-    this.openModal(
-      'نمایش سفارش',
-      `سفارش شماره ${id} انتخاب شد`,
-      'success'
-    );
+    this.selectedOrderId = id;
+    this.isOrderDialogOpen = true;
+
+    this.cdr.detectChanges();
   }
 
 
   // =====================================================
-  // انتقال سفارش (نسخه نهایی)
+  // ✅ بستن دیالوگ جزئیات
+  // =====================================================
+
+  closeOrderDialog(): void {
+    this.isOrderDialogOpen = false;
+    this.selectedOrderId = null;
+    this.cdr.detectChanges();
+  }
+
+
+  // =====================================================
+  // انتقال سفارش
   // =====================================================
 
   moveOrder(id: number): void {
@@ -288,7 +310,7 @@ export class KanbanBoardComponent implements OnInit {
 
 
   // =====================================================
-  // باز کردن Modal (نسخه نهایی با NgZone و detectChanges)
+  // باز کردن Modal (برای خطاها)
   // =====================================================
 
   openModal(
@@ -317,7 +339,7 @@ export class KanbanBoardComponent implements OnInit {
 
 
   // =====================================================
-  // بستن Modal
+  // بستن Modal (برای خطاها)
   // =====================================================
 
   closeModal(): void {
