@@ -1,0 +1,132 @@
+<div class="bill-backdrop" (click)="close()">
+  <div class="bill-card" (click)="$event.stopPropagation()">
+
+    <!-- لودینگ -->
+    <div *ngIf="loading" class="loading-state">
+      <span>⏳ در حال بارگذاری اطلاعات...</span>
+    </div>
+
+    <!-- خطا -->
+    <div *ngIf="errorMessage && !loading" class="error-state">
+      {{ errorMessage }}
+      <button class="retry-btn" (click)="loadOrderDetail(invoiceId)">تلاش مجدد</button>
+    </div>
+
+    <!-- محتوای اصلی -->
+    <ng-container *ngIf="!loading && !errorMessage && orderInfo.clinicName">
+      <div class="bill-header">
+        <h2>جزئیات صورتحساب</h2>
+        <button class="close-btn" (click)="close()">✕</button>
+      </div>
+
+      <!-- اطلاعات کلی -->
+      <div class="info-grid">
+        <div class="info-item">
+          <label>نام کلینیک</label>
+          <span class="info-value">{{ orderInfo.clinicName }}</span>
+        </div>
+        <div class="info-item">
+          <label>نام پزشک</label>
+          <span class="info-value">{{ orderInfo.doctorName }}</span>
+        </div>
+        <div class="info-item">
+          <label>نام بیمار</label>
+          <span class="info-value">{{ orderInfo.patientName }}</span>
+        </div>
+        <div class="info-item">
+          <label>وضعیت</label>
+          <span class="info-value status-badge" [class]="getStatusClass(orderInfo.status)">
+            {{ orderInfo.status }}
+          </span>
+        </div>
+        <div class="info-item">
+          <label>شماره تلفن</label>
+          <span class="info-value">{{ orderInfo.phoneNumber || '—' }}</span>
+        </div>
+        <div class="info-item">
+          <label>نوع فاکتور</label>
+          <span class="info-value">{{ orderInfo.invoiceType }}</span>
+        </div>
+        <div class="info-item">
+          <label>تاریخ ورود</label>
+          <span class="info-value">{{ orderInfo.entryDate }}</span>
+        </div>
+        <div class="info-item">
+          <label>تاریخ خروج</label>
+          <span class="info-value">{{ orderInfo.exitDate }}</span>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- جدول آیتم‌ها -->
+      <div class="table-section">
+        <h3>آیتم‌های سفارش</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>نوع</th>
+                <th>شماره دندان</th>
+                <th>تعداد</th>
+                <th>قیمت واحد (ریال)</th>
+                <th>مجموع (ریال)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of items; let i = index">
+                <td>{{ item.serviceType }}</td>
+                <td>{{ item.toothNumber }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.unitPrice | number }}</td>
+                <td class="price-cell">{{ (item.quantity * item.unitPrice) | number }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- پیوست‌ها -->
+      <div class="attachments-section" *ngIf="orderInfo.attachments.length > 0">
+        <h3>📎 فایل‌های پیوست</h3>
+        <ul class="attachments-list">
+          <li *ngFor="let file of orderInfo.attachments">
+            <span class="file-icon">📄</span>
+            <span class="file-name">{{ file.fileName }}</span>
+            <span class="file-size">({{ (file.fileSize / 1024) | number:'1.0-0' }} KB)</span>
+            <span class="file-type">[{{ file.fileType }}]</span>
+            <div class="file-actions">
+              <a *ngIf="file.viewUrl" [href]="file.viewUrl" target="_blank" class="view-link">نمایش</a>
+              <a *ngIf="file.downloadUrl" [href]="file.downloadUrl" download class="download-link">دانلود</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- جمع‌بندی مبالغ (فقط خواندنی) -->
+      <div class="summary-wrapper">
+        <div class="summary-section">
+          <div class="summary-item">
+            <label>مبلغ کل</label>
+            <span class="price-total">{{ formatMoney(totalAmount) }}</span>
+          </div>
+          <div class="summary-item">
+            <label>مبلغ تخفیف</label>
+            <span class="price-discount">- {{ formatMoney(discountAmount) }}</span>
+          </div>
+          <div class="summary-item">
+            <label>مبلغ نهایی</label>
+            <span class="price-final">{{ formatMoney(finalAmount) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- دکمه ارسال پیامک و بستن -->
+      <div class="action-footer">
+        <button class="btn-send" (click)="sendSms()">ارسال پیامک جهت واریز صورتحساب</button>
+        <button class="btn-cancel" (click)="close()">بستن</button>
+      </div>
+    </ng-container>
+
+  </div>
+</div>

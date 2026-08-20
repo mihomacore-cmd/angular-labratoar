@@ -1,0 +1,379 @@
+$primary-color: #0d9488;
+$primary-hover: #0f766e;
+$danger-color: #ef4444;
+$border-color: #e2e8f0;
+$text-main: #0f172a;
+$text-light: #475569;
+
+// ============================================================
+// پس‌زمینه و کارت اصلی
+// ============================================================
+.bill-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.bill-card {
+  background: white;
+  border-radius: 16px;
+  width: 95%;
+  max-width: 900px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 2rem 2.5rem;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: slideUp 0.3s ease-out;
+
+  // اسکرول‌بار زیبا
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+// ============================================================
+// هدر
+// ============================================================
+.bill-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid $border-color;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+
+  h2 {
+    margin: 0;
+    font-size: 2rem;
+    color: $text-main;
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: $text-light;
+    transition: color 0.2s;
+    padding: 0 0.5rem;
+
+    &:hover {
+      color: $danger-color;
+    }
+  }
+}
+
+// ============================================================
+// اطلاعات کلی (فقط خواندنی)
+// ============================================================
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem 2rem;
+  margin-bottom: 1.5rem;
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+
+    label {
+      font-size: 0.9rem;
+      color: $text-light;
+      font-weight: 500;
+    }
+
+    .info-value {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: $text-main;
+      padding: 0.3rem 0;
+      border-bottom: 1px dashed #eef2f6;
+
+      &.status-badge {
+        display: inline-block;
+        padding: 0.3rem 1rem;
+        border-radius: 20px;
+        font-weight: 500;
+        font-size: 0.95rem;
+        background: #f1f5f9;
+        color: $text-main;
+        border-bottom: none;
+      }
+    }
+  }
+}
+
+// وضعیت‌ها (همانند factorList)
+.status-pending-payment { background: #fef3c7; color: #92400e; }
+.status-waiting-invoice { background: #dbeafe; color: #1e40af; }
+.status-paid { background: #d1fae5; color: #065f46; }
+.status-building { background: #fce4ec; color: #b71c1c; }
+.status-delivered { background: #e0f2fe; color: #0369a1; }
+
+// ============================================================
+// جدول آیتم‌ها
+// ============================================================
+.divider {
+  border: none;
+  border-top: 1px solid $border-color;
+  margin: 1.5rem 0;
+}
+
+.table-section {
+  margin: 1.5rem 0;
+
+  h3 {
+    font-size: 1.3rem;
+    color: $text-main;
+    margin: 0 0 1rem 0;
+  }
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid $border-color;
+  background: white;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+
+    th {
+      background: #f8fafc;
+      color: $text-main;
+      font-weight: 600;
+      padding: 1rem 0.8rem;
+      border-bottom: 2px solid $border-color;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 0.9rem 0.8rem;
+      border-bottom: 1px solid #f1f5f9;
+      text-align: center;
+      color: $text-light;
+
+      &.price-cell {
+        font-weight: 600;
+        color: $text-main;
+      }
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+  }
+}
+
+// ============================================================
+// پیوست‌ها
+// ============================================================
+.attachments-section {
+  margin: 1.5rem 0;
+  padding: 1rem 1.5rem;
+  background: #f8fafc;
+  border-radius: 12px;
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 0.8rem;
+    font-size: 1.1rem;
+    color: $text-main;
+  }
+
+  .attachments-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid #e2e8f0;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .file-icon {
+        font-size: 1.2rem;
+      }
+      .file-name {
+        font-weight: 600;
+        color: $text-main;
+      }
+      .file-size, .file-type {
+        color: $text-light;
+        font-size: 0.85rem;
+      }
+      .file-actions {
+        margin-right: auto;
+        display: flex;
+        gap: 1rem;
+
+        a {
+          color: $primary-color;
+          text-decoration: none;
+          font-weight: 500;
+          font-size: 0.9rem;
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+}
+
+// ============================================================
+// جمع‌بندی مبالغ
+// ============================================================
+.summary-wrapper {
+  margin: 1.5rem 0;
+}
+
+.summary-section {
+  display: flex;
+  justify-content: flex-start;
+  gap: 4rem;
+  padding: 1.5rem 0;
+  border-top: 2px solid #f1f5f9;
+
+  .summary-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+
+    label {
+      font-size: 0.9rem;
+      color: $text-light;
+      font-weight: 500;
+    }
+
+    span {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: $text-main;
+
+      &.price-discount {
+        color: $danger-color;
+      }
+
+      &.price-final {
+        color: $primary-color;
+        font-size: 1.7rem;
+      }
+    }
+  }
+}
+
+// ============================================================
+// دکمه‌های پایین
+// ============================================================
+.action-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid $border-color;
+
+  .btn-send {
+    background: linear-gradient(135deg, $primary-color, $primary-hover);
+    color: white;
+    border: none;
+    padding: 0.9rem 2.5rem;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 200px;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba($primary-color, 0.4);
+    }
+  }
+
+  .btn-cancel {
+    background: transparent;
+    border: 1px solid $border-color;
+    padding: 0.9rem 2.5rem;
+    border-radius: 40px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 120px;
+
+    &:hover {
+      background: #f1f5f9;
+    }
+  }
+}
+
+// ============================================================
+// لودینگ و خطا
+// ============================================================
+.loading-state, .error-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: $text-light;
+  font-size: 1.1rem;
+
+  .retry-btn {
+    background: $danger-color;
+    color: white;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+
+    &:hover {
+      background: darken($danger-color, 10%);
+    }
+  }
+}
+
+.error-state {
+  color: $danger-color;
+}

@@ -70,10 +70,12 @@
         <tbody>
           <tr *ngFor="let invoice of filteredInvoices; trackBy: trackById">
             <td>
-              <input type="checkbox"
-                     [ngModel]="invoice.isSelected"
-                     (ngModelChange)="invoice.isSelected = $event"
-                     [disabled]="invoice.status === 'پرداخت شده'">
+              <ng-container *ngIf="invoice.status === 'انتظار ارسال فاکتور'">
+                <input type="radio"
+                      name="singleInvoiceSelection"
+                      [checked]="invoice.isSelected"
+                      (change)="selectOnlyThis(invoice)">
+              </ng-container>
             </td>
             <td><span class="truncate-text" [title]="invoice.clinic">{{ invoice.clinic }}</span></td>
             <td><span class="truncate-text" [title]="invoice.doctor">{{ invoice.doctor }}</span></td>
@@ -116,8 +118,8 @@
 
   <!-- نوار ارسال پیامک -->
   <div class="action-bar">
-    <button class="btn btn-send" [disabled]="totalCount === 0" (click)="sendSms()">
-      ارسال پیامک جهت واریز صورتحساب
+    <button class="btn btn-send" [disabled]="totalCount !== 1" (click)="sendSms()">
+  ارسال پیامک جهت واریز صورتحساب
       <span class="summary-text">
         <ng-container *ngIf="totalCount === 0; else hasSelected">
           (هیچ فاکتوری انتخاب نشده)
@@ -136,5 +138,16 @@
       <order-detail [orderId]="selectedOrderId" (closed)="closeOrderDialog()"></order-detail>
     </div>
   </div>
+
+
+ <div *ngIf="showBillDialog" class="order-dialog-backdrop" (click)="closeBillDialog()">
+  <div class="order-dialog-content" (click)="$event.stopPropagation()">
+    <app-bill-preview
+      [invoiceId]="selectedInvoiceId!"
+      (closed)="closeBillDialog()"
+    ></app-bill-preview>
+  </div>
+</div>
+
 
 </div>

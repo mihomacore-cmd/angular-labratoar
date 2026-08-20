@@ -3,6 +3,7 @@ import {
   HttpClient,
   HttpHeaders
 } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
 
@@ -30,4 +31,18 @@ export class InvoiceService {
       { headers }
     );
   }
+
+
+sendSms(invoiceId: number): Observable<any> {
+    const token = localStorage.getItem('access_token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    // استفاده از مسیر با {id}
+    return this.http.get(`${this.baseUrl}/sendSms/${invoiceId}`, { headers });
+}
+
+
+
+
 }

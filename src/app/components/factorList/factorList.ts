@@ -7,6 +7,7 @@ import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { InvoiceService } from '../../servicies/invoiceService/InvoiceService';
 import { OrderDetailsComponent } from '../orderDetail/orderDetail';
 import { Jalali } from '../../components/persianCalender/jalali';
+import { BillPreviewComponent } from '../bill/bill';
 
 interface Invoice {
   id: number;
@@ -23,22 +24,22 @@ interface Invoice {
 }
 
 @Component({
-  selector: 'app-factor-list', // تغییر selector به نام مناسب‌تر
+  selector: 'app-factor-list',
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
-    OrderDetailsComponent
+    OrderDetailsComponent,
+    BillPreviewComponent   
   ],
   templateUrl: './factorList.html',
   styleUrls: ['./factorList.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush // 🔥 فعال‌سازی OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FactorListComponent implements OnInit, OnDestroy {
-
-  private dateCache = new Map<string, string>(); // 🔥 کش برای تاریخ‌ها
-  private destroy$ = new Subject<void>(); // برای مدیریت حافظه
-  private searchSubject = new Subject<void>(); // برای debounce جستجو
+  private dateCache = new Map<string, string>();
+  private destroy$ = new Subject<void>();
+  private searchSubject = new Subject<void>();
 
   invoices: Invoice[] = [];
   filteredInvoices: Invoice[] = [];
@@ -51,9 +52,12 @@ export class FactorListComponent implements OnInit, OnDestroy {
 
   openDropdownId: number | string | null = null;
 
-  // دیالوگ جزئیات
+  // دیالوگ جزئیات سفارش
   isOrderDialogOpen = false;
   selectedOrderId: number | null = null;
+
+  // دیالوگ ارسال پیامک (اضافه شده)
+  showSendDialog = false;
 
   constructor(
     private invoiceService: InvoiceService,
@@ -63,7 +67,6 @@ export class FactorListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadInvoices();
 
-    // اعمال debounce روی جستجو (کاهش تعداد دفعات فیلتر)
     this.searchSubject.pipe(
       debounceTime(300),
       distinctUntilChanged(),
@@ -89,7 +92,7 @@ export class FactorListComponent implements OnInit, OnDestroy {
           dateOut: this.convertToJalali(item.dateOut)
         }));
         this.applyFilters();
-        this.cdr.markForCheck(); // 🔥 علامت‌گذاری برای تغییر
+        this.cdr.markForCheck();
       },
       error: (error) => {
         console.error('خطا در دریافت اطلاعات:', error);
@@ -100,7 +103,6 @@ export class FactorListComponent implements OnInit, OnDestroy {
     });
   }
 
-  // 🔥 متد تبدیل تاریخ با کش (Memoization)
   public convertToJalali(dateStr: string): string {
     if (!dateStr) return '';
     if (this.dateCache.has(dateStr)) {
@@ -156,9 +158,8 @@ export class FactorListComponent implements OnInit, OnDestroy {
     this.filteredInvoices = result;
   }
 
-  // متدهای جستجو و بازنشانی
   onSearch(): void {
-    this.searchSubject.next(); // ارسال سیگنال با debounce
+    this.searchSubject.next();
   }
 
   onReset(): void {
@@ -171,7 +172,7 @@ export class FactorListComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
-  // محاسبات انتخاب‌ها
+  // ----- محاسبات انتخاب‌ها -----
   get selectedInvoices(): Invoice[] {
     return this.filteredInvoices.filter(inv =>
       inv.status !== 'پرداخت شده' && inv.isSelected
@@ -186,7 +187,12 @@ export class FactorListComponent implements OnInit, OnDestroy {
     return this.selectedInvoices.reduce((sum, inv) => sum + inv.amount, 0);
   }
 
-  // وضعیت‌ها
+  // فاکتور انتخاب‌شده (چون فقط یک مورد قابل انتخاب است)
+  get selectedInvoice(): Invoice | undefined {
+    return this.selectedInvoices.length === 1 ? this.selectedInvoices[0] : undefined;
+  }
+
+  // ----- متدهای وضعیت -----
   getStatusText(status: string): string {
     return status;
   }
@@ -206,13 +212,13 @@ export class FactorListComponent implements OnInit, OnDestroy {
     return item.id;
   }
 
-  // کنترل منوی کشویی
+  // ----- منوی کشویی -----
   toggleDropdown(id: number | string): void {
     this.openDropdownId = this.openDropdownId === id ? null : id;
     this.cdr.markForCheck();
   }
 
-  // نمایش جزئیات سفارش
+  // ----- دیالوگ جزئیات سفارش -----
   viewOrder(id: number): void {
     console.log('نمایش جزئیات سفارش با ID:', id);
     this.openDropdownId = null;
@@ -227,13 +233,59 @@ export class FactorListComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
-  // ارسال پیامک
-  sendSms(): void {
-    if (this.totalCount === 0) {
-      return;
-    }
-    alert(
-      `پیامک برای ${this.totalCount} فاکتور با مجموع مبلغ ${this.totalAmount.toLocaleString()} ریال ارسال شد.`
-    );
+
+  showBillDialog = false;
+selectedInvoiceId: number | null = null;
+
+
+
+  // ----- انتخاب تکی با رادیو -----
+  selectOnlyThis(selectedInvoice: Invoice): void {
+    this.filteredInvoices.forEach(inv => {
+      inv.isSelected = (inv.id === selectedInvoice.id);
+    });
+    // پس از تغییر انتخاب، وضعیت دیالوگ ارسال به‌روز می‌شود (در صورت باز بودن)
+    this.cdr.markForCheck();
   }
+
+  // ========== دیالوگ ارسال پیامک (اضافه شده) ==========
+      sendSms(): void {
+        if (this.totalCount !== 1) return;
+        const invoice = this.selectedInvoices[0];
+        if (invoice) {
+          this.selectedInvoiceId = invoice.id;
+          this.showBillDialog = true;
+        }
+      } 
+
+  closeSendDialog(): void {
+    this.showSendDialog = false;
+    this.cdr.markForCheck();
+  }
+
+  confirmSend(): void {
+    // اینجا عملیات واقعی ارسال پیامک را انجام دهید (فعلاً فقط یک پیام نمایش داده می‌شود)
+    const invoice = this.selectedInvoice;
+    if (invoice) {
+      alert(`پیامک برای فاکتور شماره ${invoice.number} با مبلغ ${invoice.amount.toLocaleString()} ریال ارسال شد.`);
+    } else {
+      alert('هیچ فاکتوری انتخاب نشده است.');
+    }
+
+    // پس از ارسال، انتخاب را پاک کرده و دیالوگ را ببندیم
+    this.filteredInvoices.forEach(inv => inv.isSelected = false);
+    this.showSendDialog = false;
+    this.cdr.markForCheck();
+  }
+
+closeBillDialog(): void {
+  this.showBillDialog = false;
+  this.selectedInvoiceId = null;
+  this.loadInvoices();
+  this.cdr.markForCheck();
+}
+
+
+
+
 }
