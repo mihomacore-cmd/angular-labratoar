@@ -129,19 +129,12 @@
     </button>
   </div>
 
-  <!-- ========================================================== -->
-  <!-- 🔥 دیالوگ نمایش جزئیات سفارش (مشابه نمونه kenban) -->
-  <!-- ========================================================== -->
+  <!-- دیالوگ نمایش جزئیات سفارش -->
   <div *ngIf="isOrderDialogOpen" class="order-dialog-backdrop" (click)="closeOrderDialog()">
     <div class="order-dialog-content" (click)="$event.stopPropagation()">
-      
-      <!-- دکمه بستن دیالوگ -->
       <button class="dialog-close-btn" (click)="closeOrderDialog()">✕</button>
-
-      <!-- کامپوننت جزئیات سفارش با انتقال orderId -->
       <order-detail [orderId]="selectedOrderId" (closed)="closeOrderDialog()"></order-detail>
-
     </div>
   </div>
 
-</div> 
+</div>

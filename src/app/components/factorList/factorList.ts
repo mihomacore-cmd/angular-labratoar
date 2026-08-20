@@ -1,10 +1,12 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { InvoiceService } from '../../servicies/invoiceService/InvoiceService';
-import { OrderDetailsComponent } from '../orderDetail/orderDetail'; // مسیر صحیح را وارد کنید
-import { Jalali, JalaliDate } from '../../components/persianCalender/jalali';
+import { OrderDetailsComponent } from '../orderDetail/orderDetail';
+import { Jalali } from '../../components/persianCalender/jalali';
 
 interface Invoice {
   id: number;
@@ -14,32 +16,32 @@ interface Invoice {
   number: string;
   patient: string;
   amount: number;
-  dateIn: string;
-  dateOut: string;
+  dateIn: string;    // شمسی
+  dateOut: string;   // شمسی
   status: string;
   isSelected?: boolean;
 }
 
 @Component({
-  selector: 'forget-password',
+  selector: 'app-factor-list', // تغییر selector به نام مناسب‌تر
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
-    OrderDetailsComponent // 🔥 اضافه کردن کامپوننت جزئیات
+    OrderDetailsComponent
   ],
   templateUrl: './factorList.html',
-  styleUrls: ['./factorList.scss']
+  styleUrls: ['./factorList.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush // 🔥 فعال‌سازی OnPush
 })
-export class ForgetPasswordComponent implements OnInit {
+export class FactorListComponent implements OnInit, OnDestroy {
 
-  constructor(
-    private invoiceService: InvoiceService,
-    private cdr: ChangeDetectorRef  // 🔥 تزریق ChangeDetectorRef
-  ) { }
+  private dateCache = new Map<string, string>(); // 🔥 کش برای تاریخ‌ها
+  private destroy$ = new Subject<void>(); // برای مدیریت حافظه
+  private searchSubject = new Subject<void>(); // برای debounce جستجو
 
   invoices: Invoice[] = [];
-  filteredInvoices: Invoice[] = []; // 🔥 تغییر از getter به متغیر معمولی برای جلوگیری از خطای NG0100
+  filteredInvoices: Invoice[] = [];
 
   quickSearch = '';
   advancedPatient = '';
@@ -49,38 +51,76 @@ export class ForgetPasswordComponent implements OnInit {
 
   openDropdownId: number | string | null = null;
 
-  // ============================================================
-  // 🔹 متغیرهای مربوط به دیالوگ نمایش جزئیات سفارش
-  // ============================================================
+  // دیالوگ جزئیات
   isOrderDialogOpen = false;
   selectedOrderId: number | null = null;
 
+  constructor(
+    private invoiceService: InvoiceService,
+    private cdr: ChangeDetectorRef
+  ) { }
+
   ngOnInit(): void {
     this.loadInvoices();
+
+    // اعمال debounce روی جستجو (کاهش تعداد دفعات فیلتر)
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.applyFilters();
+      this.cdr.markForCheck();
+    });
   }
 
-loadInvoices(): void {
-  this.invoiceService.getInvoices().subscribe({
-    next: (data) => {
-      this.invoices = data.map(item => ({
-        ...item,
-        isSelected: false,
-        // 🔥 تبدیل تاریخ در اینجا (یک بار)
-        dateIn: this.convertToJalali(item.dateIn),
-        dateOut: this.convertToJalali(item.dateOut)
-      }));
-      this.applyFilters();
-    },
-    error: (error) => {
-      console.error('خطا در دریافت اطلاعات:', error);
-      this.invoices = [];
-      this.filteredInvoices = [];
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  loadInvoices(): void {
+    this.invoiceService.getInvoices().subscribe({
+      next: (data) => {
+        this.invoices = data.map(item => ({
+          ...item,
+          isSelected: false,
+          dateIn: this.convertToJalali(item.dateIn),
+          dateOut: this.convertToJalali(item.dateOut)
+        }));
+        this.applyFilters();
+        this.cdr.markForCheck(); // 🔥 علامت‌گذاری برای تغییر
+      },
+      error: (error) => {
+        console.error('خطا در دریافت اطلاعات:', error);
+        this.invoices = [];
+        this.filteredInvoices = [];
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  // 🔥 متد تبدیل تاریخ با کش (Memoization)
+  public convertToJalali(dateStr: string): string {
+    if (!dateStr) return '';
+    if (this.dateCache.has(dateStr)) {
+      return this.dateCache.get(dateStr)!;
     }
-  });
-}
-  // ============================================================
-  // 🔹 متد اعمال فیلترها (جایگزین getter)
-  // ============================================================
+    try {
+      const parts = dateStr.split('-');
+      const year = parseInt(parts[0]);
+      const month = parseInt(parts[1]);
+      const day = parseInt(parts[2]);
+      const gregorianDate = new Date(Date.UTC(year, month - 1, day));
+      const jalali = Jalali.toJalali(gregorianDate);
+      const result = `${jalali.year}/${String(jalali.month).padStart(2, '0')}/${String(jalali.day).padStart(2, '0')}`;
+      this.dateCache.set(dateStr, result);
+      return result;
+    } catch {
+      return dateStr;
+    }
+  }
+
   private applyFilters(): void {
     let result = this.invoices;
 
@@ -116,11 +156,9 @@ loadInvoices(): void {
     this.filteredInvoices = result;
   }
 
-  // ============================================================
-  // 🔹 متدهای جستجو و بازنشانی
-  // ============================================================
+  // متدهای جستجو و بازنشانی
   onSearch(): void {
-    this.applyFilters();
+    this.searchSubject.next(); // ارسال سیگنال با debounce
   }
 
   onReset(): void {
@@ -130,11 +168,10 @@ loadInvoices(): void {
     this.advancedClinic = '';
     this.advancedStatus = '';
     this.applyFilters();
+    this.cdr.markForCheck();
   }
 
-  // ============================================================
-  // 🔹 محاسبات برای انتخاب‌ها
-  // ============================================================
+  // محاسبات انتخاب‌ها
   get selectedInvoices(): Invoice[] {
     return this.filteredInvoices.filter(inv =>
       inv.status !== 'پرداخت شده' && inv.isSelected
@@ -149,9 +186,7 @@ loadInvoices(): void {
     return this.selectedInvoices.reduce((sum, inv) => sum + inv.amount, 0);
   }
 
-  // ============================================================
-  // 🔹 توابع کمکی برای وضعیت
-  // ============================================================
+  // وضعیت‌ها
   getStatusText(status: string): string {
     return status;
   }
@@ -167,43 +202,32 @@ loadInvoices(): void {
     }
   }
 
-  // ============================================================
-  // 🔹 trackBy
-  // ============================================================
- trackById(index: number, item: any): number {
-  return item.id; // یا item.id
-}
-
-  // ============================================================
-  // 🔹 کنترل منوی کشویی
-  // ============================================================
-  toggleDropdown(id: number | string): void {
-    this.openDropdownId = this.openDropdownId === id ? null : id;
+  trackById(index: number, item: Invoice): number {
+    return item.id;
   }
 
-  // ============================================================
-  // 🔹 نمایش جزئیات سفارش (مشابه نمونه kenban)
-  // ============================================================
+  // کنترل منوی کشویی
+  toggleDropdown(id: number | string): void {
+    this.openDropdownId = this.openDropdownId === id ? null : id;
+    this.cdr.markForCheck();
+  }
+
+  // نمایش جزئیات سفارش
   viewOrder(id: number): void {
     console.log('نمایش جزئیات سفارش با ID:', id);
     this.openDropdownId = null;
     this.selectedOrderId = id;
     this.isOrderDialogOpen = true;
-    this.cdr.detectChanges(); // به‌روزرسانی view
+    this.cdr.markForCheck();
   }
 
-  // ============================================================
-  // 🔹 بستن دیالوگ جزئیات
-  // ============================================================
   closeOrderDialog(): void {
     this.isOrderDialogOpen = false;
     this.selectedOrderId = null;
-    this.cdr.detectChanges();
+    this.cdr.markForCheck();
   }
 
-  // ============================================================
-  // 🔹 ارسال پیامک
-  // ============================================================
+  // ارسال پیامک
   sendSms(): void {
     if (this.totalCount === 0) {
       return;
@@ -212,21 +236,4 @@ loadInvoices(): void {
       `پیامک برای ${this.totalCount} فاکتور با مجموع مبلغ ${this.totalAmount.toLocaleString()} ریال ارسال شد.`
     );
   }
-
- public convertToJalali(dateStr: string): string {
-    if (!dateStr) return '';
-    try {
-      const parts = dateStr.split('-');
-      const year = parseInt(parts[0]);
-      const month = parseInt(parts[1]);
-      const day = parseInt(parts[2]);
-      const gregorianDate = new Date(Date.UTC(year, month - 1, day));
-      const jalali = Jalali.toJalali(gregorianDate);
-      return `${jalali.year}/${String(jalali.month).padStart(2, '0')}/${String(jalali.day).padStart(2, '0')}`;
-    } catch {
-      return dateStr; // در صورت خطا، مقدار اصلی را برگردان
-    }
-
-  }
-
 }

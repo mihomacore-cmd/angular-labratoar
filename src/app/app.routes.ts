@@ -108,7 +108,7 @@ export const routes: Routes = [
         path: 'factorList',
        loadComponent: () =>
          import('./components/factorList/factorList').then(
-      (m) => m.ForgetPasswordComponent
+      (m) => m.FactorListComponent
        ),
       },
 
