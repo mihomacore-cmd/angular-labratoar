@@ -243,16 +243,23 @@
 
   <h3>📎 فایل‌های پیوست</h3>
 
-  <div class="upload-wrapper">
+    <div class="upload-wrapper">
 
-    <input
-      type="file"
-      multiple
-      (change)="onFileSelected($event)"
-      [disabled]="!isEditMode"
-    >
+      <label
+        class="upload-btn"
+        [class.disabled]="!isEditMode"
+      >
+        📎 انتخاب فایل
 
-  </div>
+        <input
+          type="file"
+          multiple
+          (change)="onFileSelected($event)"
+          [disabled]="!isEditMode"
+        >
+      </label>
+
+    </div>
 
   <ul class="attachments-list">
 
