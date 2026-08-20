@@ -76,6 +76,17 @@
         </select>
       </div>
 
+        <div class="info-item">
+          <label>شماره تلفن</label>
+          <input 
+            type="text" 
+            class="form-input" 
+            [(ngModel)]="orderInfo.phoneNumber"
+            [disabled]="!isEditMode"
+            placeholder="مثلاً ۰۹۱۲۳۴۵۶۷۸۹"
+          >
+        </div>
+
       <!-- نوع فاکتور (با گزینه‌های انگلیسی، ولی با تبدیل مقدار دریافتی) -->
       <div class="info-item">
         <label>نوع فاکتور</label>

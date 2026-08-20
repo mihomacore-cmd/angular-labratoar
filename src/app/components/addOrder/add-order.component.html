@@ -44,6 +44,21 @@
       </div>
     </div>
 
+
+<!-- شماره تلفن -->
+<div class="field-item">
+  <label for="phone">شماره تلفن</label>
+  <input id="phone" type="text" formControlName="phone" placeholder="مثلاً ۰۹۱۲۳۴۵۶۷۸۹">
+  <small class="error-text" *ngIf="form.controls.phone.touched && form.controls.phone.hasError('required')">
+    شماره تلفن الزامی است.
+  </small>
+  <small class="error-text" *ngIf="form.controls.phone.touched && form.controls.phone.hasError('pattern')">
+    شماره تلفن معتبر نیست (فقط رقم و + مجاز است).
+  </small>
+</div>
+
+
+
     <!-- تاریخ ورود با آیکون و پاپ‌آپ -->
     <div class="field-item">
       <label>تاریخ ورود</label>

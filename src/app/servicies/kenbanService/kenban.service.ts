@@ -44,6 +44,7 @@ export interface OrderDetailResponse {
   patientName: string;
   status: string;
   invoiceType: string;
+  phoneNumber:string;
   entryDate: string;
   exitDate: string;
   items: OrderItemDetail[];

@@ -50,6 +50,7 @@ export class OrderDetailsComponent implements OnInit {
     patientName: '',
     status: '',
     invoiceType: '',
+    phoneNumber: '',      
     entryDate: '',          // شمسی
     exitDate: '',           // شمسی
     attachments: [] as Attachment[]
@@ -154,6 +155,7 @@ export class OrderDetailsComponent implements OnInit {
           patientName: data.patientName || '',
           status: data.status || '',
           invoiceType: invoiceTypeKey,
+          phoneNumber: data.phoneNumber || '', 
           entryDate: entryDate,
           exitDate: exitDate,
           attachments: (data.attachments || []).map((att: any) => ({
@@ -411,6 +413,7 @@ export class OrderDetailsComponent implements OnInit {
       patientName: this.orderInfo.patientName,
       status: this.orderInfo.status,
       invoiceType: this.orderInfo.invoiceType,
+      phoneNumber: this.orderInfo.phoneNumber, 
       entryDate: entryDateGreg,
       exitDate: exitDateGreg,
       items: this.items,

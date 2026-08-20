@@ -22,6 +22,7 @@ export interface OrderPayload {
   patientName: string;
   invoiceNumber: string;
   invoiceType: InvoiceType;
+  phone:string;
   entryDate: string;    // میلادی: yyyy-MM-dd
   exitDate: string;     // میلادی: yyyy-MM-dd
   discountAmount: number;
@@ -45,6 +46,7 @@ type OrderFormControls = {
   patientName: FormControl<string>;
   invoiceNumber: FormControl<string>;
   invoiceType: FormControl<InvoiceType>;
+  phone: FormControl<string>; 
   entryDate: FormControl<string | null>;
   exitDate: FormControl<string | null>;
   discountAmount: FormControl<number>;
@@ -116,6 +118,9 @@ export class AddOrderComponent {
       patientName: this.fb.nonNullable.control('', [Validators.required]),
       invoiceNumber: this.fb.nonNullable.control(''),
       invoiceType: this.fb.nonNullable.control<InvoiceType>('daily'),
+      phone: this.fb.nonNullable.control('', [
+      Validators.required,
+      Validators.pattern(/^\+?[0-9]+$/)]),
       entryDate: this.fb.control<string | null>(null, [Validators.required]),
       exitDate: this.fb.control<string | null>(null, [Validators.required]),
       discountAmount: this.fb.nonNullable.control(0, [Validators.min(0)]),
@@ -174,6 +179,7 @@ export class AddOrderComponent {
       patientName: '',
       invoiceNumber: '',
       invoiceType: 'daily',
+      phone: '',
       entryDate: null,
       exitDate: null,
       discountAmount: 0,
@@ -309,6 +315,7 @@ export class AddOrderComponent {
       patientName: raw.patientName.trim(),
       invoiceNumber: raw.invoiceNumber.trim(),
       invoiceType: raw.invoiceType,
+      phone: raw.phone.trim(),
       entryDate: this.convertPersianToGregorian(raw.entryDate ?? ''),
       exitDate: this.convertPersianToGregorian(raw.exitDate ?? ''),
       discountAmount,
