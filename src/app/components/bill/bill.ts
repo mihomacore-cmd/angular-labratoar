@@ -1,175 +1,942 @@
-import { Component, Input, Output, EventEmitter, OnInit, inject } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  OnInit,
+  inject
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { KanbanService, OrderDetailResponse } from '../../servicies/kenbanService/kenban.service';
-import { InvoiceService } from '../../servicies/invoiceService/InvoiceService';
-import { Jalali } from '../../components/persianCalender/jalali';
+import { OrderDetailsComponent } from '../orderDetail/orderDetail';
+import {
+  forkJoin,
+  Observable
+} from 'rxjs';
+
+import {
+  KanbanService,
+  OrderDetailResponse
+} from '../../servicies/kenbanService/kenban.service';
+
+import {
+  InvoiceService
+} from '../../servicies/invoiceService/InvoiceService';
+
+import {
+  Jalali
+} from '../../components/persianCalender/jalali';
+
+
+// =========================================================
+// Attachment
+// =========================================================
 
 interface Attachment {
+
   id?: number;
+
   fileName: string;
+
   fileType: string;
+
   fileSize: number;
+
   viewUrl?: string;
+
   downloadUrl?: string;
 }
 
-@Component({
-  selector: 'app-bill-preview',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './bill.html',
-  styleUrls: ['./bill.scss']
-})
-export class BillPreviewComponent implements OnInit {
-  private kanbanService = inject(KanbanService);
-  private invoiceService = inject(InvoiceService);
 
-  @Input() invoiceId!: number;          // شناسه فاکتور (که همان orderId است)
-  @Output() closed = new EventEmitter<void>();
+// =========================================================
+// Bill Item
+// =========================================================
+
+interface BillItem {
+
+  serviceType: string;
+
+  toothNumber: string;
+
+  quantity: number;
+
+  unitPrice: number;
+
+  totalPrice: number;
+}
+
+
+// =========================================================
+// Bill Order
+// =========================================================
+
+interface BillOrder {
+
+  invoiceId: number;
+
+  clinicName: string;
+
+  doctorName: string;
+
+  patientName: string;
+
+  status: string;
+
+  invoiceType: string;
+
+  phoneNumber: string;
+
+  entryDate: string;
+
+  exitDate: string;
+
+  attachments: Attachment[];
+
+  items: BillItem[];
+
+  discountAmount: number;
+
+  totalAmount: number;
+
+  finalAmount: number;
+}
+
+
+// =========================================================
+// Component
+// =========================================================
+
+@Component({
+
+  selector: 'app-bill-preview',
+
+  standalone: true,
+
+  imports: [
+    CommonModule,
+    FormsModule,
+    OrderDetailsComponent
+  ],
+
+  templateUrl: './bill.html',
+
+  styleUrls: [
+    './bill.scss'
+  ]
+
+})
+export class BillPreviewComponent
+  implements OnInit {
+
+
+  // =========================================================
+  // Services
+  // =========================================================
+
+  private kanbanService =
+    inject(KanbanService);
+
+
+  private invoiceService =
+    inject(InvoiceService);
+
+
+  // =========================================================
+  // Inputs
+  // =========================================================
+
+  /*
+   * تمام فاکتورهای انتخاب‌شده
+   */
+
+  @Input()
+  invoiceIds: number[] = [];
+
+
+  /*
+   * برای حالت تک‌فاکتور
+   */
+
+  @Input()
+  invoiceId: number | null = null;
+
+
+  // =========================================================
+  // Outputs
+  // =========================================================
+
+  /*
+   * فقط برای بستن خود Bill Dialog
+   *
+   * دیگر orderView نداریم.
+   */
+
+  @Output()
+  closed =
+    new EventEmitter<void>();
+
+
+  // =========================================================
+  // Bill State
+  // =========================================================
 
   loading = false;
+
+  sending = false;
+
   errorMessage = '';
 
-  // داده‌های اصلی (همان ساختار orderInfo)
-  orderInfo = {
-    clinicName: '',
-    doctorName: '',
-    patientName: '',
-    status: '',
-    invoiceType: '',
-    phoneNumber: '',
-    entryDate: '',
-    exitDate: '',
-    attachments: [] as Attachment[]
-  };
+  sendErrorMessage = '';
 
-  items: any[] = [];
-  discountAmount = 0;
-  totalAmount = 0;
-  finalAmount = 0;
+
+  // =========================================================
+  // Orders
+  // =========================================================
+
+  orders: BillOrder[] = [];
+
+
+  // =========================================================
+  // Order Detail Dialog State
+  // =========================================================
+
+  /*
+   * مشخص می‌کند دیالوگ جزئیات سفارش باز است یا نه.
+   */
+
+  isOrderDialogOpen = false;
+
+
+  /*
+   * ID فاکتوری که کاربر روی «نمایش» آن کلیک کرده.
+   */
+
+  selectedOrderId: number | null = null;
+
+
+  // =========================================================
+  // Lifecycle
+  // =========================================================
 
   ngOnInit(): void {
-    if (this.invoiceId) {
-      this.loadOrderDetail(this.invoiceId);
-    } else {
-      this.errorMessage = 'شناسه فاکتور معتبر نیست.';
+
+    this.prepareInvoiceIds();
+
+    this.loadOrders();
+  }
+
+
+  // =========================================================
+  // Prepare Invoice IDs
+  // =========================================================
+
+  private prepareInvoiceIds(): void {
+
+    /*
+     * اگر invoiceIds نداشتیم،
+     * از invoiceId استفاده می‌کنیم.
+     */
+
+    if (
+      (!this.invoiceIds ||
+        this.invoiceIds.length === 0) &&
+      this.invoiceId
+    ) {
+
+      this.invoiceIds = [
+        this.invoiceId
+      ];
+    }
+
+
+    /*
+     * حذف IDهای نامعتبر و تکراری
+     */
+
+    this.invoiceIds = [
+
+      ...new Set(
+
+        (this.invoiceIds || [])
+
+          .map(
+            id => Number(id)
+          )
+
+          .filter(
+            id =>
+              Number.isFinite(id) &&
+              id > 0
+          )
+
+      )
+
+    ];
+
+
+    /*
+     * برای سازگاری با حالت تک‌فاکتور
+     */
+
+    if (
+      !this.invoiceId &&
+      this.invoiceIds.length > 0
+    ) {
+
+      this.invoiceId =
+        this.invoiceIds[0];
     }
   }
 
-  loadOrderDetail(orderId: number): void {
+
+  // =========================================================
+  // Load Orders
+  // =========================================================
+
+  loadOrders(): void {
+
+    if (
+      !this.invoiceIds ||
+      this.invoiceIds.length === 0
+    ) {
+
+      this.errorMessage =
+        'شناسه فاکتور معتبر نیست.';
+
+      return;
+    }
+
+
     this.loading = true;
+
     this.errorMessage = '';
 
-    this.kanbanService.getOrderById(orderId).subscribe({
-      next: (data: OrderDetailResponse) => {
-        // تبدیل تاریخ‌ها به شمسی
-        const entryDate = data.entryDate ? this.convertToJalali(data.entryDate) : '';
-        const exitDate = data.exitDate ? this.convertToJalali(data.exitDate) : '';
+    this.orders = [];
 
-        // نگاشت invoiceType به فارسی (برای نمایش)
-        let invoiceTypeDisplay = '';
-        switch (data.invoiceType) {
-          case 'daily': invoiceTypeDisplay = 'روزانه'; break;
-          case 'monthly': invoiceTypeDisplay = 'ماهانه'; break;
-          case 'final': invoiceTypeDisplay = 'نهایی'; break;
-          default: invoiceTypeDisplay = data.invoiceType || '';
+
+    const requests:
+      Observable<OrderDetailResponse>[] =
+
+      this.invoiceIds.map(
+        id =>
+          this.kanbanService
+            .getOrderById(id)
+      );
+
+
+    forkJoin(requests)
+      .subscribe({
+
+        next: (
+          responses
+        ) => {
+
+          this.orders =
+            responses.map(
+              (
+                data,
+                index
+              ) =>
+
+                this.mapOrder(
+                  data,
+                  this.invoiceIds[index]
+                )
+            );
+
+
+          this.loading = false;
+        },
+
+
+        error: (
+          error
+        ) => {
+
+          console.error(
+            'خطا در دریافت جزئیات فاکتورها:',
+            error
+          );
+
+
+          this.errorMessage =
+            'خطا در دریافت اطلاعات فاکتورها. لطفاً مجدداً تلاش کنید.';
+
+
+          this.loading = false;
         }
 
-        this.orderInfo = {
-          clinicName: data.clinicName || '',
-          doctorName: data.doctorName || '',
-          patientName: data.patientName || '',
-          status: data.status || '',
-          invoiceType: invoiceTypeDisplay,
-          phoneNumber: data.phoneNumber || '',
-          entryDate: entryDate,
-          exitDate: exitDate,
-          attachments: (data.attachments || []).map((att: any) => ({
-            id: att.id,
-            fileName: att.fileName,
-            fileType: att.fileType,
-            fileSize: att.fileSize,
-            viewUrl: att.viewUrl,
-            downloadUrl: att.downloadUrl
-          }))
-        };
-
-        this.items = (data.items || []).map(item => ({
-          serviceType: item.serviceType || '',
-          toothNumber: item.toothNumber || '',
-          quantity: item.quantity || 1,
-          unitPrice: item.unitPrice || 0,
-          totalPrice: item.totalPrice || 0
-        }));
-
-        this.discountAmount = data.discountAmount || 0;
-        this.totalAmount = this.items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
-        this.finalAmount = Math.max(this.totalAmount - this.discountAmount, 0);
-
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('❌ خطا در دریافت جزئیات فاکتور:', error);
-        this.errorMessage = 'خطا در دریافت اطلاعات. لطفاً مجدداً تلاش کنید.';
-        this.loading = false;
-      }
-    });
+      });
   }
 
-  // تبدیل تاریخ میلادی به شمسی (همان متد موجود)
-  private convertToJalali(dateStr: string): string {
+
+  // =========================================================
+  // View Order
+  // =========================================================
+
+  viewOrder(
+    id: number
+  ): void {
+
+    /*
+     * ID نامعتبر
+     */
+
+    if (!id) {
+      return;
+    }
+
+
+    /*
+     * ID فاکتور انتخاب‌شده
+     */
+
+    this.selectedOrderId = id;
+
+
+    /*
+     * باز کردن دیالوگ جزئیات
+     */
+
+    this.isOrderDialogOpen = true;
+  }
+
+
+  // =========================================================
+  // Close Order Detail Dialog
+  // =========================================================
+
+  closeOrderDialog(): void {
+
+    this.isOrderDialogOpen = false;
+
+    this.selectedOrderId = null;
+  }
+
+
+  // =========================================================
+  // Map API Response
+  // =========================================================
+
+  private mapOrder(
+    data: OrderDetailResponse,
+    invoiceId: number
+  ): BillOrder {
+
+    const entryDate =
+      data.entryDate
+        ? this.convertToJalali(
+            data.entryDate
+          )
+        : '';
+
+
+    const exitDate =
+      data.exitDate
+        ? this.convertToJalali(
+            data.exitDate
+          )
+        : '';
+
+
+    const items: BillItem[] =
+
+      (data.items || []).map(
+        item => ({
+
+          serviceType:
+            item.serviceType || '',
+
+          toothNumber:
+            item.toothNumber || '',
+
+          quantity:
+            Number(
+              item.quantity || 1
+            ),
+
+          unitPrice:
+            Number(
+              item.unitPrice || 0
+            ),
+
+          totalPrice:
+            Number(
+              item.totalPrice ||
+              (
+                Number(
+                  item.quantity || 1
+                ) *
+                Number(
+                  item.unitPrice || 0
+                )
+              )
+            )
+
+        })
+      );
+
+
+    const totalAmount =
+      items.reduce(
+
+        (
+          sum,
+          item
+        ) =>
+
+          sum +
+          (
+            Number(
+              item.quantity || 0
+            ) *
+            Number(
+              item.unitPrice || 0
+            )
+          ),
+
+        0
+      );
+
+
+    const discountAmount =
+      Number(
+        data.discountAmount || 0
+      );
+
+
+    const finalAmount =
+      Math.max(
+        totalAmount -
+        discountAmount,
+        0
+      );
+
+
+    return {
+
+      invoiceId,
+
+      clinicName:
+        data.clinicName || '',
+
+      doctorName:
+        data.doctorName || '',
+
+      patientName:
+        data.patientName || '',
+
+      status:
+        data.status || '',
+
+      invoiceType:
+        this.getInvoiceTypeDisplay(
+          data.invoiceType
+        ),
+
+      phoneNumber:
+        data.phoneNumber || '',
+
+      entryDate,
+
+      exitDate,
+
+      attachments:
+        (data.attachments || [])
+          .map(
+            (att: any) => ({
+
+              id: att.id,
+
+              fileName:
+                att.fileName || '',
+
+              fileType:
+                att.fileType || '',
+
+              fileSize:
+                Number(
+                  att.fileSize || 0
+                ),
+
+              viewUrl:
+                att.viewUrl,
+
+              downloadUrl:
+                att.downloadUrl
+
+            })
+          ),
+
+      items,
+
+      discountAmount,
+
+      totalAmount,
+
+      finalAmount
+
+    };
+  }
+
+
+  // =========================================================
+  // Invoice Type
+  // =========================================================
+
+  private getInvoiceTypeDisplay(
+    invoiceType: string
+  ): string {
+
+    switch (invoiceType) {
+
+      case 'daily':
+        return 'روزانه';
+
+      case 'monthly':
+        return 'ماهانه';
+
+      case 'final':
+        return 'نهایی';
+
+      default:
+        return invoiceType || '';
+    }
+  }
+
+
+  // =========================================================
+  // Convert Date To Jalali
+  // =========================================================
+
+  private convertToJalali(
+    dateStr: string
+  ): string {
+
+    if (!dateStr) {
+      return '';
+    }
+
+
     try {
-      const parts = dateStr.split('-');
-      const year = parseInt(parts[0]);
-      const month = parseInt(parts[1]);
-      const day = parseInt(parts[2]);
-      const gregorianDate = new Date(Date.UTC(year, month - 1, day));
-      const jalali = Jalali.toJalali(gregorianDate);
-      return `${jalali.year}/${String(jalali.month).padStart(2, '0')}/${String(jalali.day).padStart(2, '0')}`;
+
+      const parts =
+        dateStr.split('-');
+
+
+      if (parts.length < 3) {
+        return dateStr;
+      }
+
+
+      const year =
+        parseInt(
+          parts[0],
+          10
+        );
+
+
+      const month =
+        parseInt(
+          parts[1],
+          10
+        );
+
+
+      const day =
+        parseInt(
+          parts[2],
+          10
+        );
+
+
+      const gregorianDate =
+        new Date(
+
+          Date.UTC(
+            year,
+            month - 1,
+            day
+          )
+
+        );
+
+
+      const jalali =
+        Jalali.toJalali(
+          gregorianDate
+        );
+
+
+      return (
+        `${jalali.year}/` +
+        `${String(jalali.month).padStart(2, '0')}/` +
+        `${String(jalali.day).padStart(2, '0')}`
+      );
+
     } catch {
+
       return dateStr;
     }
   }
 
-  // بستن دیالوگ
+
+  // =========================================================
+  // Grand Total
+  // =========================================================
+
+  get grandTotalAmount(): number {
+
+    return this.orders.reduce(
+
+      (
+        sum,
+        order
+      ) =>
+
+        sum +
+        order.totalAmount,
+
+      0
+    );
+  }
+
+
+  // =========================================================
+  // Grand Discount
+  // =========================================================
+
+  get grandDiscountAmount(): number {
+
+    return this.orders.reduce(
+
+      (
+        sum,
+        order
+      ) =>
+
+        sum +
+        order.discountAmount,
+
+      0
+    );
+  }
+
+
+  // =========================================================
+  // Grand Final
+  // =========================================================
+
+  get grandFinalAmount(): number {
+
+    return this.orders.reduce(
+
+      (
+        sum,
+        order
+      ) =>
+
+        sum +
+        order.finalAmount,
+
+      0
+    );
+  }
+
+
+  // =========================================================
+  // Selected Phone
+  // =========================================================
+
+  get selectedPhoneNumber(): string {
+
+    if (
+      this.orders.length === 0
+    ) {
+
+      return '';
+    }
+
+
+    return (
+      this.orders[0].phoneNumber ||
+      ''
+    );
+  }
+
+
+  // =========================================================
+  // Close Bill
+  // =========================================================
+
   close(): void {
+
+    if (this.sending) {
+      return;
+    }
+
+
+    /*
+     * اگر Order Detail باز است،
+     * اول همان را ببند.
+     */
+
+    if (this.isOrderDialogOpen) {
+
+      this.closeOrderDialog();
+
+      return;
+    }
+
+
+    /*
+     * در غیر این صورت
+     * خود Bill Dialog بسته می‌شود.
+     */
+
     this.closed.emit();
   }
 
-  // فرمت پول
-  formatMoney(value: number): string {
-    if (value === undefined || value === null || isNaN(value)) {
+
+  // =========================================================
+  // Format Money
+  // =========================================================
+
+  formatMoney(
+    value: number
+  ): string {
+
+    if (
+      value === undefined ||
+      value === null ||
+      isNaN(value)
+    ) {
+
       return '۰ ریال';
     }
-    return value.toLocaleString('fa-IR') + ' ریال';
+
+
+    return (
+
+      Number(value)
+        .toLocaleString('fa-IR') +
+
+      ' ریال'
+
+    );
   }
 
-  // کلاس وضعیت برای نمایش رنگ‌ها
-  getStatusClass(status: string): string {
+
+  // =========================================================
+  // Status Class
+  // =========================================================
+
+  getStatusClass(
+    status: string
+  ): string {
+
     switch (status) {
-      case 'در انتظار پرداخت': return 'status-pending-payment';
-      case 'انتظار ارسال فاکتور': return 'status-waiting-invoice';
-      case 'پرداخت شده': return 'status-paid';
-      case 'در حال ساخت': return 'status-building';
-      case 'تحویل داده شده': return 'status-delivered';
-      default: return '';
+
+      case 'در انتظار پرداخت':
+        return 'status-pending-payment';
+
+      case 'انتظار ارسال فاکتور':
+        return 'status-waiting-invoice';
+
+      case 'پرداخت شده':
+        return 'status-paid';
+
+      case 'در حال ساخت':
+        return 'status-building';
+
+      case 'تحویل داده شده':
+        return 'status-delivered';
+
+      default:
+        return 'status-default';
     }
   }
 
 
-            sendSms(): void {
-            if (!this.invoiceId) return;
+  // =========================================================
+  // Send SMS
+  // =========================================================
 
-            this.invoiceService.sendSms(this.invoiceId).subscribe({
-                next: (response) => {
-                alert(`✅ پیامک برای فاکتور شماره ${this.invoiceId} با موفقیت ارسال شد.`);
-                this.close(); // بستن دیالوگ پس از ارسال موفق
-                },
-                error: (err) => {
-                console.error('❌ خطا در ارسال پیامک:', err);
-                alert('❌ خطا در ارسال پیامک. لطفاً مجدداً تلاش کنید.');
-                }
-            });
-            }
+  sendSms(): void {
+
+    if (
+      !this.invoiceIds ||
+      this.invoiceIds.length === 0
+    ) {
+
+      return;
+    }
+
+
+    if (this.sending) {
+      return;
+    }
+
+
+    this.sending = true;
+
+    this.sendErrorMessage = '';
+
+
+    const requests =
+      this.invoiceIds.map(
+        id =>
+          this.invoiceService
+            .sendSms(id)
+      );
+
+
+    forkJoin(requests)
+      .subscribe({
+
+        next: () => {
+
+          this.sending = false;
+
+
+          alert(
+            `پیامک برای ${this.invoiceIds.length} فاکتور با موفقیت ارسال شد.`
+          );
+
+
+          this.closed.emit();
+        },
+
+
+        error: (
+          error
+        ) => {
+
+          console.error(
+            'خطا در ارسال پیامک:',
+            error
+          );
+
+
+          this.sending = false;
+
+
+          this.sendErrorMessage =
+            'در ارسال پیامک خطایی رخ داد. لطفاً مجدداً تلاش کنید.';
+        }
+
+      });
+  }
+
+
+  // =========================================================
+  // Retry
+  // =========================================================
+
+  retry(): void {
+
+    this.loadOrders();
+  }
+
 }

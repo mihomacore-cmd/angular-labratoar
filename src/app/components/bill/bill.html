@@ -1,132 +1,549 @@
-<div class="bill-backdrop" (click)="close()">
-  <div class="bill-card" (click)="$event.stopPropagation()">
+<!-- ========================================================= -->
+<!-- BILL DIALOG -->
+<!-- ========================================================= -->
 
-    <!-- لودینگ -->
-    <div *ngIf="loading" class="loading-state">
-      <span>⏳ در حال بارگذاری اطلاعات...</span>
+<div
+  class="bill-backdrop"
+  (click)="close()"
+>
+
+  <!-- ======================================================= -->
+  <!-- BILL CARD -->
+  <!-- ======================================================= -->
+
+  <div
+    class="bill-card"
+    (click)="$event.stopPropagation()"
+  >
+
+    <!-- ===================================================== -->
+    <!-- Loading -->
+    <!-- ===================================================== -->
+
+    <div
+      *ngIf="loading"
+      class="loading-state"
+    >
+
+      <div class="loading-spinner"></div>
+
+      <span>
+        ⏳ در حال بارگذاری فاکتورها...
+      </span>
+
     </div>
 
-    <!-- خطا -->
-    <div *ngIf="errorMessage && !loading" class="error-state">
-      {{ errorMessage }}
-      <button class="retry-btn" (click)="loadOrderDetail(invoiceId)">تلاش مجدد</button>
+
+    <!-- ===================================================== -->
+    <!-- Error -->
+    <!-- ===================================================== -->
+
+    <div
+      *ngIf="errorMessage && !loading"
+      class="error-state"
+    >
+
+      <p>
+        {{ errorMessage }}
+      </p>
+
+      <button
+        type="button"
+        class="retry-btn"
+        (click)="retry()"
+      >
+        تلاش مجدد
+      </button>
+
     </div>
 
-    <!-- محتوای اصلی -->
-    <ng-container *ngIf="!loading && !errorMessage && orderInfo.clinicName">
+
+    <!-- ===================================================== -->
+    <!-- Main Content -->
+    <!-- ===================================================== -->
+
+    <ng-container
+      *ngIf="!loading && !errorMessage"
+    >
+
+      <!-- =================================================== -->
+      <!-- Header -->
+      <!-- =================================================== -->
+
       <div class="bill-header">
-        <h2>جزئیات صورتحساب</h2>
-        <button class="close-btn" (click)="close()">✕</button>
-      </div>
 
-      <!-- اطلاعات کلی -->
-      <div class="info-grid">
-        <div class="info-item">
-          <label>نام کلینیک</label>
-          <span class="info-value">{{ orderInfo.clinicName }}</span>
-        </div>
-        <div class="info-item">
-          <label>نام پزشک</label>
-          <span class="info-value">{{ orderInfo.doctorName }}</span>
-        </div>
-        <div class="info-item">
-          <label>نام بیمار</label>
-          <span class="info-value">{{ orderInfo.patientName }}</span>
-        </div>
-        <div class="info-item">
-          <label>وضعیت</label>
-          <span class="info-value status-badge" [class]="getStatusClass(orderInfo.status)">
-            {{ orderInfo.status }}
-          </span>
-        </div>
-        <div class="info-item">
-          <label>شماره تلفن</label>
-          <span class="info-value">{{ orderInfo.phoneNumber || '—' }}</span>
-        </div>
-        <div class="info-item">
-          <label>نوع فاکتور</label>
-          <span class="info-value">{{ orderInfo.invoiceType }}</span>
-        </div>
-        <div class="info-item">
-          <label>تاریخ ورود</label>
-          <span class="info-value">{{ orderInfo.entryDate }}</span>
-        </div>
-        <div class="info-item">
-          <label>تاریخ خروج</label>
-          <span class="info-value">{{ orderInfo.exitDate }}</span>
-        </div>
-      </div>
+        <div class="header-content">
 
-      <hr class="divider">
+          <div>
 
-      <!-- جدول آیتم‌ها -->
-      <div class="table-section">
-        <h3>آیتم‌های سفارش</h3>
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>نوع</th>
-                <th>شماره دندان</th>
-                <th>تعداد</th>
-                <th>قیمت واحد (ریال)</th>
-                <th>مجموع (ریال)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let item of items; let i = index">
-                <td>{{ item.serviceType }}</td>
-                <td>{{ item.toothNumber }}</td>
-                <td>{{ item.quantity }}</td>
-                <td>{{ item.unitPrice | number }}</td>
-                <td class="price-cell">{{ (item.quantity * item.unitPrice) | number }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+            <h2>
+              صورتحساب‌ها
+            </h2>
 
-      <!-- پیوست‌ها -->
-      <div class="attachments-section" *ngIf="orderInfo.attachments.length > 0">
-        <h3>📎 فایل‌های پیوست</h3>
-        <ul class="attachments-list">
-          <li *ngFor="let file of orderInfo.attachments">
-            <span class="file-icon">📄</span>
-            <span class="file-name">{{ file.fileName }}</span>
-            <span class="file-size">({{ (file.fileSize / 1024) | number:'1.0-0' }} KB)</span>
-            <span class="file-type">[{{ file.fileType }}]</span>
-            <div class="file-actions">
-              <a *ngIf="file.viewUrl" [href]="file.viewUrl" target="_blank" class="view-link">نمایش</a>
-              <a *ngIf="file.downloadUrl" [href]="file.downloadUrl" download class="download-link">دانلود</a>
+            <div class="header-subtitle">
+              خلاصه فاکتورهای انتخاب‌شده
             </div>
-          </li>
-        </ul>
-      </div>
 
-      <!-- جمع‌بندی مبالغ (فقط خواندنی) -->
-      <div class="summary-wrapper">
-        <div class="summary-section">
-          <div class="summary-item">
-            <label>مبلغ کل</label>
-            <span class="price-total">{{ formatMoney(totalAmount) }}</span>
           </div>
-          <div class="summary-item">
-            <label>مبلغ تخفیف</label>
-            <span class="price-discount">- {{ formatMoney(discountAmount) }}</span>
+
+
+          <div class="invoice-count">
+
+            <span>
+              تعداد فاکتورها
+            </span>
+
+            <strong>
+              {{ orders.length }}
+            </strong>
+
           </div>
-          <div class="summary-item">
-            <label>مبلغ نهایی</label>
-            <span class="price-final">{{ formatMoney(finalAmount) }}</span>
-          </div>
+
         </div>
+
+
+        <button
+          type="button"
+          class="close-btn"
+          (click)="close()"
+          [disabled]="sending"
+        >
+          ✕
+        </button>
+
       </div>
 
-      <!-- دکمه ارسال پیامک و بستن -->
-      <div class="action-footer">
-        <button class="btn-send" (click)="sendSms()">ارسال پیامک جهت واریز صورتحساب</button>
-        <button class="btn-cancel" (click)="close()">بستن</button>
+
+      <!-- =================================================== -->
+      <!-- Selected Phone -->
+      <!-- =================================================== -->
+
+      <div
+        class="selected-phone-info"
+        *ngIf="selectedPhoneNumber"
+      >
+
+        <span class="phone-icon">
+          ☎
+        </span>
+
+        <div>
+
+          <span class="phone-label">
+            شماره تلفن
+          </span>
+
+          <strong>
+            {{ selectedPhoneNumber }}
+          </strong>
+
+        </div>
+
       </div>
+
+
+      <!-- =================================================== -->
+      <!-- Empty -->
+      <!-- =================================================== -->
+
+      <div
+        *ngIf="orders.length === 0"
+        class="empty-state"
+      >
+
+        <div class="empty-icon">
+          📄
+        </div>
+
+        <h3>
+          فاکتوری وجود ندارد
+        </h3>
+
+        <p>
+          برای این صورتحساب فاکتوری پیدا نشد.
+        </p>
+
+      </div>
+
+
+      <!-- =================================================== -->
+      <!-- Invoice List -->
+      <!-- =================================================== -->
+
+      <div
+        *ngIf="orders.length > 0"
+        class="invoice-list"
+      >
+
+        <!-- ================================================= -->
+        <!-- Table Header -->
+        <!-- ================================================= -->
+
+        <div class="invoice-table-header">
+
+          <div class="col-invoice">
+            فاکتور
+          </div>
+
+          <div class="col-patient">
+            بیمار
+          </div>
+
+          <div class="col-doctor">
+            پزشک
+          </div>
+
+          <div class="col-clinic">
+            کلینیک
+          </div>
+
+          <div class="col-date">
+            تاریخ
+          </div>
+
+          <div class="col-status">
+            وضعیت
+          </div>
+
+          <div class="col-amount">
+            مبلغ نهایی
+          </div>
+
+          <div class="col-action">
+            عملیات
+          </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- Invoice Rows -->
+        <!-- ================================================= -->
+
+        <div
+          class="invoice-row"
+          *ngFor="
+            let order of orders;
+            let invoiceIndex = index
+          "
+        >
+
+          <!-- Invoice -->
+
+          <div class="col-invoice">
+
+            <span class="mobile-label">
+              فاکتور
+            </span>
+
+            <div class="invoice-number">
+
+              <span class="invoice-icon">
+                #
+              </span>
+
+              <div>
+
+                <strong>
+                  {{ order.invoiceId }}
+                </strong>
+
+                <small>
+                  فاکتور {{ invoiceIndex + 1 }}
+                </small>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- Patient -->
+
+          <div class="col-patient">
+
+            <span class="mobile-label">
+              بیمار
+            </span>
+
+            <strong>
+              {{ order.patientName || '—' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Doctor -->
+
+          <div class="col-doctor">
+
+            <span class="mobile-label">
+              پزشک
+            </span>
+
+            <span>
+              {{ order.doctorName || '—' }}
+            </span>
+
+          </div>
+
+
+          <!-- Clinic -->
+
+          <div class="col-clinic">
+
+            <span class="mobile-label">
+              کلینیک
+            </span>
+
+            <span>
+              {{ order.clinicName || '—' }}
+            </span>
+
+          </div>
+
+
+          <!-- Date -->
+
+          <div class="col-date">
+
+            <span class="mobile-label">
+              تاریخ
+            </span>
+
+            <span>
+              {{ order.entryDate || '—' }}
+            </span>
+
+          </div>
+
+
+          <!-- Status -->
+
+          <div class="col-status">
+
+            <span class="mobile-label">
+              وضعیت
+            </span>
+
+            <span
+              class="status-badge"
+              [ngClass]="getStatusClass(order.status)"
+            >
+              {{ order.status || '—' }}
+            </span>
+
+          </div>
+
+
+          <!-- Amount -->
+
+          <div class="col-amount">
+
+            <span class="mobile-label">
+              مبلغ نهایی
+            </span>
+
+            <strong>
+              {{ formatMoney(order.finalAmount) }}
+            </strong>
+
+          </div>
+
+
+          <!-- Action -->
+
+          <div class="col-action">
+
+            <button
+              type="button"
+              class="btn-view"
+              (click)="viewOrder(order.invoiceId)"
+            >
+
+              <span class="view-icon">
+                👁
+              </span>
+
+              نمایش
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =================================================== -->
+      <!-- Grand Summary -->
+      <!-- =================================================== -->
+
+      <div
+        *ngIf="orders.length > 0"
+        class="grand-summary"
+      >
+
+        <div class="grand-summary-title">
+
+          <span>
+            جمع صورتحساب‌ها
+          </span>
+
+          <strong>
+            {{ orders.length }} فاکتور
+          </strong>
+
+        </div>
+
+
+        <div class="grand-summary-items">
+
+          <div class="grand-summary-item">
+
+            <span>
+              مبلغ کل
+            </span>
+
+            <strong>
+              {{ formatMoney(grandTotalAmount) }}
+            </strong>
+
+          </div>
+
+
+          <div class="grand-summary-item discount">
+
+            <span>
+              تخفیف
+            </span>
+
+            <strong>
+              {{ formatMoney(grandDiscountAmount) }}
+            </strong>
+
+          </div>
+
+
+          <div class="grand-summary-item final">
+
+            <span>
+              مبلغ نهایی
+            </span>
+
+            <strong>
+              {{ formatMoney(grandFinalAmount) }}
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =================================================== -->
+      <!-- Send Error -->
+      <!-- =================================================== -->
+
+      <div
+        *ngIf="sendErrorMessage"
+        class="send-error"
+      >
+        {{ sendErrorMessage }}
+      </div>
+
+
+      <!-- =================================================== -->
+      <!-- Footer -->
+      <!-- =================================================== -->
+
+      <div class="action-footer">
+
+        <button
+          type="button"
+          class="btn-send"
+          [disabled]="
+            sending ||
+            orders.length === 0
+          "
+          (click)="sendSms()"
+        >
+
+          <ng-container
+            *ngIf="!sending; else sendingTemplate"
+          >
+
+            📱 ارسال پیامک جهت واریز صورتحساب
+
+          </ng-container>
+
+
+          <ng-template #sendingTemplate>
+
+            ⏳ در حال ارسال پیامک...
+
+          </ng-template>
+
+        </button>
+
+
+        <button
+          type="button"
+          class="btn-cancel"
+          [disabled]="sending"
+          (click)="close()"
+        >
+
+          بستن
+
+        </button>
+
+      </div>
+
     </ng-container>
 
   </div>
+</div>
+
+
+<!-- ========================================================= -->
+<!-- ORDER DETAIL DIALOG -->
+<!-- ========================================================= -->
+<!--
+  خیلی مهم:
+  این قسمت نباید داخل .bill-card باشد.
+  -->
+
+<div
+  *ngIf="isOrderDialogOpen"
+  class="order-dialog-backdrop"
+  (click)="closeOrderDialog()"
+>
+
+  <div
+    class="order-dialog-content"
+    (click)="$event.stopPropagation()"
+  >
+
+    <button
+      type="button"
+      class="dialog-close-btn"
+      (click)="closeOrderDialog()"
+    >
+      ✕
+    </button>
+
+
+    <order-detail
+    *ngIf="selectedOrderId !== null"
+      [orderId]="selectedOrderId"
+      (closed)="closeOrderDialog()"
+    >
+    </order-detail>
+
+  </div>
+
 </div>
