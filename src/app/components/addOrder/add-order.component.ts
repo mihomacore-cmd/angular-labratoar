@@ -6,6 +6,22 @@ import { PersianCalendarComponent } from '../persianCalender/persianCalender';
 import { Jalali, JalaliDate } from '../persianCalender/jalali';
 
 export type InvoiceType = 'daily' | 'monthly';
+export interface Clinic {
+  id: number;
+  name: string;
+}
+
+export interface ClinicDoctor {
+  id: number;
+  doctorId: number;
+  doctorName: string;
+  phone: string;
+}
+
+
+
+
+
 
 export interface OrderItemPayload {
   serviceType: string;
@@ -16,13 +32,11 @@ export interface OrderItemPayload {
 }
 
 export interface OrderPayload {
-  clinicName: string;
-  doctorName: string;
+    clinicDoctorId: number;
   headerField: string;
   patientName: string;
   invoiceNumber: string;
   invoiceType: InvoiceType;
-  phone:string;
   entryDate: string;    // میلادی: yyyy-MM-dd
   exitDate: string;     // میلادی: yyyy-MM-dd
   discountAmount: number;
@@ -40,8 +54,8 @@ type OrderItemForm = {
 };
 
 type OrderFormControls = {
-  clinicName: FormControl<string>;
-  doctorName: FormControl<string>;
+  clinicId: FormControl<number | null>;
+  clinicDoctorId: FormControl<number | null>;
   headerField: FormControl<string>;
   patientName: FormControl<string>;
   invoiceNumber: FormControl<string>;
@@ -67,6 +81,26 @@ type OrderFormControls = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddOrderComponent {
+
+
+clinics: Clinic[] = [];
+doctors: ClinicDoctor[] = [];
+
+ngOnInit(): void {
+
+  this.orderService.getClinics().subscribe({
+    next: clinics => {
+      this.clinics = clinics;
+    },
+    error: error => {
+      console.error(error);
+    }
+  });
+
+}
+
+
+
   showErrorModal = false;
   errorMessage = '';
 
@@ -112,8 +146,8 @@ export class AddOrderComponent {
 
   readonly form = this.fb.group(
     {
-      clinicName: this.fb.nonNullable.control('', [Validators.required]),
-      doctorName: this.fb.nonNullable.control('', [Validators.required]),
+      clinicId: this.fb.control<number | null>(null,Validators.required),
+      clinicDoctorId: this.fb.control<number | null>(null,Validators.required),     
       headerField: this.fb.nonNullable.control('', [Validators.required]),
       patientName: this.fb.nonNullable.control('', [Validators.required]),
       invoiceNumber: this.fb.nonNullable.control(''),
@@ -173,8 +207,8 @@ export class AddOrderComponent {
 
   clearTopFields(): void {
     this.form.patchValue({
-      clinicName: '',
-      doctorName: '',
+      clinicDoctorId:0,
+      clinicId:0,      
       headerField: '',
       patientName: '',
       invoiceNumber: '',
@@ -309,13 +343,11 @@ export class AddOrderComponent {
 
     // ساخت payload با تاریخ‌های میلادی
     const payload: OrderPayload = {
-      clinicName: raw.clinicName.trim(),
-      doctorName: raw.doctorName.trim(),
+  clinicDoctorId: raw.clinicDoctorId!,
       headerField: raw.headerField.trim(),
       patientName: raw.patientName.trim(),
       invoiceNumber: raw.invoiceNumber.trim(),
       invoiceType: raw.invoiceType,
-      phone: raw.phone.trim(),
       entryDate: this.convertPersianToGregorian(raw.entryDate ?? ''),
       exitDate: this.convertPersianToGregorian(raw.exitDate ?? ''),
       discountAmount,
@@ -367,4 +399,63 @@ export class AddOrderComponent {
     const parsed = Number(normalized);
     return Number.isFinite(parsed) ? parsed : 0;
   }
+
+onClinicChange(): void {
+
+  const clinicId = this.form.controls.clinicId.value;
+
+  // پزشک قبلی را پاک کن
+  this.form.controls.clinicDoctorId.setValue(null);
+
+  // شماره قبلی را پاک کن
+  this.form.controls.phone.setValue('');
+
+  this.doctors = [];
+
+  if (!clinicId) {
+    return;
+  }
+
+  this.orderService.getDoctorsByClinic(clinicId).subscribe({
+    next: doctors => {
+      this.doctors = doctors;
+    },
+    error: error => {
+      console.error(error);
+
+      this.errorMessage =
+        'دریافت پزشکان کلینیک با خطا مواجه شد.';
+
+      this.showErrorModal = true;
+    }
+  });
+}
+
+
+onDoctorChange(): void {
+
+  const clinicDoctorId =
+    this.form.controls.clinicDoctorId.value;
+
+  if (!clinicDoctorId) {
+    this.form.controls.phone.setValue('');
+    return;
+  }
+
+  const selectedDoctor =
+    this.doctors.find(
+      doctor => doctor.id === Number(clinicDoctorId)
+    );
+
+  if (!selectedDoctor) {
+    this.form.controls.phone.setValue('');
+    return;
+  }
+
+  this.form.controls.phone.setValue(
+    selectedDoctor.phone
+  );
+}
+
+
 }

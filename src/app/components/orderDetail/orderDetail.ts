@@ -1,457 +1,1385 @@
-import { Component, OnInit, inject, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  inject,
+  Input,
+  Output,
+  EventEmitter,
+  ChangeDetectorRef
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { KanbanService, OrderDetailResponse } from '../../servicies/kenbanService/kenban.service';
-import { Jalali, JalaliDate } from '../../components/persianCalender/jalali';
-import { PersianCalendarComponent } from '../../components/persianCalender/persianCalender';
+
+import {
+  KanbanService,
+  OrderDetailResponse
+} from '../../servicies/kenbanService/kenban.service';
+
+import {
+  Jalali,
+  JalaliDate
+} from '../../components/persianCalender/jalali';
+
+import {
+  PersianCalendarComponent
+} from '../../components/persianCalender/persianCalender';
+
+import {
+  AddOrderService
+} from '../../servicies/addOrder.service';
+
 
 // ============================================================
-// 🔹 تعریف نوع Attachment برای فایل‌های پیوست
+// Attachment
 // ============================================================
+
 interface Attachment {
-  id?: number;               // در صورت وجود = فایل قبلاً در سرور ذخیره شده
+  id?: number;
   fileName: string;
   fileType: string;
   fileSize: number;
-  fileObject?: File;         // فقط برای فایل‌های جدید (هنوز آپلود نشده)
-  viewUrl?: string;          // لینک نمایش (از سرور)
-  downloadUrl?: string;      // لینک دانلود (از سرور)
+  fileObject?: File;
+  viewUrl?: string;
+  downloadUrl?: string;
 }
+
+
+// ============================================================
+// Clinic
+// ============================================================
+
+export interface Clinic {
+  id: number;
+  name: string;
+}
+
+
+// ============================================================
+// ClinicDoctor
+// ============================================================
+
+export interface ClinicDoctor {
+  id: number;          // id جدول clinic_doctor
+  doctorId: number;    // id پزشک
+  doctorName: string;
+  phone: string;
+}
+
+
+// ============================================================
+// Component
+// ============================================================
 
 @Component({
   selector: 'order-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, PersianCalendarComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    PersianCalendarComponent
+  ],
   templateUrl: './orderDetail.html',
   styleUrls: ['./orderDetail.scss']
 })
 export class OrderDetailsComponent implements OnInit {
-  private kanbanService = inject(KanbanService);
-  private cdr = inject(ChangeDetectorRef);
 
-  private originalOrderInfo: any = null;
-  private originalItems: any[] = [];
-  private originalDiscountAmount = 0;
+  private readonly kanbanService = inject(KanbanService);
+  private readonly orderService = inject(AddOrderService);
+  private readonly cdr = inject(ChangeDetectorRef);
+
+
+  // ============================================================
+  // Inputs / Outputs
+  // ============================================================
+
+  @Input() orderId: number | null = null;
+
+  @Output() closed = new EventEmitter<void>();
+
+
+  // ============================================================
+  // Loading / Error
+  // ============================================================
+
+  loading = false;
+
+  errorMessage = '';
+
+
+  // ============================================================
+  // Edit mode
+  // ============================================================
 
   isEditMode = false;
 
-  @Input() orderId: number | null = null;
-  @Output() closed = new EventEmitter<void>();
-
-  loading = false;
-  errorMessage = '';
 
   // ============================================================
-  // 🔹 داده‌های اصلی سفارش (با نوع Attachment)
+  // Clinics / Doctors
   // ============================================================
+
+  clinics: Clinic[] = [];
+
+  doctors: ClinicDoctor[] = [];
+
+  selectedClinicId: number | null = null;
+
+  selectedDoctorId: number | null = null;
+
+
+  // ============================================================
+  // Order info
+  // ============================================================
+
   orderInfo = {
+
+    clinicId: null as number | null,
+
     clinicName: '',
+
+    clinicDoctorId: null as number | null,
+
     doctorName: '',
+
     patientName: '',
+
     status: '',
+
     invoiceType: '',
-    phoneNumber: '',      
-    entryDate: '',          // شمسی
-    exitDate: '',           // شمسی
+
+    phoneNumber: '',
+
+    entryDate: '',
+    exitDate: '',
+
     attachments: [] as Attachment[]
   };
 
+
+  // ============================================================
+  // Items
+  // ============================================================
+
   items: any[] = [];
+
   discountAmount = 0;
 
-  // کنترل‌های تقویم
+
+  // ============================================================
+  // Calendar
+  // ============================================================
+
   showEntryDatePicker = false;
+
   showExitDatePicker = false;
 
-  // اعتبارسنجی تاریخ خروج
   exitDateInvalid = false;
 
-  // مودال خطا
+
+  // ============================================================
+  // Validation modal
+  // ============================================================
+
   showValidationModal = false;
+
   validationErrorMessage = '';
 
-  // ============================================================
-  // 🔹 لیست شناسه‌های فایل‌های حذف‌شده (قبلی)
-  // ============================================================
-  private deletedAttachmentIds: number[] = [];
 
   // ============================================================
-  // مقدار minDate برای تقویم خروج
+  // Deleted attachments
   // ============================================================
+
+  private deletedAttachmentIds: number[] = [];
+
+
+  // ============================================================
+  // Entry date for minDate
+  // ============================================================
+
   get entryDateValue(): JalaliDate | undefined {
+
     const val = this.orderInfo.entryDate;
-    if (!val) return undefined;
-    const parts = val.split('/').map(Number);
-    if (parts.length === 3 && parts.every(p => !isNaN(p))) {
-      return { year: parts[0], month: parts[1], day: parts[2] };
+
+    if (!val) {
+      return undefined;
     }
+
+    const parts = val.split('/').map(Number);
+
+    if (
+      parts.length === 3 &&
+      parts.every(p => !isNaN(p))
+    ) {
+      return {
+        year: parts[0],
+        month: parts[1],
+        day: parts[2]
+      };
+    }
+
     return undefined;
   }
 
-  // ============================================================
-  // چرخه حیات
-  // ============================================================
-  ngOnInit(): void {
-    if (this.orderId) {
-      this.loadOrderDetail(this.orderId);
-    } else {
-      this.errorMessage = 'شناسه سفارش معتبر نیست.';
-      setTimeout(() => this.closeDialog(), 1500);
-    }
-  }
 
   // ============================================================
-  // ویرایش / لغو ویرایش
+  // Init
   // ============================================================
-  toggleEditMode(): void {
-    if (!this.isEditMode) {
-      this.isEditMode = true;
+
+  ngOnInit(): void {
+
+    this.loadClinics();
+
+    if (!this.orderId) {
+
+      this.errorMessage = 'شناسه سفارش معتبر نیست.';
+
+      setTimeout(() => {
+        this.closeDialog();
+      }, 1500);
+
       return;
     }
 
-    // لغو ویرایش
-    this.isEditMode = false;
-    this.deletedAttachmentIds = [];   // 🔥 ریست لیست حذف
-
-    this.showEntryDatePicker = false;
-    this.showExitDatePicker = false;
-    this.exitDateInvalid = false;
-    this.showValidationModal = false;
-    this.validationErrorMessage = '';
-
-    if (this.orderId) {
-      this.loadOrderDetail(this.orderId);
-    }
+    this.loadOrderDetail(this.orderId);
   }
 
+
   // ============================================================
-  // بارگذاری جزئیات سفارش از بک‌اند
+  // Load clinics
   // ============================================================
-  loadOrderDetail(orderId: number): void {
-    this.loading = true;
-    this.errorMessage = '';
-    this.deletedAttachmentIds = [];   // 🔥 ریست لیست حذف هنگام بارگذاری مجدد
 
-    this.kanbanService.getOrderById(orderId).subscribe({
-      next: (data: OrderDetailResponse) => {
-        console.log('📦 داده دریافتی از بک‌اند:', data);
+  private loadClinics(): void {
 
-        let invoiceTypeKey = '';
-        if (data.invoiceType === 'روزانه') {
-          invoiceTypeKey = 'daily';
-        } else if (data.invoiceType === 'ماهانه') {
-          invoiceTypeKey = 'monthly';
-        } else {
-          invoiceTypeKey = data.invoiceType || 'daily';
-        }
+    this.orderService.getClinics().subscribe({
 
-        const entryDate = data.entryDate ? this.convertToJalali(data.entryDate) : '';
-        const exitDate = data.exitDate ? this.convertToJalali(data.exitDate) : '';
+      next: (clinics) => {
 
-        // 🔥 نگاشت attachments با type Attachment
-        this.orderInfo = {
-          clinicName: data.clinicName || '',
-          doctorName: data.doctorName || '',
-          patientName: data.patientName || '',
-          status: data.status || '',
-          invoiceType: invoiceTypeKey,
-          phoneNumber: data.phoneNumber || '', 
-          entryDate: entryDate,
-          exitDate: exitDate,
-          attachments: (data.attachments || []).map((att: any) => ({
-            id: att.id,
-            fileName: att.fileName,
-            fileType: att.fileType,
-            fileSize: att.fileSize,
-            viewUrl: att.viewUrl,
-            downloadUrl: att.downloadUrl
-            // 🔥 توجه: fileObject ندارد چون فایل قبلاً آپلود شده
-          }))
-        };
+        this.clinics = clinics;
 
-        this.items = (data.items || []).map(item => ({
-          serviceType: item.serviceType || '',
-          toothNumber: item.toothNumber || '',
-          quantity: item.quantity || 1,
-          unitPrice: item.unitPrice || 0,
-          totalPrice: item.totalPrice || 0
-        }));
-
-        this.discountAmount = data.discountAmount || 0;
-
-        // اعتبارسنجی اولیه
-        this.validateExitDate();
-
-        this.loading = false;
         this.cdr.detectChanges();
       },
+
       error: (error) => {
-        console.error('❌ خطا در دریافت جزئیات:', error);
-        this.errorMessage = 'خطا در دریافت اطلاعات سفارش. لطفاً مجدداً تلاش کنید.';
-        this.loading = false;
+
+        console.error(
+          '❌ خطا در دریافت کلینیک‌ها:',
+          error
+        );
+
+        this.errorMessage =
+          'دریافت لیست کلینیک‌ها با خطا مواجه شد.';
+
         this.cdr.detectChanges();
       }
     });
   }
 
-  // ============================================================
-  // تبدیل تاریخ میلادی ↔ شمسی
-  // ============================================================
-  private convertToJalali(dateStr: string): string {
-    try {
-      const parts = dateStr.split('-');
-      const year = parseInt(parts[0]);
-      const month = parseInt(parts[1]);
-      const day = parseInt(parts[2]);
-      const gregorianDate = new Date(Date.UTC(year, month - 1, day));
-      const jalali = Jalali.toJalali(gregorianDate);
-      return `${jalali.year}/${String(jalali.month).padStart(2, '0')}/${String(jalali.day).padStart(2, '0')}`;
-    } catch {
-      return '';
-    }
-  }
-
-  private convertToGregorian(jalaliStr: string): string {
-    try {
-      const parts = jalaliStr.split('/');
-      const year = parseInt(parts[0]);
-      const month = parseInt(parts[1]);
-      const day = parseInt(parts[2]);
-      const gregorianDate = Jalali.toGregorian(year, month, day);
-      const y = gregorianDate.getUTCFullYear();
-      const m = String(gregorianDate.getUTCMonth() + 1).padStart(2, '0');
-      const d = String(gregorianDate.getUTCDate()).padStart(2, '0');
-      return `${y}-${m}-${d}`;
-    } catch {
-      return '';
-    }
-  }
 
   // ============================================================
-  // اعتبارسنجی تاریخ خروج
+  // Load doctors by clinic
   // ============================================================
-  private validateExitDate(): void {
-    const entry = this.orderInfo.entryDate;
-    const exit = this.orderInfo.exitDate;
-    if (!entry || !exit) {
-      this.exitDateInvalid = false;
+
+  private loadDoctorsByClinic(
+    clinicId: number,
+    selectedClinicDoctorId: number | null = null
+  ): void {
+
+    this.doctors = [];
+
+    this.orderService
+      .getDoctorsByClinic(clinicId)
+      .subscribe({
+
+        next: (doctors) => {
+
+          this.doctors = doctors;
+
+          /*
+           * اگر سفارش قبلاً پزشک داشته،
+           * همان رکورد clinic_doctor انتخاب می‌شود.
+           */
+          if (selectedClinicDoctorId !== null) {
+
+            const selectedDoctor =
+              this.doctors.find(
+                doctor =>
+                  Number(doctor.id) ===
+                  Number(selectedClinicDoctorId)
+              );
+
+            if (selectedDoctor) {
+
+              this.selectedDoctorId =
+                selectedDoctor.id;
+
+              this.orderInfo.clinicDoctorId =
+                selectedDoctor.id;
+
+              this.orderInfo.doctorName =
+                selectedDoctor.doctorName;
+
+              this.orderInfo.phoneNumber =
+                selectedDoctor.phone;
+            }
+          }
+
+          this.cdr.detectChanges();
+        },
+
+        error: (error) => {
+
+          console.error(
+            '❌ خطا در دریافت پزشکان:',
+            error
+          );
+
+          this.doctors = [];
+
+          this.errorMessage =
+            'دریافت پزشکان کلینیک با خطا مواجه شد.';
+
+          this.cdr.detectChanges();
+        }
+      });
+  }
+
+
+  // ============================================================
+  // Load order detail
+  // ============================================================
+
+  loadOrderDetail(orderId: number): void {
+
+    this.loading = true;
+
+    this.errorMessage = '';
+
+    this.deletedAttachmentIds = [];
+
+    this.kanbanService
+      .getOrderById(orderId)
+      .subscribe({
+
+        next: (data: OrderDetailResponse) => {
+
+          console.log(
+            '📦 داده سفارش:',
+            data
+          );
+
+
+          // ====================================================
+          // Invoice type
+          // ====================================================
+
+          let invoiceTypeKey = 'daily';
+
+          if (data.invoiceType === 'روزانه') {
+
+            invoiceTypeKey = 'daily';
+
+          } else if (data.invoiceType === 'ماهانه') {
+
+            invoiceTypeKey = 'monthly';
+
+          } else if (data.invoiceType) {
+
+            invoiceTypeKey = data.invoiceType;
+          }
+
+
+          // ====================================================
+          // Dates
+          // ====================================================
+
+          const entryDate =
+            data.entryDate
+              ? this.convertToJalali(data.entryDate)
+              : '';
+
+          const exitDate =
+            data.exitDate
+              ? this.convertToJalali(data.exitDate)
+              : '';
+
+
+          // ====================================================
+          // Order info
+          // ====================================================
+
+          this.orderInfo = {
+
+            clinicId:
+              data.clinicId ?? null,
+
+            clinicName:
+              data.clinicName || '',
+
+            clinicDoctorId:
+              data.clinicDoctorId ?? null,
+
+            doctorName:
+              data.doctorName || '',
+
+            patientName:
+              data.patientName || '',
+
+            status:
+              data.status || '',
+
+            invoiceType:
+              invoiceTypeKey,
+
+            phoneNumber:
+              data.phoneNumber || '',
+
+            entryDate,
+
+            exitDate,
+
+            attachments:
+              (data.attachments || []).map((att: any) => ({
+
+                id: att.id,
+
+                fileName: att.fileName,
+
+                fileType: att.fileType,
+
+                fileSize: att.fileSize,
+
+                viewUrl: att.viewUrl,
+
+                downloadUrl: att.downloadUrl
+              }))
+          };
+
+
+          // ====================================================
+          // Selected clinic
+          // ====================================================
+
+          this.selectedClinicId =
+            this.orderInfo.clinicId;
+
+
+          // ====================================================
+          // Selected doctor
+          // ====================================================
+
+          this.selectedDoctorId =
+            this.orderInfo.clinicDoctorId;
+
+
+          // ====================================================
+          // Load doctors of selected clinic
+          // ====================================================
+
+          if (this.selectedClinicId) {
+
+            this.loadDoctorsByClinic(
+
+              this.selectedClinicId,
+
+              this.selectedDoctorId
+            );
+          }
+
+
+          // ====================================================
+          // Items
+          // ====================================================
+
+          this.items =
+            (data.items || []).map(item => ({
+
+              serviceType:
+                item.serviceType || '',
+
+              toothNumber:
+                item.toothNumber || '',
+
+              quantity:
+                item.quantity || 1,
+
+              unitPrice:
+                item.unitPrice || 0,
+
+              totalPrice:
+                item.totalPrice || 0
+            }));
+
+
+          // ====================================================
+          // Discount
+          // ====================================================
+
+          this.discountAmount =
+            data.discountAmount || 0;
+
+
+          // ====================================================
+          // Validate dates
+          // ====================================================
+
+          this.validateExitDate();
+
+
+          this.loading = false;
+
+          this.cdr.detectChanges();
+        },
+
+        error: (error) => {
+
+          console.error(
+            '❌ خطا در دریافت جزئیات سفارش:',
+            error
+          );
+
+          this.errorMessage =
+            'خطا در دریافت اطلاعات سفارش. لطفاً مجدداً تلاش کنید.';
+
+          this.loading = false;
+
+          this.cdr.detectChanges();
+        }
+      });
+  }
+
+
+  // ============================================================
+  // Clinic changed
+  // ============================================================
+
+  onClinicChange(clinicId: number | string | null): void {
+
+    const id =
+      clinicId !== null &&
+      clinicId !== ''
+        ? Number(clinicId)
+        : null;
+
+
+    // ذخیره کلینیک انتخاب‌شده
+
+    this.selectedClinicId = id;
+
+    this.orderInfo.clinicId = id;
+
+
+    // پزشک قبلی پاک شود
+
+    this.selectedDoctorId = null;
+
+    this.orderInfo.clinicDoctorId = null;
+
+    this.orderInfo.doctorName = '';
+
+    this.orderInfo.phoneNumber = '';
+
+
+    // لیست پزشکان پاک شود
+
+    this.doctors = [];
+
+
+    if (!id) {
       return;
     }
 
-    const entryParts = entry.split('/').map(Number);
-    const exitParts = exit.split('/').map(Number);
-    if (entryParts.length !== 3 || exitParts.length !== 3) {
-      this.exitDateInvalid = false;
+
+    // دریافت پزشکان کلینیک جدید
+
+    this.loadDoctorsByClinic(id);
+  }
+
+
+  // ============================================================
+  // Doctor changed
+  // ============================================================
+
+  onDoctorChange(
+    clinicDoctorId: number | string | null
+  ): void {
+
+    const id =
+      clinicDoctorId !== null &&
+      clinicDoctorId !== ''
+        ? Number(clinicDoctorId)
+        : null;
+
+
+    this.selectedDoctorId = id;
+
+    this.orderInfo.clinicDoctorId = id;
+
+
+    if (!id) {
+
+      this.orderInfo.doctorName = '';
+
+      this.orderInfo.phoneNumber = '';
+
       return;
     }
 
-    const entryObj: JalaliDate = { year: entryParts[0], month: entryParts[1], day: entryParts[2] };
-    const exitObj: JalaliDate = { year: exitParts[0], month: exitParts[1], day: exitParts[2] };
-    const entryGreg = Jalali.toGregorian(entryObj.year, entryObj.month, entryObj.day);
-    const exitGreg = Jalali.toGregorian(exitObj.year, exitObj.month, exitObj.day);
 
-    this.exitDateInvalid = exitGreg < entryGreg;
+    /*
+     * توجه:
+     *
+     * اینجا doctor.id را پیدا می‌کنیم
+     * نه doctor.doctorId
+     *
+     * چون مقدار select باید clinicDoctor.id باشد.
+     */
+
+    const selectedDoctor =
+      this.doctors.find(
+        doctor =>
+          Number(doctor.id) === id
+      );
+
+
+    if (!selectedDoctor) {
+
+      this.orderInfo.doctorName = '';
+
+      this.orderInfo.phoneNumber = '';
+
+      return;
+    }
+
+
+    // نام پزشک
+
+    this.orderInfo.doctorName =
+      selectedDoctor.doctorName;
+
+
+    // شماره تلفن
+
+    this.orderInfo.phoneNumber =
+      selectedDoctor.phone;
   }
 
+
   // ============================================================
-  // متدهای تقویم ورود
+  // Edit mode
   // ============================================================
+
+  toggleEditMode(): void {
+
+    if (!this.isEditMode) {
+
+      this.isEditMode = true;
+
+      return;
+    }
+
+
+    // Cancel edit
+
+    this.isEditMode = false;
+
+    this.deletedAttachmentIds = [];
+
+    this.showEntryDatePicker = false;
+
+    this.showExitDatePicker = false;
+
+    this.exitDateInvalid = false;
+
+    this.showValidationModal = false;
+
+    this.validationErrorMessage = '';
+
+
+    if (this.orderId) {
+
+      this.loadOrderDetail(this.orderId);
+    }
+  }
+
+
+  // ============================================================
+  // Entry date
+  // ============================================================
+
   toggleEntryDatePicker(): void {
-    if (this.isEditMode) {
-      this.showEntryDatePicker = !this.showEntryDatePicker;
-      this.showExitDatePicker = false;
+
+    if (!this.isEditMode) {
+      return;
     }
+
+    this.showEntryDatePicker =
+      !this.showEntryDatePicker;
+
+    this.showExitDatePicker = false;
   }
+
 
   closeEntryDatePicker(): void {
+
     this.showEntryDatePicker = false;
   }
 
+
   onEntryDateConfirm(date: string): void {
+
     this.orderInfo.entryDate = date;
+
     this.closeEntryDatePicker();
 
+
     if (this.orderInfo.exitDate) {
+
       this.validateExitDate();
+
+
       if (this.exitDateInvalid) {
+
         this.orderInfo.exitDate = '';
+
         this.exitDateInvalid = false;
-        this.validationErrorMessage = 'تاریخ خروج با تغییر تاریخ ورود نامعتبر شد. لطفاً مجدداً انتخاب کنید.';
+
+        this.validationErrorMessage =
+          'تاریخ خروج با تغییر تاریخ ورود نامعتبر شد. لطفاً مجدداً انتخاب کنید.';
+
         this.showValidationModal = true;
       }
     }
   }
 
+
   // ============================================================
-  // متدهای تقویم خروج
+  // Exit date
   // ============================================================
+
   toggleExitDatePicker(): void {
-    if (this.isEditMode) {
-      this.showExitDatePicker = !this.showExitDatePicker;
-      this.showEntryDatePicker = false;
+
+    if (!this.isEditMode) {
+      return;
     }
+
+    this.showExitDatePicker =
+      !this.showExitDatePicker;
+
+    this.showEntryDatePicker = false;
   }
 
+
   closeExitDatePicker(): void {
+
     this.showExitDatePicker = false;
   }
 
+
   onExitDateConfirm(date: string): void {
+
     this.orderInfo.exitDate = date;
+
     this.closeExitDatePicker();
+
     this.validateExitDate();
+
+
     if (this.exitDateInvalid) {
+
       this.orderInfo.exitDate = '';
-      this.validationErrorMessage = 'تاریخ خروج نباید از تاریخ ورود کوچک‌تر باشد.';
+
+      this.validationErrorMessage =
+        'تاریخ خروج نباید از تاریخ ورود کوچک‌تر باشد.';
+
       this.showValidationModal = true;
     }
   }
 
+
   onInvalidExitDate(): void {
-    this.validationErrorMessage = 'تاریخ خروج نباید از تاریخ ورود کوچک‌تر باشد.';
+
+    this.validationErrorMessage =
+      'تاریخ خروج نباید از تاریخ ورود کوچک‌تر باشد.';
+
     this.showValidationModal = true;
   }
 
+
   // ============================================================
-  // مدیریت مودال خطا
+  // Validate exit date
   // ============================================================
+
+  private validateExitDate(): void {
+
+    const entry =
+      this.orderInfo.entryDate;
+
+    const exit =
+      this.orderInfo.exitDate;
+
+
+    if (!entry || !exit) {
+
+      this.exitDateInvalid = false;
+
+      return;
+    }
+
+
+    const entryParts =
+      entry.split('/').map(Number);
+
+    const exitParts =
+      exit.split('/').map(Number);
+
+
+    if (
+      entryParts.length !== 3 ||
+      exitParts.length !== 3
+    ) {
+
+      this.exitDateInvalid = false;
+
+      return;
+    }
+
+
+    const entryObj: JalaliDate = {
+
+      year: entryParts[0],
+
+      month: entryParts[1],
+
+      day: entryParts[2]
+    };
+
+
+    const exitObj: JalaliDate = {
+
+      year: exitParts[0],
+
+      month: exitParts[1],
+
+      day: exitParts[2]
+    };
+
+
+    const entryGreg =
+      Jalali.toGregorian(
+        entryObj.year,
+        entryObj.month,
+        entryObj.day
+      );
+
+
+    const exitGreg =
+      Jalali.toGregorian(
+        exitObj.year,
+        exitObj.month,
+        exitObj.day
+      );
+
+
+    this.exitDateInvalid =
+      exitGreg < entryGreg;
+  }
+
+
+  // ============================================================
+  // Validation modal
+  // ============================================================
+
   closeValidationModal(): void {
+
     this.showValidationModal = false;
+
     this.validationErrorMessage = '';
   }
 
+
   // ============================================================
-  // مدیریت آیتم‌های سفارش
+  // Items
   // ============================================================
+
   addItem(): void {
-    this.items.push({ serviceType: '', toothNumber: '', quantity: 1, unitPrice: 0 });
+
+    this.items.push({
+
+      serviceType: '',
+
+      toothNumber: '',
+
+      quantity: 1,
+
+      unitPrice: 0,
+
+      totalPrice: 0
+    });
   }
+
 
   removeItem(index: number): void {
+
     if (this.items.length === 1) {
-      this.items[0] = { serviceType: '', toothNumber: '', quantity: 1, unitPrice: 0 };
-    } else {
-      this.items.splice(index, 1);
+
+      this.items[0] = {
+
+        serviceType: '',
+
+        toothNumber: '',
+
+        quantity: 1,
+
+        unitPrice: 0,
+
+        totalPrice: 0
+      };
+
+      return;
     }
+
+    this.items.splice(index, 1);
   }
+
 
   rowTotal(index: number): number {
+
     const item = this.items[index];
-    return (item.quantity || 0) * (item.unitPrice || 0);
+
+    return (
+      Number(item.quantity || 0) *
+      Number(item.unitPrice || 0)
+    );
   }
+
 
   get totalAmount(): number {
-    return this.items.reduce((sum, item) => sum + ((item.quantity || 0) * (item.unitPrice || 0)), 0);
+
+    return this.items.reduce(
+
+      (sum, item) =>
+
+        sum +
+        (
+          Number(item.quantity || 0) *
+          Number(item.unitPrice || 0)
+        ),
+
+      0
+    );
   }
+
 
   get finalAmount(): number {
-    return Math.max(this.totalAmount - (this.discountAmount || 0), 0);
+
+    return Math.max(
+
+      this.totalAmount -
+      Number(this.discountAmount || 0),
+
+      0
+    );
   }
+
 
   formatMoney(value: number): string {
-    if (value === undefined || value === null || isNaN(value)) {
+
+    if (
+      value === undefined ||
+      value === null ||
+      isNaN(value)
+    ) {
+
       return '۰ ریال';
     }
-    return value.toLocaleString('fa-IR') + ' ریال';
+
+    return (
+      value.toLocaleString('fa-IR') +
+      ' ریال'
+    );
   }
 
+
   // ============================================================
-  // مدیریت فایل‌های پیوست
+  // Attachments
   // ============================================================
-  onFileSelected(event: any): void {
-    const files = event.target.files;
-    if (!files) return;
+
+  onFileSelected(event: Event): void {
+
+    const input =
+      event.target as HTMLInputElement;
+
+    const files = input.files;
+
+    if (!files) {
+      return;
+    }
+
 
     for (let i = 0; i < files.length; i++) {
+
       const file = files[i];
+
       this.orderInfo.attachments.push({
+
         fileName: file.name,
+
         fileType: file.type,
+
         fileSize: file.size,
-        fileObject: file   // 🔥 فایل جدید
+
+        fileObject: file
       });
     }
-    // ریست input تا امکان انتخاب مجدد فایل‌های تکراری وجود داشته باشد
-    event.target.value = '';
+
+
+    input.value = '';
   }
+
 
   removeAttachment(index: number): void {
-    const attachment = this.orderInfo.attachments[index];
-    
-    // اگر فایل دارای ID باشد یعنی قبلاً در سرور ذخیره شده، آن را به لیست حذف اضافه می‌کنیم
+
+    const attachment =
+      this.orderInfo.attachments[index];
+
+
     if (attachment.id) {
-      this.deletedAttachmentIds.push(attachment.id);
+
+      this.deletedAttachmentIds.push(
+        attachment.id
+      );
     }
-    // حذف از آرایه نمایشی
-    this.orderInfo.attachments.splice(index, 1);
+
+
+    this.orderInfo.attachments.splice(
+      index,
+      1
+    );
   }
 
+
   // ============================================================
-  // ثبت نهایی تغییرات (ارسال با FormData)
+  // Submit
   // ============================================================
+
   submitOrder(): void {
+
     if (!this.isEditMode) {
-      alert('برای ثبت تغییرات، ابتدا دکمه ویرایش را فعال کنید.');
+
       return;
     }
 
-    // اعتبارسنجی نهایی
+
     this.validateExitDate();
+
+
     if (this.exitDateInvalid) {
-      this.validationErrorMessage = 'تاریخ خروج نباید از تاریخ ورود کوچک‌تر باشد.';
+
+      this.validationErrorMessage =
+        'تاریخ خروج نباید از تاریخ ورود کوچک‌تر باشد.';
+
       this.showValidationModal = true;
+
       return;
     }
 
-    // ۱. ساخت payload متنی (بدون فایل‌ها)
-    const entryDateGreg = this.convertToGregorian(this.orderInfo.entryDate);
-    const exitDateGreg = this.convertToGregorian(this.orderInfo.exitDate);
+
+    // ========================================================
+    // بررسی کلینیک و پزشک
+    // ========================================================
+
+    if (!this.orderInfo.clinicId) {
+
+      this.validationErrorMessage =
+        'لطفاً کلینیک را انتخاب کنید.';
+
+      this.showValidationModal = true;
+
+      return;
+    }
+
+
+    if (!this.orderInfo.clinicDoctorId) {
+
+      this.validationErrorMessage =
+        'لطفاً پزشک را انتخاب کنید.';
+
+      this.showValidationModal = true;
+
+      return;
+    }
+
+
+    // ========================================================
+    // Dates
+    // ========================================================
+
+    const entryDateGreg =
+      this.convertToGregorian(
+        this.orderInfo.entryDate
+      );
+
+
+    const exitDateGreg =
+      this.convertToGregorian(
+        this.orderInfo.exitDate
+      );
+
+
+    // ========================================================
+    // Payload
+    // ========================================================
 
     const payload = {
-      clinicName: this.orderInfo.clinicName,
-      doctorName: this.orderInfo.doctorName,
-      patientName: this.orderInfo.patientName,
-      status: this.orderInfo.status,
-      invoiceType: this.orderInfo.invoiceType,
-      phoneNumber: this.orderInfo.phoneNumber, 
-      entryDate: entryDateGreg,
-      exitDate: exitDateGreg,
-      items: this.items,
-      discountAmount: this.discountAmount,
-      deletedAttachmentIds: this.deletedAttachmentIds   // 🔑 لیست فایل‌های حذف‌شده
+
+      // مهم:
+      // این همان id رکورد clinic_doctor است
+
+      clinicDoctorId:
+        this.orderInfo.clinicDoctorId,
+
+      patientName:
+        this.orderInfo.patientName,
+
+      status:
+        this.orderInfo.status,
+
+      invoiceType:
+        this.orderInfo.invoiceType,
+
+      phoneNumber:
+        this.orderInfo.phoneNumber,
+
+      entryDate:
+        entryDateGreg,
+
+      exitDate:
+        exitDateGreg,
+
+      items:
+        this.items.map(item => ({
+
+          serviceType:
+            String(item.serviceType || '').trim(),
+
+          toothNumber:
+            String(item.toothNumber || '').trim(),
+
+          quantity:
+            Number(item.quantity || 0),
+
+          unitPrice:
+            Number(item.unitPrice || 0),
+
+          totalPrice:
+            this.rowTotal(
+              this.items.indexOf(item)
+            )
+        })),
+
+      discountAmount:
+        Number(this.discountAmount || 0),
+
+      deletedAttachmentIds:
+        this.deletedAttachmentIds
     };
 
-    // ۲. ساخت FormData
-    const formData = new FormData();
-    formData.append('data', JSON.stringify(payload));
 
-    // ۳. اضافه کردن فایل‌های جدید (آنهایی که fileObject دارند)
-    this.orderInfo.attachments.forEach((att) => {
-      if (att.fileObject) {
-        formData.append('files', att.fileObject, att.fileName);
-      }
-    });
+    console.log(
+      '📤 Payload:',
+      payload
+    );
 
-    // ۴. ارسال به سرویس (نیاز به پیاده‌سازی در KanbanService)
-    this.kanbanService.updateOrderWithFiles(this.orderId!, formData).subscribe({
-      next: (res) => {
-        console.log('✅ سفارش با موفقیت به‌روزرسانی شد', res);
-        alert('تغییرات با موفقیت ثبت شد!');
-        this.isEditMode = false;
-        this.deletedAttachmentIds = [];   // خالی کردن لیست حذف
-        this.closeDialog();
-      },
-      error: (err) => {
-        console.error('❌ خطا در ارسال:', err);
-        this.errorMessage = 'خطا در ثبت تغییرات. لطفاً مجدداً تلاش کنید.';
+
+    // ========================================================
+    // FormData
+    // ========================================================
+
+    const formData =
+      new FormData();
+
+
+    formData.append(
+      'data',
+      JSON.stringify(payload)
+    );
+
+
+    // ========================================================
+    // New files
+    // ========================================================
+
+    this.orderInfo.attachments.forEach(
+      attachment => {
+
+        if (attachment.fileObject) {
+
+          formData.append(
+
+            'files',
+
+            attachment.fileObject,
+
+            attachment.fileName
+          );
+        }
       }
-    });
+    );
+
+
+    // ========================================================
+    // Send
+    // ========================================================
+
+    this.kanbanService
+      .updateOrderWithFiles(
+        this.orderId!,
+        formData
+      )
+      .subscribe({
+
+        next: (response) => {
+
+          console.log(
+            '✅ سفارش بروزرسانی شد:',
+            response
+          );
+
+          alert(
+            'تغییرات با موفقیت ثبت شد!'
+          );
+
+          this.isEditMode = false;
+
+          this.deletedAttachmentIds = [];
+
+          this.closeDialog();
+        },
+
+        error: (error) => {
+
+          console.error(
+            '❌ خطا در بروزرسانی:',
+            error
+          );
+
+          this.errorMessage =
+            'خطا در ثبت تغییرات. لطفاً مجدداً تلاش کنید.';
+
+          this.cdr.detectChanges();
+        }
+      });
   }
 
+
   // ============================================================
-  // بستن دیالوگ
+  // Gregorian → Jalali
   // ============================================================
+
+  private convertToJalali(
+    dateStr: string
+  ): string {
+
+    try {
+
+      const parts =
+        dateStr.split('-');
+
+      const year =
+        parseInt(parts[0]);
+
+      const month =
+        parseInt(parts[1]);
+
+      const day =
+        parseInt(parts[2]);
+
+
+      const gregorianDate =
+        new Date(
+          Date.UTC(
+            year,
+            month - 1,
+            day
+          )
+        );
+
+
+      const jalali =
+        Jalali.toJalali(
+          gregorianDate
+        );
+
+
+      return `${jalali.year}/${String(jalali.month).padStart(2, '0')}/${String(jalali.day).padStart(2, '0')}`;
+
+    } catch {
+
+      return '';
+    }
+  }
+
+
+  // ============================================================
+  // Jalali → Gregorian
+  // ============================================================
+
+  private convertToGregorian(
+    jalaliStr: string
+  ): string {
+
+    try {
+
+      const parts =
+        jalaliStr.split('/');
+
+      const year =
+        parseInt(parts[0]);
+
+      const month =
+        parseInt(parts[1]);
+
+      const day =
+        parseInt(parts[2]);
+
+
+      const gregorianDate =
+        Jalali.toGregorian(
+          year,
+          month,
+          day
+        );
+
+
+      const y =
+        gregorianDate.getUTCFullYear();
+
+      const m =
+        String(
+          gregorianDate.getUTCMonth() + 1
+        ).padStart(2, '0');
+
+      const d =
+        String(
+          gregorianDate.getUTCDate()
+        ).padStart(2, '0');
+
+
+      return `${y}-${m}-${d}`;
+
+    } catch {
+
+      return '';
+    }
+  }
+
+
+  // ============================================================
+  // Close
+  // ============================================================
+
   closeDialog(): void {
+
     this.closed.emit();
   }
 }

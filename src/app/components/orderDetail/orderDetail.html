@@ -1,183 +1,201 @@
-<div class="details-card">
-  
-  <!-- لودینگ -->
+<div class="details-card" dir="rtl">
+
+  <!-- ========================================================= -->
+  <!-- Loading -->
+  <!-- ========================================================= -->
   <div *ngIf="loading" class="loading-message">
     <span>⏳ در حال بارگذاری اطلاعات...</span>
   </div>
 
-  <!-- خطا -->
+  <!-- ========================================================= -->
+  <!-- Error -->
+  <!-- ========================================================= -->
   <div *ngIf="errorMessage && !loading" class="error-message">
     {{ errorMessage }}
-    <button class="error-retry-btn" (click)="orderId && loadOrderDetail(orderId)">تلاش مجدد</button>
+    <button class="error-retry-btn" type="button" (click)="orderId && loadOrderDetail(orderId)">
+      تلاش مجدد
+    </button>
   </div>
 
-  <!-- محتوای اصلی -->
+  <!-- ========================================================= -->
+  <!-- Main Content -->
+  <!-- ========================================================= -->
   <ng-container *ngIf="!loading && !errorMessage">
-    
-    <!-- هدر با دکمه ویرایش -->
+
+    <!-- ======================================================= -->
+    <!-- Header -->
+    <!-- ======================================================= -->
     <div class="card-header">
       <div class="header-left">
         <h2>جزئیات سفارش</h2>
         <span class="status-badge">وضعیت: {{ orderInfo.status }}</span>
       </div>
       <div class="header-actions">
-          <button
-          type="button"
-          class="edit-toggle-btn"
-          (click)="toggleEditMode()"
-          [class.active]="isEditMode"
-            >
+        <button type="button" class="edit-toggle-btn" (click)="toggleEditMode()" [class.active]="isEditMode">
           {{ isEditMode ? 'لغو ویرایش' : '✏️ ویرایش' }}
         </button>
       </div>
     </div>
 
-    <!-- اطلاعات کلی -->
+    <!-- ======================================================= -->
+    <!-- اطلاعات (داخل گرید) -->
+    <!-- ======================================================= -->
     <div class="info-grid">
+
+      <!-- ===================================================== -->
+      <!-- کلینیک (حالت نمایش / ویرایش) -->
+      <!-- ===================================================== -->
       <div class="info-item">
-        <label>نام کلینیک</label>
-        <input 
-          type="text" 
-          class="form-input" 
-          [(ngModel)]="orderInfo.clinicName"
-          [disabled]="!isEditMode"
+        <label for="clinic">نام کلینیک</label>
+
+        <!-- حالت نمایش -->
+        <input
+          *ngIf="!isEditMode"
+          id="clinic"
+          type="text"
+          class="form-input"
+          [value]="orderInfo.clinicName || ''"
+          readonly
+        >
+
+        <!-- حالت ویرایش -->
+        <select
+          *ngIf="isEditMode"
+          id="clinic"
+          class="form-input"
+          [ngModel]="selectedClinicId"
+          (ngModelChange)="onClinicChange($event)"
+        >
+          <option [ngValue]="null">انتخاب کلینیک</option>
+          <option *ngFor="let clinic of clinics" [ngValue]="clinic.id">
+            {{ clinic.name }}
+          </option>
+        </select>
+      </div>
+
+      <!-- ===================================================== -->
+      <!-- پزشک (حالت نمایش / ویرایش) -->
+      <!-- ===================================================== -->
+      <div class="info-item">
+        <label for="doctor">نام پزشک</label>
+
+        <!-- حالت نمایش -->
+        <input
+          *ngIf="!isEditMode"
+          id="doctor"
+          type="text"
+          class="form-input"
+          [value]="orderInfo.doctorName || ''"
+          readonly
+        >
+
+        <!-- حالت ویرایش -->
+        <select
+          *ngIf="isEditMode"
+          id="doctor"
+          class="form-input"
+          [disabled]="!selectedClinicId || !doctors.length"
+          [ngModel]="selectedDoctorId"
+          (ngModelChange)="onDoctorChange($event)"
+        >
+          <option [ngValue]="null">
+            {{
+              !selectedClinicId
+                ? 'ابتدا کلینیک را انتخاب کنید'
+                : doctors.length
+                  ? 'انتخاب پزشک'
+                  : 'پزشکی برای این کلینیک وجود ندارد'
+            }}
+          </option>
+          <option *ngFor="let doctor of doctors" [ngValue]="doctor.id">
+            {{ doctor.doctorName }}
+          </option>
+        </select>
+      </div>
+
+      <!-- ===================================================== -->
+      <!-- شماره تماس پزشک (همیشه فقط‌خوانده) -->
+      <!-- ===================================================== -->
+      <div class="info-item">
+        <label for="phone">شماره تماس پزشک</label>
+        <input
+          id="phone"
+          type="text"
+          class="form-input"
+          [value]="orderInfo.phoneNumber || ''"
+          readonly
+          placeholder="شماره تلفن پزشک"
         >
       </div>
-      <div class="info-item">
-        <label>نام پزشک</label>
-        <input 
-          type="text" 
-          class="form-input" 
-          [(ngModel)]="orderInfo.doctorName"
-          [disabled]="!isEditMode"
-        >
-      </div>
+
+      <!-- ===================================================== -->
+      <!-- نام بیمار -->
+      <!-- ===================================================== -->
       <div class="info-item">
         <label>نام بیمار</label>
-        <input 
-          type="text" 
-          class="form-input" 
-          [(ngModel)]="orderInfo.patientName"
-          [disabled]="!isEditMode"
-        >
+        <input type="text" class="form-input" [(ngModel)]="orderInfo.patientName" [disabled]="!isEditMode" placeholder="نام بیمار">
       </div>
-      
-      <!-- وضعیت سفارش (با گزینه‌های فارسی) -->
+
+      <!-- ===================================================== -->
+      <!-- وضعیت -->
+      <!-- ===================================================== -->
       <div class="info-item">
         <label>وضعیت</label>
-        <select 
-          class="form-input" 
-          [(ngModel)]="orderInfo.status"
-          [disabled]="!isEditMode"
-        >
+        <select class="form-input" [(ngModel)]="orderInfo.status" [disabled]="!isEditMode">
           <option value="در انتظار پرداخت">در انتظار پرداخت</option>
           <option value="در حال ساخت">در حال ساخت</option>
           <option value="تحویل داده شده">تحویل داده شده</option>
         </select>
       </div>
 
-        <div class="info-item">
-          <label>شماره تلفن</label>
-          <input 
-            type="text" 
-            class="form-input" 
-            [(ngModel)]="orderInfo.phoneNumber"
-            [disabled]="!isEditMode"
-            placeholder="مثلاً ۰۹۱۲۳۴۵۶۷۸۹"
-          >
-        </div>
-
-      <!-- نوع فاکتور (با گزینه‌های انگلیسی، ولی با تبدیل مقدار دریافتی) -->
+      <!-- ===================================================== -->
+      <!-- نوع فاکتور -->
+      <!-- ===================================================== -->
       <div class="info-item">
         <label>نوع فاکتور</label>
-        <select 
-          class="form-input" 
-          [(ngModel)]="orderInfo.invoiceType"
-          [disabled]="!isEditMode"
-        >
+        <select class="form-input" [(ngModel)]="orderInfo.invoiceType" [disabled]="!isEditMode">
           <option value="daily">روزانه</option>
           <option value="monthly">ماهانه</option>
           <option value="final">نهایی</option>
         </select>
       </div>
-      
+
+      <!-- ===================================================== -->
       <!-- تاریخ ورود -->
+      <!-- ===================================================== -->
       <div class="info-item date-picker-wrapper">
         <label>تاریخ ورود</label>
         <div class="date-input-group">
-          <input 
-            type="text" 
-            class="form-input date-input" 
-            [(ngModel)]="orderInfo.entryDate"
-            [disabled]="!isEditMode"
-            placeholder="۱۴۰۴/۰۱/۰۱"
-          >
-          <button 
-            type="button" 
-            class="calendar-btn" 
-            (click)="toggleEntryDatePicker()"
-            [disabled]="!isEditMode"
-          >
-            📅
-          </button>
+          <input type="text" class="form-input date-input" [(ngModel)]="orderInfo.entryDate" [disabled]="!isEditMode" placeholder="۱۴۰۴/۰۱/۰۱">
+          <button type="button" class="calendar-btn" (click)="toggleEntryDatePicker()" [disabled]="!isEditMode">📅</button>
         </div>
-        <app-persian-calendar 
-          *ngIf="showEntryDatePicker"
-          (confirm)="onEntryDateConfirm($event)"
-          (cancel)="closeEntryDatePicker()"
-        ></app-persian-calendar>
+        <app-persian-calendar *ngIf="showEntryDatePicker" (confirm)="onEntryDateConfirm($event)" (cancel)="closeEntryDatePicker()"></app-persian-calendar>
       </div>
 
-      <!-- تاریخ خروج با اعتبارسنجی -->
+      <!-- ===================================================== -->
+      <!-- تاریخ خروج -->
+      <!-- ===================================================== -->
       <div class="info-item date-picker-wrapper">
         <label>تاریخ خروج</label>
         <div class="date-input-group">
-          <input 
-            type="text" 
-            class="form-input date-input" 
-            [(ngModel)]="orderInfo.exitDate"
-            [disabled]="!isEditMode"
-            placeholder="۱۴۰۴/۰۱/۰۱"
-          >
-          <button 
-            type="button" 
-            class="calendar-btn" 
-            (click)="toggleExitDatePicker()"
-            [disabled]="!isEditMode"
-          >
-            📅
-          </button>
+          <input type="text" class="form-input date-input" [(ngModel)]="orderInfo.exitDate" [disabled]="!isEditMode" placeholder="۱۴۰۴/۰۱/۰۱">
+          <button type="button" class="calendar-btn" (click)="toggleExitDatePicker()" [disabled]="!isEditMode">📅</button>
         </div>
-        
-        <!-- نمایش خطای اعتبارسنجی -->
-        <div *ngIf="exitDateInvalid" class="error-text">
-          تاریخ خروج نباید از تاریخ ورود کوچک‌تر باشد.
-        </div>
-
-        <app-persian-calendar 
-          *ngIf="showExitDatePicker"
-          (confirm)="onExitDateConfirm($event)"
-          (cancel)="closeExitDatePicker()"
-          (invalidSelection)="onInvalidExitDate()"
-          [minDate]="entryDateValue"
-        ></app-persian-calendar>
+        <div *ngIf="exitDateInvalid" class="error-text">تاریخ خروج نباید از تاریخ ورود کوچک‌تر باشد.</div>
+        <app-persian-calendar *ngIf="showExitDatePicker" [minDate]="entryDateValue" (confirm)="onExitDateConfirm($event)" (cancel)="closeExitDatePicker()" (invalidSelection)="onInvalidExitDate()"></app-persian-calendar>
       </div>
-    </div>
+
+    </div> <!-- /info-grid -->
 
     <hr class="divider">
 
-    <!-- جدول آیتم‌های سفارش -->
+    <!-- ======================================================= -->
+    <!-- Items (جدول) -->
+    <!-- ======================================================= -->
     <div class="table-section">
       <div class="table-toolbar">
         <h2>آیتم‌های سفارش</h2>
-        <button 
-          type="button" 
-          class="add-row-btn" 
-          (click)="addItem()"
-          [disabled]="!isEditMode"
-        >
-          + افزودن آیتم
-        </button>
+        <button type="button" class="add-row-btn" (click)="addItem()" [disabled]="!isEditMode">+ افزودن آیتم</button>
       </div>
 
       <div class="table-wrapper">
@@ -193,54 +211,23 @@
             </tr>
           </thead>
           <tbody>
-            @for (item of items; track i; let i = $index) {
+            @for (item of items; track $index; let i = $index) {
               <tr>
                 <td>
-                  <input 
-                    type="text" 
-                    class="table-input" 
-                    [(ngModel)]="item.serviceType"
-                    [disabled]="!isEditMode"
-                    placeholder="نوع خدمات"
-                  >
+                  <input type="text" class="table-input" [(ngModel)]="item.serviceType" [disabled]="!isEditMode" placeholder="نوع خدمات">
                 </td>
                 <td>
-                  <input 
-                    type="text" 
-                    class="table-input" 
-                    [(ngModel)]="item.toothNumber"
-                    [disabled]="!isEditMode"
-                    placeholder="مثلاً ۱۲"
-                  >
+                  <input type="text" class="table-input" [(ngModel)]="item.toothNumber" [disabled]="!isEditMode" placeholder="مثلاً ۱۲">
                 </td>
                 <td>
-                  <input 
-                    type="number" 
-                    class="table-input" 
-                    [(ngModel)]="item.quantity"
-                    [disabled]="!isEditMode"
-                    min="1"
-                  >
+                  <input type="number" class="table-input" [(ngModel)]="item.quantity" [disabled]="!isEditMode" min="1">
                 </td>
                 <td>
-                  <input 
-                    type="number" 
-                    class="table-input" 
-                    [(ngModel)]="item.unitPrice"
-                    [disabled]="!isEditMode"
-                    min="0"
-                  >
+                  <input type="number" class="table-input" [(ngModel)]="item.unitPrice" [disabled]="!isEditMode" min="0">
                 </td>
                 <td class="price-cell">{{ formatMoney(rowTotal(i)) }}</td>
                 <td>
-                  <button 
-                    type="button" 
-                    class="delete-row-btn" 
-                    (click)="removeItem(i)"
-                    [disabled]="!isEditMode"
-                  >
-                    ✕
-                  </button>
+                  <button type="button" class="delete-row-btn" (click)="removeItem(i)" [disabled]="!isEditMode">✕</button>
                 </td>
               </tr>
             }
@@ -249,85 +236,37 @@
       </div>
     </div>
 
-    <!-- بخش پیوست‌ها -->
-  <div class="attachments-section">
+    <!-- ======================================================= -->
+    <!-- Attachments -->
+    <!-- ======================================================= -->
+    <div class="attachments-section">
+      <h3>📎 فایل‌های پیوست</h3>
 
-  <h3>📎 فایل‌های پیوست</h3>
-
-    <div class="upload-wrapper">
-
-      <label
-        class="upload-btn"
-        [class.disabled]="!isEditMode"
-      >
-        📎 انتخاب فایل
-
-        <input
-          type="file"
-          multiple
-          (change)="onFileSelected($event)"
-          [disabled]="!isEditMode"
-        >
-      </label>
-
-    </div>
-
-  <ul class="attachments-list">
-
-    <li *ngFor="let file of orderInfo.attachments; let i = index">
-
-      <span class="file-icon">📄</span>
-
-      <span class="file-name">
-        {{ file.fileName }}
-      </span>
-
-      <span class="file-size">
-        ({{ (file.fileSize / 1024) | number:'1.0-0' }} KB)
-      </span>
-
-      <span class="file-type">
-        [{{ file.fileType }}]
-      </span>
-
-      <div class="file-actions">
-
-        <a
-          *ngIf="file.viewUrl"
-          [href]="file.viewUrl"
-          target="_blank"
-          class="view-link"
-        >
-          نمایش
-        </a>
-
-        <a
-          *ngIf="file.downloadUrl"
-          [href]="file.downloadUrl"
-          download
-          class="download-link"
-        >
-          دانلود
-        </a>
-
-        <button
-          type="button"
-          class="delete-file-btn"
-          (click)="removeAttachment(i)"
-          [disabled]="!isEditMode"
-        >
-          حذف
-        </button>
-
+      <div class="upload-wrapper">
+        <label class="upload-btn" [class.disabled]="!isEditMode">
+          📎 انتخاب فایل
+          <input type="file" multiple (change)="onFileSelected($event)" [disabled]="!isEditMode">
+        </label>
       </div>
 
-    </li>
+      <ul class="attachments-list">
+        <li *ngFor="let file of orderInfo.attachments; let i = index">
+          <span class="file-icon">📄</span>
+          <span class="file-name">{{ file.fileName }}</span>
+          <span class="file-size">({{ (file.fileSize / 1024) | number:'1.0-0' }} KB)</span>
+          <span class="file-type">[{{ file.fileType }}]</span>
+          <div class="file-actions">
+            <a *ngIf="file.viewUrl" [href]="file.viewUrl" target="_blank" class="view-link">نمایش</a>
+            <a *ngIf="file.downloadUrl" [href]="file.downloadUrl" download class="download-link">دانلود</a>
+            <button type="button" class="delete-file-btn" (click)="removeAttachment(i)" [disabled]="!isEditMode">حذف</button>
+          </div>
+        </li>
+      </ul>
+    </div>
 
-  </ul>
-
-</div>
-
-    <!-- جمع‌بندی مبالغ -->
+    <!-- ======================================================= -->
+    <!-- Summary -->
+    <!-- ======================================================= -->
     <div class="summary-wrapper">
       <div class="summary-section">
         <div class="summary-item">
@@ -336,13 +275,7 @@
         </div>
         <div class="summary-item">
           <label>مبلغ تخفیف</label>
-          <input 
-            type="number" 
-            class="discount-input" 
-            [(ngModel)]="discountAmount"
-            [disabled]="!isEditMode"
-            min="0"
-          >
+          <input type="number" class="discount-input" [(ngModel)]="discountAmount" [disabled]="!isEditMode" min="0">
           <span class="price-discount">- {{ formatMoney(discountAmount) }}</span>
         </div>
         <div class="summary-item">
@@ -352,33 +285,27 @@
       </div>
 
       <div class="action-footer">
-        <button 
-          type="button" 
-          class="submit-btn" 
-          (click)="submitOrder()"
-          [disabled]="!isEditMode"
-        >
-          تایید و ثبت تغییرات
-        </button>
+        <button type="button" class="submit-btn" (click)="submitOrder()" [disabled]="!isEditMode">تایید و ثبت تغییرات</button>
       </div>
     </div>
 
   </ng-container>
-
 </div>
 
-<!-- مودال خطای اعتبارسنجی -->
+<!-- =========================================================== -->
+<!-- Validation Modal -->
+<!-- =========================================================== -->
 <div *ngIf="showValidationModal" class="error-modal-backdrop" (click)="$event.stopPropagation()">
   <div class="error-modal-content">
     <div class="error-modal-header">
       <h3>خطا</h3>
-      <button class="close-button" (click)="closeValidationModal()">&times;</button>
+      <button class="close-button" type="button" (click)="closeValidationModal()">&times;</button>
     </div>
     <div class="error-modal-body">
       <p>{{ validationErrorMessage }}</p>
     </div>
     <div class="error-modal-footer">
-      <button class="confirm-button" (click)="closeValidationModal()">تایید</button>
+      <button class="confirm-button" type="button" (click)="closeValidationModal()">تایید</button>
     </div>
   </div>
 </div>

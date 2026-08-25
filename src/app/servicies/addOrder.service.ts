@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'; // HttpHeaders را هم اضافه کنید
 
 import { CookieService } from 'ngx-cookie-service';
-
+import { Clinic, ClinicDoctor } from '../components/addOrder/add-order.component';
 import { OrderPayload } from '../components/addOrder/add-order.component';
 
 import { Observable } from 'rxjs';
@@ -37,4 +37,30 @@ export class AddOrderService {
     { headers }
   );
 }
+
+getClinics(): Observable<Clinic[]> {
+  const token = localStorage.getItem('access_token');
+  const headers = new HttpHeaders({
+    Authorization: `Bearer ${token}`
+  });
+  return this.http.get<Clinic[]>(
+    'http://localhost:8080/api/clinic/getAll',
+    { headers } // ✅ اضافه شد
+  );
+}
+
+getDoctorsByClinic(clinicId: number): Observable<ClinicDoctor[]> {
+  const token = localStorage.getItem('access_token');
+  const headers = new HttpHeaders({
+    Authorization: `Bearer ${token}`
+  });
+  return this.http.get<ClinicDoctor[]>(
+    `http://localhost:8080/api/clinic-doctor/clinic/${clinicId}`,
+    { headers } // ✅ اضافه شد
+  );
+}
+
+
+
+
 }

@@ -39,7 +39,9 @@ export interface OrderItemDetail {
 }
 
 export interface OrderDetailResponse {
+  clinicId: number | null;
   clinicName: string;
+  clinicDoctorId: number | null;
   doctorName: string;
   patientName: string;
   status: string;
