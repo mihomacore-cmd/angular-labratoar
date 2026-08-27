@@ -55,7 +55,7 @@
       <button class="dialog-close-btn" (click)="closeOrderDialog()">✕</button>
 
       <!-- کامپوننت جزئیات سفارش با انتقال orderId -->
-      <order-detail [orderId]="selectedOrderId" (closed)="closeOrderDialog()"></order-detail>
+      <order-detail [orderId]="selectedOrderId"  [disableEdit]="false" (closed)="closeOrderDialog()"></order-detail>
 
     </div>
   </div>

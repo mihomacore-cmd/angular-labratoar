@@ -25,17 +25,26 @@
     <!-- ======================================================= -->
     <!-- Header -->
     <!-- ======================================================= -->
-    <div class="card-header">
-      <div class="header-left">
-        <h2>جزئیات سفارش</h2>
-            <span class="status-badge">وضعیت: {{ orderInfo.statusCode }}</span>
-      </div>
-      <div class="header-actions">
-        <button type="button" class="edit-toggle-btn" (click)="toggleEditMode()" [class.active]="isEditMode">
-          {{ isEditMode ? 'لغو ویرایش' : '✏️ ویرایش' }}
-        </button>
-      </div>
-    </div>
+   <!-- ======================================================= -->
+<!-- Header -->
+<!-- ======================================================= -->
+            <div class="card-header">
+              <div class="header-left">
+                <h2>جزئیات سفارش</h2>
+                <span class="status-badge">وضعیت: {{ orderInfo.statusCode }}</span>
+              </div>
+              <div class="header-actions">
+                <button
+                  *ngIf="!disableEdit"
+                  type="button"
+                  class="edit-toggle-btn"
+                  (click)="toggleEditMode()"
+                  [class.active]="isEditMode"
+                >
+                  {{ isEditMode ? 'لغو ویرایش' : '✏️ ویرایش' }}
+                </button>
+              </div>
+            </div>
 
     <!-- ======================================================= -->
     <!-- اطلاعات (داخل گرید) -->
@@ -308,9 +317,11 @@
         </div>
       </div>
 
-      <div class="action-footer">
-        <button type="button" class="submit-btn" (click)="submitOrder()" [disabled]="!isEditMode">تایید و ثبت تغییرات</button>
-      </div>
+          <div class="action-footer" *ngIf="!disableEdit">
+            <button type="button" class="submit-btn" (click)="submitOrder()" [disabled]="!isEditMode">
+              تایید و ثبت تغییرات
+            </button>
+          </div>
     </div>
 
   </ng-container>

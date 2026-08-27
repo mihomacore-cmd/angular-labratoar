@@ -1,24 +1,31 @@
 <div class="page-container">
+
+  <!-- ===================================================== -->
+  <!-- هدر -->
+  <!-- ===================================================== -->
   <div class="page-header">
-    <h2>تخته کانبان سفارشات</h2>
-    <span class="subtitle">سیستم پیگیری مراحل سفارشات (سه مرحله)</span>
+    <h2>سفارش‌های من</h2>
+    <span class="subtitle">لیست سفارشات بر اساس وضعیت</span>
   </div>
 
+  <!-- ===================================================== -->
+  <!-- بخش جستجوی پیشرفته -->
+  <!-- ===================================================== -->
   <div class="filter-section">
     <div class="filter-header">جستجوی پیشرفته</div>
     <div class="filter-body">
       <div class="filter-row">
         <div class="form-group">
           <label>نام پزشک</label>
-          <input type="text" placeholder="نام پزشک را وارد کنید..." [(ngModel)]="searchDoctor">
+          <input type="text" placeholder="نام پزشک را وارد کنید..." [(ngModel)]="searchDoctor" (input)="onSearch()">
         </div>
         <div class="form-group">
           <label>نام کلینیک</label>
-          <input type="text" placeholder="نام کلینیک را وارد کنید..." [(ngModel)]="searchClinic">
+          <input type="text" placeholder="نام کلینیک را وارد کنید..." [(ngModel)]="searchClinic" (input)="onSearch()">
         </div>
         <div class="form-group">
           <label>وضعیت</label>
-          <select [(ngModel)]="searchStatus">
+          <select [(ngModel)]="searchStatus" (change)="onSearch()">
             <option value="">همه وضعیت‌ها</option>
             <option value="pending_payment">در انتظار پرداخت</option>
             <option value="building">در حال ساخت</option>
@@ -36,7 +43,11 @@
     </div>
   </div>
 
+  <!-- ===================================================== -->
+  <!-- تخته کانبان (سه ستون) -->
+  <!-- ===================================================== -->
   <div class="kanban-board">
+
     <!-- ستون در انتظار پرداخت -->
     <div class="kanban-col">
       <div class="col-header col-red">
@@ -62,9 +73,11 @@
                 <td>{{ item.doctorName }}</td>
                 <td>{{ item.patientName }}</td>
                 <td class="action-cell">
-                  <button class="btn-sm btn-success" (click)="goToOrderDetail()">نمایش</button>
+                  <button class="btn-sm btn-success" (click)="viewOrder(item.id)">نمایش</button>
                 </td>
               </tr>
+            } @empty {
+              <tr><td colspan="5" class="empty-row">هیچ آیتمی در این ستون وجود ندارد</td></tr>
             }
           </tbody>
         </table>
@@ -96,9 +109,11 @@
                 <td>{{ item.doctorName }}</td>
                 <td>{{ item.patientName }}</td>
                 <td class="action-cell">
-                  <button class="btn-sm btn-success" (click)="goToOrderDetail()">نمایش</button>
+                  <button class="btn-sm btn-success" (click)="viewOrder(item.id)">نمایش</button>
                 </td>
               </tr>
+            } @empty {
+              <tr><td colspan="5" class="empty-row">هیچ آیتمی در این ستون وجود ندارد</td></tr>
             }
           </tbody>
         </table>
@@ -130,13 +145,51 @@
                 <td>{{ item.doctorName }}</td>
                 <td>{{ item.patientName }}</td>
                 <td class="action-cell">
-                  <button class="btn-sm btn-success" (click)="goToOrderDetail()">نمایش</button>
+                  <button class="btn-sm btn-success" (click)="viewOrder(item.id)">نمایش</button>
                 </td>
               </tr>
+            } @empty {
+              <tr><td colspan="5" class="empty-row">هیچ آیتمی در این ستون وجود ندارد</td></tr>
             }
           </tbody>
         </table>
       </div>
     </div>
+
   </div>
+
+  <!-- ===================================================== -->
+  <!-- مودال خطا/موفقیت -->
+  <!-- ===================================================== -->
+  <div *ngIf="isModalOpen" class="modal-backdrop" (click)="$event.stopPropagation()">
+    <div class="modal-content" [class.modal-success]="modalType === 'success'" [class.modal-error]="modalType === 'error'">
+      <div class="modal-header">
+        <h3>{{ modalTitle }}</h3>
+        <button class="modal-close" (click)="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>{{ modalMessage }}</p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn" [class.btn-success]="modalType === 'success'" [class.btn-error]="modalType === 'error'" (click)="closeModal()">تایید</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================== -->
+  <!-- دیالوگ جزئیات سفارش -->
+  <!-- ===================================================== -->
+  <div *ngIf="isOrderDialogOpen" class="order-dialog-backdrop" (click)="closeOrderDialog()">
+    <div class="order-dialog-content" (click)="$event.stopPropagation()">
+      <button class="dialog-close-btn" (click)="closeOrderDialog()">✕</button>
+<!-- myOrder.html -->
+            <order-detail
+              [orderId]="selectedOrderId"
+              [disableEdit]="true"
+              (closed)="closeOrderDialog()"
+            >
+            </order-detail>
+    </div>
+  </div>
+
 </div>

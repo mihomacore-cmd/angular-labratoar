@@ -524,6 +524,7 @@
     <order-detail
       *ngIf="selectedOrderId !== null"
       [orderId]="selectedOrderId"
+       [disableEdit]="false"
       (closed)="closeOrderDialog()"
     >
     </order-detail>

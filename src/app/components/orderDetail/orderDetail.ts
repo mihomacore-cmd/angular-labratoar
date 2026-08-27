@@ -97,6 +97,7 @@ export class OrderDetailsComponent implements OnInit {
 
   @Output() closed = new EventEmitter<void>();
 
+  @Input() disableEdit: boolean = false;
 
   // ============================================================
   // Loading / Error
