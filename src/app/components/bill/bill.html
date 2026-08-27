@@ -329,9 +329,9 @@
 
             <span
               class="status-badge"
-              [ngClass]="getStatusClass(order.status)"
+              [ngClass]="getStatusClass(order.statusCode)"
             >
-              {{ order.status || '—' }}
+              {{ order.statusCode || '—' }}
             </span>
 
           </div>

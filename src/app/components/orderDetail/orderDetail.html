@@ -28,7 +28,7 @@
     <div class="card-header">
       <div class="header-left">
         <h2>جزئیات سفارش</h2>
-        <span class="status-badge">وضعیت: {{ orderInfo.status }}</span>
+            <span class="status-badge">وضعیت: {{ orderInfo.statusCode }}</span>
       </div>
       <div class="header-actions">
         <button type="button" class="edit-toggle-btn" (click)="toggleEditMode()" [class.active]="isEditMode">
@@ -59,21 +59,20 @@
         >
 
         <!-- حالت ویرایش -->
-        <!-- کلینیک -->
-                                    <select
-              *ngIf="isEditMode"
-              id="clinic"
-              class="form-input"
-              [(ngModel)]="selectedClinicId"
-              (ngModelChange)="onClinicChange($event)"
-            >
-              <option
-                *ngFor="let clinic of clinics"
-                [ngValue]="clinic.id"
-              >
-                {{ clinic.name }}
-              </option>
-            </select>
+        <select
+          *ngIf="isEditMode"
+          id="clinic"
+          class="form-input"
+          [(ngModel)]="selectedClinicId"
+          (ngModelChange)="onClinicChange($event)"
+        >
+          <option
+            *ngFor="let clinic of clinics"
+            [ngValue]="clinic.id"
+          >
+            {{ clinic.name }}
+          </option>
+        </select>
       </div>
 
       <!-- ===================================================== -->
@@ -93,22 +92,21 @@
         >
 
         <!-- حالت ویرایش -->
-                                  <!-- پزشک -->
-                          <select
-                *ngIf="isEditMode"
-                id="doctor"
-                class="form-input"
-                [disabled]="!selectedClinicId || !doctors.length"
-                [(ngModel)]="selectedDoctorId"
-                (ngModelChange)="onDoctorChange($event)"
-              >
-                <option
-                  *ngFor="let doctor of doctors"
-                  [ngValue]="doctor.id"
-                >
-                  {{ doctor.doctorName }}
-                </option>
-              </select>
+        <select
+          *ngIf="isEditMode"
+          id="doctor"
+          class="form-input"
+          [disabled]="!selectedClinicId || !doctors.length"
+          [(ngModel)]="selectedDoctorId"
+          (ngModelChange)="onDoctorChange($event)"
+        >
+          <option
+            *ngFor="let doctor of doctors"
+            [ngValue]="doctor.id"
+          >
+            {{ doctor.doctorName }}
+          </option>
+        </select>
       </div>
 
       <!-- ===================================================== -->
@@ -137,14 +135,19 @@
       <!-- ===================================================== -->
       <!-- وضعیت -->
       <!-- ===================================================== -->
-      <div class="info-item">
-        <label>وضعیت</label>
-        <select class="form-input" [(ngModel)]="orderInfo.status" [disabled]="!isEditMode">
-          <option value="در انتظار پرداخت">در انتظار پرداخت</option>
-          <option value="در حال ساخت">در حال ساخت</option>
-          <option value="تحویل داده شده">تحویل داده شده</option>
-        </select>
-      </div>
+              <div class="info-item">
+            <label>وضعیت</label>
+            <span *ngIf="!isEditMode" class="form-input display-mode">
+              {{ orderInfo.statusCode }}
+            </span>
+            <select *ngIf="isEditMode" class="form-input" [(ngModel)]="orderInfo.status">
+              <option [value]="1">در انتظار پرداخت</option>
+              <option [value]="2">در حال ساخت</option>
+              <option [value]="3">تحویل داده شده</option>
+              <option [value]="4">انتظار ارسال فاکتور</option>
+              <option [value]="5">پرداخت شده</option>
+            </select>
+          </div>
 
       <!-- ===================================================== -->
       <!-- نوع فاکتور -->
@@ -254,17 +257,14 @@
           <span class="file-size">({{ (file.fileSize / 1024) | number:'1.0-0' }} KB)</span>
           <span class="file-type">[{{ file.fileType }}]</span>
           <div class="file-actions">
-
-                <button
-                  *ngIf="file.viewUrl"
-                  type="button"
-                  class="view-link"
-                  (click)="viewAttachment(file)"
-                >
-                  نمایش
-                </button>
-
-
+            <button
+              *ngIf="file.viewUrl"
+              type="button"
+              class="view-link"
+              (click)="viewAttachment(file)"
+            >
+              نمایش
+            </button>
             <a *ngIf="file.downloadUrl" [href]="file.downloadUrl" download class="download-link">دانلود</a>
             <button type="button" class="delete-file-btn" (click)="removeAttachment(i)" [disabled]="!isEditMode">حذف</button>
           </div>
@@ -300,7 +300,6 @@
   </ng-container>
 </div>
 
-
 <!-- =========================================================== -->
 <!-- Success Modal -->
 <!-- =========================================================== -->
@@ -310,10 +309,8 @@
   (click)="$event.stopPropagation()"
 >
   <div class="success-modal-content">
-
     <div class="success-modal-header">
       <h3>موفق</h3>
-
       <button
         class="success-close-button"
         type="button"
@@ -322,17 +319,12 @@
         &times;
       </button>
     </div>
-
     <div class="success-modal-body">
       <div class="success-icon">
         ✓
       </div>
-
-      <p>
-        {{ successMessage }}
-      </p>
+      <p>{{ successMessage }}</p>
     </div>
-
     <div class="success-modal-footer">
       <button
         class="success-confirm-button"
@@ -342,10 +334,8 @@
         تایید
       </button>
     </div>
-
   </div>
 </div>
-
 
 <!-- =========================================================== -->
 <!-- Validation Modal -->

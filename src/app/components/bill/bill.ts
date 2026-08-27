@@ -81,7 +81,7 @@ interface BillOrder {
 
   patientName: string;
 
-  status: string;
+  statusCode: string;
 
   invoiceType: string;
 
@@ -527,8 +527,8 @@ export class BillPreviewComponent
       patientName:
         data.patientName || '',
 
-      status:
-        data.status || '',
+      statusCode:
+        data.statusCode || '',
 
       invoiceType:
         this.getInvoiceTypeDisplay(

@@ -143,7 +143,9 @@ export class OrderDetailsComponent implements OnInit {
 
     patientName: '',
 
-    status: '',
+    status: null as number | null,
+
+    statusCode: '',   // <-- دریافت متن وضعیت از سرور
 
     invoiceType: '',
 
@@ -416,7 +418,10 @@ successMessage = '';
               data.patientName || '',
 
             status:
-              data.status || '',
+              data.status || null,
+
+            statusCode:
+              data.statusCode  || '',   // <-- اصلاح شده
 
             invoiceType:
               invoiceTypeKey,
@@ -647,43 +652,56 @@ successMessage = '';
   // Edit mode
   // ============================================================
 
-  toggleEditMode(): void {
+toggleEditMode(): void {
 
-    if (!this.isEditMode) {
+  if (!this.isEditMode) {
+
+    // ==========================================
+    // ورود به حالت ویرایش
+    // ==========================================
 
     this.selectedClinicId = this.orderInfo.clinicId;
+
     this.selectedDoctorId = this.orderInfo.clinicDoctorId;
 
+    this.isEditMode = true;
 
-      this.isEditMode = true;
-
-      return;
+    // اگر کلینیک قبلی وجود دارد، پزشکان آن را بگیر
+    if (this.selectedClinicId) {
+      this.loadDoctorsByClinic(
+        this.selectedClinicId,
+        this.selectedDoctorId
+      );
     }
 
+    this.cdr.detectChanges();
 
-    // Cancel edit
-
-    this.isEditMode = false;
-
-    this.deletedAttachmentIds = [];
-
-    this.showEntryDatePicker = false;
-
-    this.showExitDatePicker = false;
-
-    this.exitDateInvalid = false;
-
-    this.showValidationModal = false;
-
-    this.validationErrorMessage = '';
-
-
-    if (this.orderId) {
-
-      this.loadOrderDetail(this.orderId);
-    }
+    return;
   }
 
+
+  // ==========================================
+  // لغو ویرایش
+  // ==========================================
+
+  this.isEditMode = false;
+
+  this.deletedAttachmentIds = [];
+
+  this.showEntryDatePicker = false;
+
+  this.showExitDatePicker = false;
+
+  this.exitDateInvalid = false;
+
+  this.showValidationModal = false;
+
+  this.validationErrorMessage = '';
+
+  if (this.orderId) {
+    this.loadOrderDetail(this.orderId);
+  }
+}
 
   // ============================================================
   // Entry date
@@ -1450,6 +1468,23 @@ viewAttachment(file: Attachment): void {
       }
     });
 }
+
+  // ============================================================
+  // Get status text (تبدیل عدد به متن)
+  // ============================================================
+
+  getStatusText(statusCode: number | null): string {
+    const statusMap: { [key: number]: string } = {
+      1: 'در انتظار پرداخت',
+      2: 'در حال ساخت',
+      3: 'تحویل داده شده',
+      4: 'انتظار ارسال فاکتور',
+      5: 'پرداخت شده'
+    };
+    return statusCode !== null && statusMap[statusCode]
+      ? statusMap[statusCode]
+      : 'نامشخص';
+  }
 
   // ============================================================
   // Close

@@ -44,7 +44,8 @@ export interface OrderDetailResponse {
   clinicDoctorId: number | null;
   doctorName: string;
   patientName: string;
-  status: string;
+  status: number;
+  statusCode: string;
   invoiceType: string;
   phoneNumber:string;
   entryDate: string;
