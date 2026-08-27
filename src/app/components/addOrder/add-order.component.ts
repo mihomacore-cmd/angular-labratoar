@@ -104,6 +104,10 @@ ngOnInit(): void {
   showErrorModal = false;
   errorMessage = '';
 
+showSuccessModal = false;
+successMessage = '';
+
+
   private readonly fb = inject(FormBuilder);
   private orderService = inject(AddOrderService);
   @Output() readonly orderSubmit = new EventEmitter<OrderPayload>();
@@ -370,15 +374,24 @@ ngOnInit(): void {
     }
 
     this.orderService.submitOrder(payload, this.selectedFiles).subscribe({
-      next: response => {
-        alert('سفارش با موفقیت ثبت شد!');
+          next: response => {
+        this.successMessage = 'سفارش با موفقیت ثبت شد.';
+        this.showSuccessModal = true;
+
         this.form.reset();
         this.selectedFiles = [];
       },
       error: error => {
-        this.errorMessage = 'خطایی رخ داده است مجددا تلاش کنید';
-        this.showErrorModal = true;
-      },
+          
+          console.error('❌ خطای ثبت سفارش:', error);
+
+          this.errorMessage =
+            error?.error?.message ||
+            error?.error ||
+            'خطایی در ثبت سفارش رخ داده است.';
+
+          this.showErrorModal = true;
+        },
     });
   }
 
@@ -457,5 +470,9 @@ onDoctorChange(): void {
   );
 }
 
+closeSuccessModal(): void {
+  this.showSuccessModal = false;
+  this.successMessage = '';
+}
 
 }

@@ -10,7 +10,7 @@ import {
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
+import { AttachmentService } from '../../servicies/attachmentService/attachmentService';
 import {
   KanbanService,
   OrderDetailResponse
@@ -87,7 +87,7 @@ export class OrderDetailsComponent implements OnInit {
   private readonly kanbanService = inject(KanbanService);
   private readonly orderService = inject(AddOrderService);
   private readonly cdr = inject(ChangeDetectorRef);
-
+  private readonly attachmentService = inject (AttachmentService);
 
   // ============================================================
   // Inputs / Outputs
@@ -280,68 +280,52 @@ export class OrderDetailsComponent implements OnInit {
   // ============================================================
 
   private loadDoctorsByClinic(
-    clinicId: number,
-    selectedClinicDoctorId: number | null = null
-  ): void {
+  clinicId: number,
+  selectedClinicDoctorId: number | null = null
+): void {
 
-    this.doctors = [];
+  this.doctors = [];
 
-    this.orderService
-      .getDoctorsByClinic(clinicId)
-      .subscribe({
+  this.orderService
+    .getDoctorsByClinic(clinicId)
+    .subscribe({
 
-        next: (doctors) => {
+      next: (doctors) => {
 
-          this.doctors = doctors;
+        this.doctors = doctors;
 
-          /*
-           * اگر سفارش قبلاً پزشک داشته،
-           * همان رکورد clinic_doctor انتخاب می‌شود.
-           */
-          if (selectedClinicDoctorId !== null) {
+        // فقط مقدار Select را مشخص کن
+        if (selectedClinicDoctorId !== null) {
 
-            const selectedDoctor =
-              this.doctors.find(
-                doctor =>
-                  Number(doctor.id) ===
-                  Number(selectedClinicDoctorId)
-              );
-
-            if (selectedDoctor) {
-
-              this.selectedDoctorId =
-                selectedDoctor.id;
-
-              this.orderInfo.clinicDoctorId =
-                selectedDoctor.id;
-
-              this.orderInfo.doctorName =
-                selectedDoctor.doctorName;
-
-              this.orderInfo.phoneNumber =
-                selectedDoctor.phone;
-            }
-          }
-
-          this.cdr.detectChanges();
-        },
-
-        error: (error) => {
-
-          console.error(
-            '❌ خطا در دریافت پزشکان:',
-            error
+          const selectedDoctor = this.doctors.find(
+            doctor =>
+              Number(doctor.id) === Number(selectedClinicDoctorId)
           );
 
-          this.doctors = [];
-
-          this.errorMessage =
-            'دریافت پزشکان کلینیک با خطا مواجه شد.';
-
-          this.cdr.detectChanges();
+          if (selectedDoctor) {
+            this.selectedDoctorId = selectedDoctor.id;
+          }
         }
-      });
-  }
+
+        this.cdr.detectChanges();
+      },
+
+      error: (error) => {
+
+        console.error(
+          '❌ خطا در دریافت پزشکان:',
+          error
+        );
+
+        this.doctors = [];
+
+        this.errorMessage =
+          'دریافت پزشکان کلینیک با خطا مواجه شد.';
+
+        this.cdr.detectChanges();
+      }
+    });
+}
 
 
   // ============================================================
@@ -554,45 +538,33 @@ export class OrderDetailsComponent implements OnInit {
 
   onClinicChange(clinicId: number | string | null): void {
 
-    const id =
-      clinicId !== null &&
-      clinicId !== ''
-        ? Number(clinicId)
-        : null;
+  const id =
+    clinicId !== null && clinicId !== ''
+      ? Number(clinicId)
+      : null;
 
+  this.selectedClinicId = id;
 
-    // ذخیره کلینیک انتخاب‌شده
+  // چون کاربر واقعاً کلینیک را تغییر داده
+  this.orderInfo.clinicId = id;
+  this.orderInfo.clinicName =
+    this.clinics.find(c => c.id === id)?.name || '';
 
-    this.selectedClinicId = id;
+  // پزشک قبلی دیگر معتبر نیست
+  this.selectedDoctorId = null;
 
-    this.orderInfo.clinicId = id;
+  this.orderInfo.clinicDoctorId = null;
+  this.orderInfo.doctorName = '';
+  this.orderInfo.phoneNumber = '';
 
+  this.doctors = [];
 
-    // پزشک قبلی پاک شود
-
-    this.selectedDoctorId = null;
-
-    this.orderInfo.clinicDoctorId = null;
-
-    this.orderInfo.doctorName = '';
-
-    this.orderInfo.phoneNumber = '';
-
-
-    // لیست پزشکان پاک شود
-
-    this.doctors = [];
-
-
-    if (!id) {
-      return;
-    }
-
-
-    // دریافت پزشکان کلینیک جدید
-
-    this.loadDoctorsByClinic(id);
+  if (!id) {
+    return;
   }
+
+  this.loadDoctorsByClinic(id);
+}
 
 
   // ============================================================
@@ -671,6 +643,10 @@ export class OrderDetailsComponent implements OnInit {
   toggleEditMode(): void {
 
     if (!this.isEditMode) {
+
+    this.selectedClinicId = this.orderInfo.clinicId;
+    this.selectedDoctorId = this.orderInfo.clinicDoctorId;
+
 
       this.isEditMode = true;
 
@@ -1373,6 +1349,94 @@ export class OrderDetailsComponent implements OnInit {
     }
   }
 
+
+
+viewAttachment(file: Attachment): void {
+
+  if (!file.id) {
+    console.error('❌ شناسه فایل موجود نیست.');
+    return;
+  }
+
+  // تب را بلافاصله با کلیک کاربر باز می‌کنیم
+  const newTab = window.open('', '_blank');
+
+  if (!newTab) {
+
+    console.error('❌ مرورگر اجازه باز کردن تب جدید را نداد.');
+
+    this.validationErrorMessage =
+      'مرورگر اجازه باز کردن تب جدید را نداد. لطفاً Popup را فعال کنید.';
+
+    this.showValidationModal = true;
+
+    return;
+  }
+
+  // فعلاً در تب پیام Loading نمایش بده
+  newTab.document.write(`
+    <html>
+      <head>
+        <title>در حال بارگذاری فایل...</title>
+      </head>
+      <body style="
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        height:100vh;
+        font-family:sans-serif;
+      ">
+        <h3>⏳ در حال بارگذاری فایل...</h3>
+      </body>
+    </html>
+  `);
+
+  // درخواست فایل از Backend
+  this.attachmentService
+    .viewAttachment(file.id)
+    .subscribe({
+
+      next: (blob: Blob) => {
+
+        console.log('✅ فایل دریافت شد');
+        console.log('📦 Blob:', blob);
+        console.log('📄 File type:', blob.type);
+        console.log('📏 File size:', blob.size);
+
+        // ساخت URL موقت برای Blob
+        const fileUrl =
+          URL.createObjectURL(blob);
+
+        // تب باز شده را به فایل هدایت می‌کنیم
+        newTab.location.href = fileUrl;
+
+        // آزاد کردن URL بعد از مدتی
+        setTimeout(() => {
+
+          URL.revokeObjectURL(fileUrl);
+
+        }, 60000);
+      },
+
+      error: (error) => {
+
+        console.error(
+          '❌ خطا در دریافت فایل:',
+          error
+        );
+
+        // اگر Backend خطا داد، تب را ببند
+        newTab.close();
+
+        this.validationErrorMessage =
+          'نمایش فایل با خطا مواجه شد.';
+
+        this.showValidationModal = true;
+
+        this.cdr.detectChanges();
+      }
+    });
+}
 
   // ============================================================
   // Close

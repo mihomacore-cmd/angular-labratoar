@@ -819,3 +819,72 @@ table {
     padding: 0.8rem 0.5rem !important;
   }
 }
+
+
+
+/* ============================================================
+   View Attachment Button
+   ============================================================ */
+
+.view-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  min-width: 72px;
+  height: 36px;
+  padding: 0 13px;
+
+  background: #eef6ff;
+  color: #1976d2;
+
+  border: 1px solid #c9e2ff;
+  border-radius: 9px;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+
+  line-height: 1;
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
+
+  // آیکون چشم
+  &::before {
+    content: '👁';
+    font-size: 15px;
+    line-height: 1;
+  }
+
+  &:hover {
+    background: #dceeff;
+    border-color: #9dccff;
+    color: #0d5eae;
+
+    box-shadow: 0 4px 10px rgba(25, 118, 210, 0.14);
+
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.97);
+
+    box-shadow: none;
+  }
+
+  &:focus-visible {
+    outline: none;
+
+    box-shadow:
+      0 0 0 3px rgba(25, 118, 210, 0.15);
+  }
+}

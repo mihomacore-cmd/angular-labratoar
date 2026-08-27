@@ -240,17 +240,96 @@
 </form>
 
 <!-- مودال خطا -->
-<div *ngIf="showErrorModal" class="error-modal-backdrop" (click)="$event.stopPropagation()">
-  <div class="error-modal-content">
+<div
+  class="error-modal-backdrop"
+  *ngIf="showErrorModal"
+  (click)="closeErrorModal()"
+>
+  <div
+    class="error-modal-content"
+    (click)="$event.stopPropagation()"
+  >
+
+    <button
+      type="button"
+      class="error-close-button"
+      (click)="closeErrorModal()"
+      aria-label="بستن"
+    >
+      ×
+    </button>
+
+    <div class="error-icon-wrapper">
+      <div class="error-icon">
+        !
+      </div>
+    </div>
+
     <div class="error-modal-header">
       <h3>خطا</h3>
-      <button class="close-button" (click)="closeErrorModal()">&times;</button>
     </div>
+
     <div class="error-modal-body">
       <p>{{ errorMessage }}</p>
     </div>
+
     <div class="error-modal-footer">
-      <button class="confirm-button" (click)="closeErrorModal()">تایید</button>
+      <button
+        type="button"
+        class="error-confirm-button"
+        (click)="closeErrorModal()"
+      >
+        متوجه شدم
+      </button>
     </div>
+
+  </div>
+</div>
+
+
+<!-- مودال موفقیت -->
+<div
+  class="success-modal-backdrop"
+  *ngIf="showSuccessModal"
+  (click)="closeSuccessModal()"
+>
+  <div
+    class="success-modal-content"
+    (click)="$event.stopPropagation()"
+  >
+
+    <button
+      type="button"
+      class="success-close-button"
+      (click)="closeSuccessModal()"
+      aria-label="بستن"
+    >
+      ×
+    </button>
+
+    <div class="success-icon-wrapper">
+      <div class="success-icon">
+        ✓
+      </div>
+    </div>
+
+    <div class="success-modal-header">
+      <h3>ثبت موفق</h3>
+    </div>
+
+    <div class="success-modal-body">
+      <p>{{ successMessage }}</p>
+    </div>
+
+    <div class="success-modal-footer">
+      <button
+        type="button"
+        class="success-confirm-button"
+        (click)="closeSuccessModal()"
+      >
+        متوجه شدم
+      </button>
+    </div>
+
   </div>
 </div>

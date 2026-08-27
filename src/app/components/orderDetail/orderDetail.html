@@ -60,27 +60,20 @@
 
         <!-- حالت ویرایش -->
         <!-- کلینیک -->
-              <select
-                *ngIf="isEditMode"
-                id="clinic"
-                class="form-input"
-                [(ngModel)]="selectedClinicId"
-                (ngModelChange)="onClinicChange($event)"
+                                    <select
+              *ngIf="isEditMode"
+              id="clinic"
+              class="form-input"
+              [(ngModel)]="selectedClinicId"
+              (ngModelChange)="onClinicChange($event)"
+            >
+              <option
+                *ngFor="let clinic of clinics"
+                [ngValue]="clinic.id"
               >
-                <option
-                  *ngIf="!selectedClinicId"
-                  [ngValue]="null"
-                >
-                  انتخاب کلینیک
-                </option>
-
-                <option
-                  *ngFor="let clinic of clinics"
-                  [ngValue]="clinic.id"
-                >
-                  {{ clinic.name }}
-                </option>
-              </select>
+                {{ clinic.name }}
+              </option>
+            </select>
       </div>
 
       <!-- ===================================================== -->
@@ -100,35 +93,22 @@
         >
 
         <!-- حالت ویرایش -->
-        <!-- پزشک -->
-                  <select
-                    *ngIf="isEditMode"
-                    id="doctor"
-                    class="form-input"
-                    [disabled]="!selectedClinicId || !doctors.length"
-                    [(ngModel)]="selectedDoctorId"
-                    (ngModelChange)="onDoctorChange($event)"
-                  >
-                    <option
-                      *ngIf="!selectedDoctorId"
-                      [ngValue]="null"
-                    >
-                      {{
-                        !selectedClinicId
-                          ? 'ابتدا کلینیک را انتخاب کنید'
-                          : doctors.length
-                            ? 'انتخاب پزشک'
-                            : 'پزشکی برای این کلینیک وجود ندارد'
-                      }}
-                    </option>
-
-                    <option
-                      *ngFor="let doctor of doctors"
-                      [ngValue]="doctor.id"
-                    >
-                      {{ doctor.doctorName }}
-                    </option>
-                  </select>
+                                  <!-- پزشک -->
+                          <select
+                *ngIf="isEditMode"
+                id="doctor"
+                class="form-input"
+                [disabled]="!selectedClinicId || !doctors.length"
+                [(ngModel)]="selectedDoctorId"
+                (ngModelChange)="onDoctorChange($event)"
+              >
+                <option
+                  *ngFor="let doctor of doctors"
+                  [ngValue]="doctor.id"
+                >
+                  {{ doctor.doctorName }}
+                </option>
+              </select>
       </div>
 
       <!-- ===================================================== -->
@@ -274,7 +254,17 @@
           <span class="file-size">({{ (file.fileSize / 1024) | number:'1.0-0' }} KB)</span>
           <span class="file-type">[{{ file.fileType }}]</span>
           <div class="file-actions">
-            <a *ngIf="file.viewUrl" [href]="file.viewUrl" target="_blank" class="view-link">نمایش</a>
+
+                <button
+                  *ngIf="file.viewUrl"
+                  type="button"
+                  class="view-link"
+                  (click)="viewAttachment(file)"
+                >
+                  نمایش
+                </button>
+
+
             <a *ngIf="file.downloadUrl" [href]="file.downloadUrl" download class="download-link">دانلود</a>
             <button type="button" class="delete-file-btn" (click)="removeAttachment(i)" [disabled]="!isEditMode">حذف</button>
           </div>
