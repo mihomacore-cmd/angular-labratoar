@@ -300,6 +300,53 @@
   </ng-container>
 </div>
 
+
+<!-- =========================================================== -->
+<!-- Success Modal -->
+<!-- =========================================================== -->
+<div
+  *ngIf="showSuccessModal"
+  class="success-modal-backdrop"
+  (click)="$event.stopPropagation()"
+>
+  <div class="success-modal-content">
+
+    <div class="success-modal-header">
+      <h3>موفق</h3>
+
+      <button
+        class="success-close-button"
+        type="button"
+        (click)="closeSuccessModal()"
+      >
+        &times;
+      </button>
+    </div>
+
+    <div class="success-modal-body">
+      <div class="success-icon">
+        ✓
+      </div>
+
+      <p>
+        {{ successMessage }}
+      </p>
+    </div>
+
+    <div class="success-modal-footer">
+      <button
+        class="success-confirm-button"
+        type="button"
+        (click)="closeSuccessModal()"
+      >
+        تایید
+      </button>
+    </div>
+
+  </div>
+</div>
+
+
 <!-- =========================================================== -->
 <!-- Validation Modal -->
 <!-- =========================================================== -->

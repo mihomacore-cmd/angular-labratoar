@@ -184,6 +184,13 @@ export class OrderDetailsComponent implements OnInit {
 
   validationErrorMessage = '';
 
+// ============================================================
+// Success modal
+// ============================================================
+
+showSuccessModal = false;
+
+successMessage = '';
 
   // ============================================================
   // Deleted attachments
@@ -873,6 +880,14 @@ export class OrderDetailsComponent implements OnInit {
   }
 
 
+closeSuccessModal(): void {
+
+  this.showSuccessModal = false;
+
+  this.successMessage = '';
+}
+
+
   // ============================================================
   // Items
   // ============================================================
@@ -1214,23 +1229,21 @@ export class OrderDetailsComponent implements OnInit {
       )
       .subscribe({
 
-        next: (response) => {
+       next: (response) => {
+                // خروج از حالت ویرایش
+                this.isEditMode = false;
 
-          console.log(
-            '✅ سفارش بروزرسانی شد:',
-            response
-          );
+                // پاک کردن لیست فایل‌های حذف‌شده
+                this.deletedAttachmentIds = [];
 
-          alert(
-            'تغییرات با موفقیت ثبت شد!'
-          );
+                // نمایش پیام موفقیت
+                this.successMessage =
+                  'تغییرات سفارش با موفقیت ثبت شد.';
 
-          this.isEditMode = false;
+                this.showSuccessModal = true;
 
-          this.deletedAttachmentIds = [];
-
-          this.closeDialog();
-        },
+                this.cdr.detectChanges();
+              },
 
         error: (error) => {
 
