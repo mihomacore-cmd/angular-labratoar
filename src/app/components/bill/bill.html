@@ -35,7 +35,7 @@
 
 
     <!-- ===================================================== -->
-    <!-- Error -->
+    <!-- Error (در صورت نیاز) -->
     <!-- ===================================================== -->
 
     <div
@@ -445,18 +445,6 @@
 
 
       <!-- =================================================== -->
-      <!-- Send Error -->
-      <!-- =================================================== -->
-
-      <div
-        *ngIf="sendErrorMessage"
-        class="send-error"
-      >
-        {{ sendErrorMessage }}
-      </div>
-
-
-      <!-- =================================================== -->
       <!-- Footer -->
       <!-- =================================================== -->
 
@@ -512,10 +500,6 @@
 <!-- ========================================================= -->
 <!-- ORDER DETAIL DIALOG -->
 <!-- ========================================================= -->
-<!--
-  خیلی مهم:
-  این قسمت نباید داخل .bill-card باشد.
-  -->
 
 <div
   *ngIf="isOrderDialogOpen"
@@ -538,7 +522,7 @@
 
 
     <order-detail
-    *ngIf="selectedOrderId !== null"
+      *ngIf="selectedOrderId !== null"
       [orderId]="selectedOrderId"
       (closed)="closeOrderDialog()"
     >
@@ -546,4 +530,79 @@
 
   </div>
 
+</div>
+
+
+<!-- ========================================================= -->
+<!-- مودال موفقیت -->
+<!-- ========================================================= -->
+
+<div
+  *ngIf="showSuccessModal"
+  class="success-modal-backdrop"
+  (click)="$event.stopPropagation()"
+>
+  <div class="success-modal-content">
+    <div class="success-modal-header">
+      <h3>موفق</h3>
+      <button
+        class="success-close-button"
+        type="button"
+        (click)="closeSuccessModal()"
+      >
+        &times;
+      </button>
+    </div>
+    <div class="success-modal-body">
+      <div class="success-icon">
+        ✓
+      </div>
+      <p>{{ successMessage }}</p>
+    </div>
+    <div class="success-modal-footer">
+      <button
+        class="success-confirm-button"
+        type="button"
+        (click)="closeSuccessModal()"
+      >
+        تایید
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ========================================================= -->
+<!-- مودال خطا -->
+<!-- ========================================================= -->
+
+<div
+  *ngIf="showErrorModal"
+  class="error-modal-backdrop"
+  (click)="$event.stopPropagation()"
+>
+  <div class="error-modal-content">
+    <div class="error-modal-header">
+      <h3>خطا</h3>
+      <button
+        class="close-button"
+        type="button"
+        (click)="closeErrorModal()"
+      >
+        &times;
+      </button>
+    </div>
+    <div class="error-modal-body">
+      <p>{{ errorModalMessage }}</p>
+    </div>
+    <div class="error-modal-footer">
+      <button
+        class="confirm-button"
+        type="button"
+        (click)="closeErrorModal()"
+      >
+        تایید
+      </button>
+    </div>
+  </div>
 </div>

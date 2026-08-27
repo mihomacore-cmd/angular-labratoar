@@ -1150,7 +1150,7 @@ closeSuccessModal(): void {
       patientName:
         this.orderInfo.patientName,
 
-      status:
+      statusId:
         this.orderInfo.status,
 
       invoiceType:

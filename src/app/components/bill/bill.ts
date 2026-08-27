@@ -10,23 +10,15 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OrderDetailsComponent } from '../orderDetail/orderDetail';
-import {
-  forkJoin,
-  Observable
-} from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 
 import {
   KanbanService,
   OrderDetailResponse
 } from '../../servicies/kenbanService/kenban.service';
 
-import {
-  InvoiceService
-} from '../../servicies/invoiceService/InvoiceService';
-
-import {
-  Jalali
-} from '../../components/persianCalender/jalali';
+import { InvoiceService } from '../../servicies/invoiceService/InvoiceService';
+import { Jalali } from '../../components/persianCalender/jalali';
 
 
 // =========================================================
@@ -34,17 +26,11 @@ import {
 // =========================================================
 
 interface Attachment {
-
   id?: number;
-
   fileName: string;
-
   fileType: string;
-
   fileSize: number;
-
   viewUrl?: string;
-
   downloadUrl?: string;
 }
 
@@ -54,15 +40,10 @@ interface Attachment {
 // =========================================================
 
 interface BillItem {
-
   serviceType: string;
-
   toothNumber: string;
-
   quantity: number;
-
   unitPrice: number;
-
   totalPrice: number;
 }
 
@@ -72,33 +53,19 @@ interface BillItem {
 // =========================================================
 
 interface BillOrder {
-
   invoiceId: number;
-
   clinicName: string;
-
   doctorName: string;
-
   patientName: string;
-
   statusCode: string;
-
   invoiceType: string;
-
   phoneNumber: string;
-
   entryDate: string;
-
   exitDate: string;
-
   attachments: Attachment[];
-
   items: BillItem[];
-
   discountAmount: number;
-
   totalAmount: number;
-
   finalAmount: number;
 }
 
@@ -108,73 +75,39 @@ interface BillOrder {
 // =========================================================
 
 @Component({
-
   selector: 'app-bill-preview',
-
   standalone: true,
-
   imports: [
     CommonModule,
     FormsModule,
     OrderDetailsComponent
   ],
-
   templateUrl: './bill.html',
-
-  styleUrls: [
-    './bill.scss'
-  ]
-
+  styleUrls: ['./bill.scss']
 })
-export class BillPreviewComponent
-  implements OnInit {
-
+export class BillPreviewComponent implements OnInit {
 
   // =========================================================
   // Services
   // =========================================================
 
-  private kanbanService =
-    inject(KanbanService);
-
-
-  private invoiceService =
-    inject(InvoiceService);
+  private kanbanService = inject(KanbanService);
+  private invoiceService = inject(InvoiceService);
 
 
   // =========================================================
   // Inputs
   // =========================================================
 
-  /*
-   * تمام فاکتورهای انتخاب‌شده
-   */
-
-  @Input()
-  invoiceIds: number[] = [];
-
-
-  /*
-   * برای حالت تک‌فاکتور
-   */
-
-  @Input()
-  invoiceId: number | null = null;
+  @Input() invoiceIds: number[] = [];
+  @Input() invoiceId: number | null = null;
 
 
   // =========================================================
   // Outputs
   // =========================================================
 
-  /*
-   * فقط برای بستن خود Bill Dialog
-   *
-   * دیگر orderView نداریم.
-   */
-
-  @Output()
-  closed =
-    new EventEmitter<void>();
+  @Output() closed = new EventEmitter<void>();
 
 
   // =========================================================
@@ -182,12 +115,8 @@ export class BillPreviewComponent
   // =========================================================
 
   loading = false;
-
   sending = false;
-
   errorMessage = '';
-
-  sendErrorMessage = '';
 
 
   // =========================================================
@@ -201,18 +130,19 @@ export class BillPreviewComponent
   // Order Detail Dialog State
   // =========================================================
 
-  /*
-   * مشخص می‌کند دیالوگ جزئیات سفارش باز است یا نه.
-   */
-
   isOrderDialogOpen = false;
-
-
-  /*
-   * ID فاکتوری که کاربر روی «نمایش» آن کلیک کرده.
-   */
-
   selectedOrderId: number | null = null;
+
+
+  // =========================================================
+  // Modal State
+  // =========================================================
+
+  showSuccessModal = false;
+  successMessage = '';
+
+  showErrorModal = false;
+  errorModalMessage = '';
 
 
   // =========================================================
@@ -220,9 +150,7 @@ export class BillPreviewComponent
   // =========================================================
 
   ngOnInit(): void {
-
     this.prepareInvoiceIds();
-
     this.loadOrders();
   }
 
@@ -232,60 +160,20 @@ export class BillPreviewComponent
   // =========================================================
 
   private prepareInvoiceIds(): void {
-
-    /*
-     * اگر invoiceIds نداشتیم،
-     * از invoiceId استفاده می‌کنیم.
-     */
-
-    if (
-      (!this.invoiceIds ||
-        this.invoiceIds.length === 0) &&
-      this.invoiceId
-    ) {
-
-      this.invoiceIds = [
-        this.invoiceId
-      ];
+    if ((!this.invoiceIds || this.invoiceIds.length === 0) && this.invoiceId) {
+      this.invoiceIds = [this.invoiceId];
     }
 
-
-    /*
-     * حذف IDهای نامعتبر و تکراری
-     */
-
     this.invoiceIds = [
-
       ...new Set(
-
         (this.invoiceIds || [])
-
-          .map(
-            id => Number(id)
-          )
-
-          .filter(
-            id =>
-              Number.isFinite(id) &&
-              id > 0
-          )
-
+          .map(id => Number(id))
+          .filter(id => Number.isFinite(id) && id > 0)
       )
-
     ];
 
-
-    /*
-     * برای سازگاری با حالت تک‌فاکتور
-     */
-
-    if (
-      !this.invoiceId &&
-      this.invoiceIds.length > 0
-    ) {
-
-      this.invoiceId =
-        this.invoiceIds[0];
+    if (!this.invoiceId && this.invoiceIds.length > 0) {
+      this.invoiceId = this.invoiceIds[0];
     }
   }
 
@@ -295,79 +183,34 @@ export class BillPreviewComponent
   // =========================================================
 
   loadOrders(): void {
-
-    if (
-      !this.invoiceIds ||
-      this.invoiceIds.length === 0
-    ) {
-
-      this.errorMessage =
-        'شناسه فاکتور معتبر نیست.';
-
+    if (!this.invoiceIds || this.invoiceIds.length === 0) {
+      this.errorMessage = 'شناسه فاکتور معتبر نیست.';
       return;
     }
 
-
     this.loading = true;
-
     this.errorMessage = '';
-
     this.orders = [];
 
+    const requests: Observable<OrderDetailResponse>[] = this.invoiceIds.map(
+      id => this.kanbanService.getOrderById(id)
+    );
 
-    const requests:
-      Observable<OrderDetailResponse>[] =
-
-      this.invoiceIds.map(
-        id =>
-          this.kanbanService
-            .getOrderById(id)
-      );
-
-
-    forkJoin(requests)
-      .subscribe({
-
-        next: (
-          responses
-        ) => {
-
-          this.orders =
-            responses.map(
-              (
-                data,
-                index
-              ) =>
-
-                this.mapOrder(
-                  data,
-                  this.invoiceIds[index]
-                )
-            );
-
-
-          this.loading = false;
-        },
-
-
-        error: (
-          error
-        ) => {
-
-          console.error(
-            'خطا در دریافت جزئیات فاکتورها:',
-            error
-          );
-
-
-          this.errorMessage =
-            'خطا در دریافت اطلاعات فاکتورها. لطفاً مجدداً تلاش کنید.';
-
-
-          this.loading = false;
-        }
-
-      });
+    forkJoin(requests).subscribe({
+      next: (responses) => {
+        this.orders = responses.map((data, index) =>
+          this.mapOrder(data, this.invoiceIds[index])
+        );
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('خطا در دریافت جزئیات فاکتورها:', error);
+        this.errorMessage = 'خطا در دریافت اطلاعات فاکتورها. لطفاً مجدداً تلاش کنید.';
+        this.loading = false;
+        // نمایش خطا با مودال
+        this.showErrorModalMessage('خطا در دریافت اطلاعات فاکتورها. لطفاً مجدداً تلاش کنید.');
+      }
+    });
   }
 
 
@@ -375,30 +218,9 @@ export class BillPreviewComponent
   // View Order
   // =========================================================
 
-  viewOrder(
-    id: number
-  ): void {
-
-    /*
-     * ID نامعتبر
-     */
-
-    if (!id) {
-      return;
-    }
-
-
-    /*
-     * ID فاکتور انتخاب‌شده
-     */
-
+  viewOrder(id: number): void {
+    if (!id) return;
     this.selectedOrderId = id;
-
-
-    /*
-     * باز کردن دیالوگ جزئیات
-     */
-
     this.isOrderDialogOpen = true;
   }
 
@@ -408,9 +230,7 @@ export class BillPreviewComponent
   // =========================================================
 
   closeOrderDialog(): void {
-
     this.isOrderDialogOpen = false;
-
     this.selectedOrderId = null;
   }
 
@@ -419,164 +239,44 @@ export class BillPreviewComponent
   // Map API Response
   // =========================================================
 
-  private mapOrder(
-    data: OrderDetailResponse,
-    invoiceId: number
-  ): BillOrder {
+  private mapOrder(data: OrderDetailResponse, invoiceId: number): BillOrder {
+    const entryDate = data.entryDate ? this.convertToJalali(data.entryDate) : '';
+    const exitDate = data.exitDate ? this.convertToJalali(data.exitDate) : '';
 
-    const entryDate =
-      data.entryDate
-        ? this.convertToJalali(
-            data.entryDate
-          )
-        : '';
+    const items: BillItem[] = (data.items || []).map(item => ({
+      serviceType: item.serviceType || '',
+      toothNumber: item.toothNumber || '',
+      quantity: Number(item.quantity || 1),
+      unitPrice: Number(item.unitPrice || 0),
+      totalPrice: Number(item.totalPrice || (Number(item.quantity || 1) * Number(item.unitPrice || 0)))
+    }));
 
-
-    const exitDate =
-      data.exitDate
-        ? this.convertToJalali(
-            data.exitDate
-          )
-        : '';
-
-
-    const items: BillItem[] =
-
-      (data.items || []).map(
-        item => ({
-
-          serviceType:
-            item.serviceType || '',
-
-          toothNumber:
-            item.toothNumber || '',
-
-          quantity:
-            Number(
-              item.quantity || 1
-            ),
-
-          unitPrice:
-            Number(
-              item.unitPrice || 0
-            ),
-
-          totalPrice:
-            Number(
-              item.totalPrice ||
-              (
-                Number(
-                  item.quantity || 1
-                ) *
-                Number(
-                  item.unitPrice || 0
-                )
-              )
-            )
-
-        })
-      );
-
-
-    const totalAmount =
-      items.reduce(
-
-        (
-          sum,
-          item
-        ) =>
-
-          sum +
-          (
-            Number(
-              item.quantity || 0
-            ) *
-            Number(
-              item.unitPrice || 0
-            )
-          ),
-
-        0
-      );
-
-
-    const discountAmount =
-      Number(
-        data.discountAmount || 0
-      );
-
-
-    const finalAmount =
-      Math.max(
-        totalAmount -
-        discountAmount,
-        0
-      );
-
+    const totalAmount = items.reduce((sum, item) => sum + (Number(item.quantity || 0) * Number(item.unitPrice || 0)), 0);
+    const discountAmount = Number(data.discountAmount || 0);
+    const finalAmount = Math.max(totalAmount - discountAmount, 0);
 
     return {
-
       invoiceId,
-
-      clinicName:
-        data.clinicName || '',
-
-      doctorName:
-        data.doctorName || '',
-
-      patientName:
-        data.patientName || '',
-
-      statusCode:
-        data.statusCode || '',
-
-      invoiceType:
-        this.getInvoiceTypeDisplay(
-          data.invoiceType
-        ),
-
-      phoneNumber:
-        data.phoneNumber || '',
-
+      clinicName: data.clinicName || '',
+      doctorName: data.doctorName || '',
+      patientName: data.patientName || '',
+      statusCode: data.statusCode || '',
+      invoiceType: this.getInvoiceTypeDisplay(data.invoiceType),
+      phoneNumber: data.phoneNumber || '',
       entryDate,
-
       exitDate,
-
-      attachments:
-        (data.attachments || [])
-          .map(
-            (att: any) => ({
-
-              id: att.id,
-
-              fileName:
-                att.fileName || '',
-
-              fileType:
-                att.fileType || '',
-
-              fileSize:
-                Number(
-                  att.fileSize || 0
-                ),
-
-              viewUrl:
-                att.viewUrl,
-
-              downloadUrl:
-                att.downloadUrl
-
-            })
-          ),
-
+      attachments: (data.attachments || []).map((att: any) => ({
+        id: att.id,
+        fileName: att.fileName || '',
+        fileType: att.fileType || '',
+        fileSize: Number(att.fileSize || 0),
+        viewUrl: att.viewUrl,
+        downloadUrl: att.downloadUrl
+      })),
       items,
-
       discountAmount,
-
       totalAmount,
-
       finalAmount
-
     };
   }
 
@@ -585,23 +285,12 @@ export class BillPreviewComponent
   // Invoice Type
   // =========================================================
 
-  private getInvoiceTypeDisplay(
-    invoiceType: string
-  ): string {
-
+  private getInvoiceTypeDisplay(invoiceType: string): string {
     switch (invoiceType) {
-
-      case 'daily':
-        return 'روزانه';
-
-      case 'monthly':
-        return 'ماهانه';
-
-      case 'final':
-        return 'نهایی';
-
-      default:
-        return invoiceType || '';
+      case 'daily': return 'روزانه';
+      case 'monthly': return 'ماهانه';
+      case 'final': return 'نهایی';
+      default: return invoiceType || '';
     }
   }
 
@@ -610,138 +299,37 @@ export class BillPreviewComponent
   // Convert Date To Jalali
   // =========================================================
 
-  private convertToJalali(
-    dateStr: string
-  ): string {
-
-    if (!dateStr) {
-      return '';
-    }
-
-
+  private convertToJalali(dateStr: string): string {
+    if (!dateStr) return '';
     try {
-
-      const parts =
-        dateStr.split('-');
-
-
-      if (parts.length < 3) {
-        return dateStr;
-      }
-
-
-      const year =
-        parseInt(
-          parts[0],
-          10
-        );
-
-
-      const month =
-        parseInt(
-          parts[1],
-          10
-        );
-
-
-      const day =
-        parseInt(
-          parts[2],
-          10
-        );
-
-
-      const gregorianDate =
-        new Date(
-
-          Date.UTC(
-            year,
-            month - 1,
-            day
-          )
-
-        );
-
-
-      const jalali =
-        Jalali.toJalali(
-          gregorianDate
-        );
-
-
-      return (
-        `${jalali.year}/` +
-        `${String(jalali.month).padStart(2, '0')}/` +
-        `${String(jalali.day).padStart(2, '0')}`
-      );
-
+      const parts = dateStr.split('-');
+      if (parts.length < 3) return dateStr;
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10);
+      const day = parseInt(parts[2], 10);
+      const gregorianDate = new Date(Date.UTC(year, month - 1, day));
+      const jalali = Jalali.toJalali(gregorianDate);
+      return `${jalali.year}/${String(jalali.month).padStart(2, '0')}/${String(jalali.day).padStart(2, '0')}`;
     } catch {
-
       return dateStr;
     }
   }
 
 
   // =========================================================
-  // Grand Total
+  // Grand Totals
   // =========================================================
 
   get grandTotalAmount(): number {
-
-    return this.orders.reduce(
-
-      (
-        sum,
-        order
-      ) =>
-
-        sum +
-        order.totalAmount,
-
-      0
-    );
+    return this.orders.reduce((sum, order) => sum + order.totalAmount, 0);
   }
-
-
-  // =========================================================
-  // Grand Discount
-  // =========================================================
 
   get grandDiscountAmount(): number {
-
-    return this.orders.reduce(
-
-      (
-        sum,
-        order
-      ) =>
-
-        sum +
-        order.discountAmount,
-
-      0
-    );
+    return this.orders.reduce((sum, order) => sum + order.discountAmount, 0);
   }
 
-
-  // =========================================================
-  // Grand Final
-  // =========================================================
-
   get grandFinalAmount(): number {
-
-    return this.orders.reduce(
-
-      (
-        sum,
-        order
-      ) =>
-
-        sum +
-        order.finalAmount,
-
-      0
-    );
+    return this.orders.reduce((sum, order) => sum + order.finalAmount, 0);
   }
 
 
@@ -750,19 +338,7 @@ export class BillPreviewComponent
   // =========================================================
 
   get selectedPhoneNumber(): string {
-
-    if (
-      this.orders.length === 0
-    ) {
-
-      return '';
-    }
-
-
-    return (
-      this.orders[0].phoneNumber ||
-      ''
-    );
+    return this.orders.length > 0 ? this.orders[0].phoneNumber || '' : '';
   }
 
 
@@ -771,30 +347,11 @@ export class BillPreviewComponent
   // =========================================================
 
   close(): void {
-
-    if (this.sending) {
-      return;
-    }
-
-
-    /*
-     * اگر Order Detail باز است،
-     * اول همان را ببند.
-     */
-
+    if (this.sending) return;
     if (this.isOrderDialogOpen) {
-
       this.closeOrderDialog();
-
       return;
     }
-
-
-    /*
-     * در غیر این صورت
-     * خود Bill Dialog بسته می‌شود.
-     */
-
     this.closed.emit();
   }
 
@@ -803,28 +360,11 @@ export class BillPreviewComponent
   // Format Money
   // =========================================================
 
-  formatMoney(
-    value: number
-  ): string {
-
-    if (
-      value === undefined ||
-      value === null ||
-      isNaN(value)
-    ) {
-
+  formatMoney(value: number): string {
+    if (value === undefined || value === null || isNaN(value)) {
       return '۰ ریال';
     }
-
-
-    return (
-
-      Number(value)
-        .toLocaleString('fa-IR') +
-
-      ' ریال'
-
-    );
+    return Number(value).toLocaleString('fa-IR') + ' ریال';
   }
 
 
@@ -832,29 +372,14 @@ export class BillPreviewComponent
   // Status Class
   // =========================================================
 
-  getStatusClass(
-    status: string
-  ): string {
-
+  getStatusClass(status: string): string {
     switch (status) {
-
-      case 'در انتظار پرداخت':
-        return 'status-pending-payment';
-
-      case 'انتظار ارسال فاکتور':
-        return 'status-waiting-invoice';
-
-      case 'پرداخت شده':
-        return 'status-paid';
-
-      case 'در حال ساخت':
-        return 'status-building';
-
-      case 'تحویل داده شده':
-        return 'status-delivered';
-
-      default:
-        return 'status-default';
+      case 'در انتظار پرداخت': return 'status-pending-payment';
+      case 'انتظار ارسال فاکتور': return 'status-waiting-invoice';
+      case 'پرداخت شده': return 'status-paid';
+      case 'در حال ساخت': return 'status-building';
+      case 'تحویل داده شده': return 'status-delivered';
+      default: return 'status-default';
     }
   }
 
@@ -864,69 +389,61 @@ export class BillPreviewComponent
   // =========================================================
 
   sendSms(): void {
-
-    if (
-      !this.invoiceIds ||
-      this.invoiceIds.length === 0
-    ) {
-
+    if (!this.invoiceIds || this.invoiceIds.length === 0 || this.sending) {
       return;
     }
-
-
-    if (this.sending) {
-      return;
-    }
-
 
     this.sending = true;
 
-    this.sendErrorMessage = '';
+    const requests = this.invoiceIds.map(id => this.invoiceService.sendSms(id));
+
+    forkJoin(requests).subscribe({
+      next: () => {
+        this.sending = false;
+        this.showSuccessModalMessage(
+          `پیامک برای ${this.invoiceIds.length} فاکتور با موفقیت ارسال شد.`
+        );
+      },
+      error: (error) => {
+        console.error('خطا در ارسال پیامک:', error);
+        this.sending = false;
+        this.showErrorModalMessage('در ارسال پیامک خطایی رخ داد. لطفاً مجدداً تلاش کنید.');
+      }
+    });
+  }
 
 
-    const requests =
-      this.invoiceIds.map(
-        id =>
-          this.invoiceService
-            .sendSms(id)
-      );
+  // =========================================================
+  // Modal Helpers
+  // =========================================================
+
+  private showSuccessModalMessage(message: string): void {
+    this.successMessage = message;
+    this.showSuccessModal = true;
+  }
+
+  private showErrorModalMessage(message: string): void {
+    this.errorModalMessage = message;
+    this.showErrorModal = true;
+  }
 
 
-    forkJoin(requests)
-      .subscribe({
+  // =========================================================
+  // Close Modals
+  // =========================================================
 
-        next: () => {
+  closeSuccessModal(): void {
+    this.showSuccessModal = false;
+    this.successMessage = '';
+    // بعد از نمایش موفقیت، دیالوگ را می‌بندیم
+    if (!this.showErrorModal) {
+      this.closed.emit();
+    }
+  }
 
-          this.sending = false;
-
-
-          alert(
-            `پیامک برای ${this.invoiceIds.length} فاکتور با موفقیت ارسال شد.`
-          );
-
-
-          this.closed.emit();
-        },
-
-
-        error: (
-          error
-        ) => {
-
-          console.error(
-            'خطا در ارسال پیامک:',
-            error
-          );
-
-
-          this.sending = false;
-
-
-          this.sendErrorMessage =
-            'در ارسال پیامک خطایی رخ داد. لطفاً مجدداً تلاش کنید.';
-        }
-
-      });
+  closeErrorModal(): void {
+    this.showErrorModal = false;
+    this.errorModalMessage = '';
   }
 
 
@@ -935,8 +452,6 @@ export class BillPreviewComponent
   // =========================================================
 
   retry(): void {
-
     this.loadOrders();
   }
-
 }
