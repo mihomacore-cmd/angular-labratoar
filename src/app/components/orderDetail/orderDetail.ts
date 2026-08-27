@@ -1486,6 +1486,34 @@ viewAttachment(file: Attachment): void {
       : 'نامشخص';
   }
 
+// orderDetail.component.ts
+downloadAttachment(file: Attachment): void {
+  if (!file.id) {
+    console.error('❌ شناسه فایل موجود نیست.');
+    return;
+  }
+
+  this.attachmentService.downloadAttachment(file.id).subscribe({
+    next: (blob: Blob) => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = file.fileName; // نام فایل اصلی
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    },
+    error: (error) => {
+      console.error('❌ خطا در دانلود فایل:', error);
+      this.validationErrorMessage = 'دانلود فایل با خطا مواجه شد.';
+      this.showValidationModal = true;
+      this.cdr.detectChanges();
+    }
+  });
+}
+
+
   // ============================================================
   // Close
   // ============================================================

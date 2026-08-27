@@ -887,6 +887,103 @@ table {
     box-shadow:
       0 0 0 3px rgba(25, 118, 210, 0.15);
   }
+
+}
+
+
+
+
+/* ============================================================
+   Download Attachment Button
+   ============================================================ */
+
+.download-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  min-width: 82px;
+  height: 36px;
+  padding: 0 14px;
+
+  background: linear-gradient(
+    135deg,
+    #ecfdf5 0%,
+    #d1fae5 100%
+  );
+
+  color: #047857;
+
+  border: 1px solid #a7f3d0;
+  border-radius: 9px;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+
+  line-height: 1;
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.15s ease;
+
+  // آیکون دانلود
+  &::before {
+    content: '↓';
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 18px;
+    height: 18px;
+
+    font-size: 17px;
+    font-weight: 800;
+
+    transition: transform 0.25s ease;
+  }
+
+  &:hover {
+    background: linear-gradient(
+      135deg,
+      #0d9488 0%,
+      #0f766e 100%
+    );
+
+    border-color: #0d9488;
+    color: white;
+
+    box-shadow:
+      0 5px 14px rgba(13, 148, 136, 0.25);
+
+    transform: translateY(-2px);
+
+    &::before {
+      transform: translateY(2px);
+    }
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.97);
+
+    box-shadow:
+      0 2px 6px rgba(13, 148, 136, 0.2);
+  }
+
+  &:focus-visible {
+    outline: none;
+
+    box-shadow:
+      0 0 0 3px rgba(13, 148, 136, 0.15),
+      0 5px 14px rgba(13, 148, 136, 0.2);
+  }
 }
 
 // =====================================================

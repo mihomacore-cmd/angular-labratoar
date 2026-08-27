@@ -256,18 +256,34 @@
           <span class="file-name">{{ file.fileName }}</span>
           <span class="file-size">({{ (file.fileSize / 1024) | number:'1.0-0' }} KB)</span>
           <span class="file-type">[{{ file.fileType }}]</span>
-          <div class="file-actions">
-            <button
-              *ngIf="file.viewUrl"
-              type="button"
-              class="view-link"
-              (click)="viewAttachment(file)"
-            >
-              نمایش
-            </button>
-            <a *ngIf="file.downloadUrl" [href]="file.downloadUrl" download class="download-link">دانلود</a>
-            <button type="button" class="delete-file-btn" (click)="removeAttachment(i)" [disabled]="!isEditMode">حذف</button>
-          </div>
+                          <!-- در بخش attachments-list -->
+                <div class="file-actions">
+                  <button
+                    *ngIf="file.viewUrl"
+                    type="button"
+                    class="view-link"
+                    (click)="viewAttachment(file)"
+                  >
+                    نمایش
+                  </button>
+
+                  <button
+                    type="button"
+                    class="download-link"
+                    (click)="downloadAttachment(file)"
+                  >
+                    دانلود
+                  </button>
+
+                  <button
+                    type="button"
+                    class="delete-file-btn"
+                    (click)="removeAttachment(i)"
+                    [disabled]="!isEditMode"
+                  >
+                    حذف
+                  </button>
+                </div>
         </li>
       </ul>
     </div>
