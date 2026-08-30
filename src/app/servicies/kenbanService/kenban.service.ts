@@ -47,6 +47,7 @@ export interface OrderDetailResponse {
   status: number;
   statusCode: string;
   invoiceType: string;
+  invoiceNumber?: string;   // <-- اضافه شد
   phoneNumber:string;
   entryDate: string;
   exitDate: string;

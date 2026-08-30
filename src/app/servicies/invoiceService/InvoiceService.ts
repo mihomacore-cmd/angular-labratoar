@@ -33,16 +33,29 @@ export class InvoiceService {
   }
 
 
-sendSms(invoiceId: number): Observable<any> {
+  sendSms(invoiceId: number): Observable<any> {
     const token = localStorage.getItem('access_token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`
     });
-    // استفاده از مسیر با {id}
     return this.http.get(`${this.baseUrl}/sendSms/${invoiceId}`, { headers });
-}
+  }
 
 
-
-
+  // =============================================================
+  // متد اصلاح‌شده: ثبت شماره فاکتور برای چند سفارش
+  // =============================================================
+  setInvoiceNumber(orderIds: number[], invoiceNumber: string): Observable<string> {
+    const token = localStorage.getItem('access_token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+    const body = { orderIds, invoiceNumber };
+    
+    return this.http.post(`${this.baseUrl}/setInvoiceNumber`, body, {
+      headers,
+      responseType: 'text'   // <-- کلید حل مشکل
+    });
+  }
 }

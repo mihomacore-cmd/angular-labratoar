@@ -54,6 +54,7 @@ interface BillItem {
 
 interface BillOrder {
   invoiceId: number;
+  invoiceNumber?: string; 
   clinicName: string;
   doctorName: string;
   patientName: string;
@@ -90,6 +91,7 @@ export class BillPreviewComponent implements OnInit {
   // =========================================================
   // Services
   // =========================================================
+private successAction: 'setInvoice' | 'sendSms' = 'setInvoice';
 
   private kanbanService = inject(KanbanService);
   private invoiceService = inject(InvoiceService);
@@ -143,6 +145,15 @@ export class BillPreviewComponent implements OnInit {
 
   showErrorModal = false;
   errorModalMessage = '';
+
+
+  // =========================================================
+  // State for setting invoice number
+  // =========================================================
+
+  invoiceNumberToSet = '';
+  settingInvoiceNumber = false;
+  setInvoiceError = '';
 
 
   // =========================================================
@@ -207,7 +218,6 @@ export class BillPreviewComponent implements OnInit {
         console.error('خطا در دریافت جزئیات فاکتورها:', error);
         this.errorMessage = 'خطا در دریافت اطلاعات فاکتورها. لطفاً مجدداً تلاش کنید.';
         this.loading = false;
-        // نمایش خطا با مودال
         this.showErrorModalMessage('خطا در دریافت اطلاعات فاکتورها. لطفاً مجدداً تلاش کنید.');
       }
     });
@@ -262,6 +272,7 @@ export class BillPreviewComponent implements OnInit {
       patientName: data.patientName || '',
       statusCode: data.statusCode || '',
       invoiceType: this.getInvoiceTypeDisplay(data.invoiceType),
+      invoiceNumber: data.invoiceNumber || '',
       phoneNumber: data.phoneNumber || '',
       entryDate,
       exitDate,
@@ -400,9 +411,10 @@ export class BillPreviewComponent implements OnInit {
     forkJoin(requests).subscribe({
       next: () => {
         this.sending = false;
-        this.showSuccessModalMessage(
-          `پیامک برای ${this.invoiceIds.length} فاکتور با موفقیت ارسال شد.`
-        );
+       this.showSuccessModalMessage(
+              `پیامک برای ${this.invoiceIds.length} فاکتور با موفقیت ارسال شد.`,
+              'sendSms'
+            );
       },
       error: (error) => {
         console.error('خطا در ارسال پیامک:', error);
@@ -414,14 +426,53 @@ export class BillPreviewComponent implements OnInit {
 
 
   // =========================================================
+  // Set Invoice Number for current orders
+  // =========================================================
+
+  setInvoiceNumberForOrders(): void {
+    const trimmed = this.invoiceNumberToSet.trim();
+    if (!trimmed) {
+      this.setInvoiceError = 'لطفاً شماره فاکتور را وارد کنید.';
+      return;
+    }
+
+    if (!this.invoiceIds || this.invoiceIds.length === 0) {
+      this.setInvoiceError = 'هیچ سفارشی برای ثبت شماره وجود ندارد.';
+      return;
+    }
+
+    this.settingInvoiceNumber = true;
+    this.setInvoiceError = '';
+
+    this.invoiceService.setInvoiceNumber(this.invoiceIds, trimmed).subscribe({
+      next: (responseMessage: string) => {
+        this.settingInvoiceNumber = false;
+        // استفاده از پیام دریافتی از سرور
+          this.showSuccessModalMessage(
+            responseMessage || `شماره فاکتور "${trimmed}" برای ${this.invoiceIds.length} سفارش با موفقیت ثبت شد.`,
+            'setInvoice'
+          );        // بارگذاری مجدد برای نمایش شماره جدید
+        this.loadOrders();
+      },
+      error: (err) => {
+        console.error('خطا در ثبت شماره فاکتور:', err);
+        this.settingInvoiceNumber = false;
+        this.setInvoiceError = 'ثبت شماره فاکتور با خطا مواجه شد. لطفاً مجدداً تلاش کنید.';
+        this.showErrorModalMessage(this.setInvoiceError);
+      }
+    });
+  }
+
+
+  // =========================================================
   // Modal Helpers
   // =========================================================
 
-  private showSuccessModalMessage(message: string): void {
-    this.successMessage = message;
-    this.showSuccessModal = true;
-  }
-
+ private showSuccessModalMessage(message: string, action: 'setInvoice' | 'sendSms' = 'setInvoice'): void {
+  this.successMessage = message;
+  this.successAction = action;
+  this.showSuccessModal = true;
+}
   private showErrorModalMessage(message: string): void {
     this.errorModalMessage = message;
     this.showErrorModal = true;
@@ -435,10 +486,10 @@ export class BillPreviewComponent implements OnInit {
   closeSuccessModal(): void {
     this.showSuccessModal = false;
     this.successMessage = '';
-    // بعد از نمایش موفقیت، دیالوگ را می‌بندیم
-    if (!this.showErrorModal) {
-      this.closed.emit();
-    }
+      if (this.successAction === 'sendSms') {
+          this.closed.emit();
+        }
+
   }
 
   closeErrorModal(): void {
@@ -454,4 +505,11 @@ export class BillPreviewComponent implements OnInit {
   retry(): void {
     this.loadOrders();
   }
+
+
+  get allOrdersHaveInvoiceNumber(): boolean {
+    if (this.orders.length === 0) return false;
+    return this.orders.every(order => order.invoiceNumber && order.invoiceNumber.trim() !== '');
+  }
+
 }

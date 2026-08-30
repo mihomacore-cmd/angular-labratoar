@@ -918,6 +918,7 @@ export class FactorListComponent implements OnInit, OnDestroy {
     this.selectedInvoiceId = null;
 
 
+
     /*
      * بعد از بسته شدن صورتحساب،
      * انتخاب‌ها پاک می‌شوند.
@@ -930,6 +931,7 @@ export class FactorListComponent implements OnInit, OnDestroy {
 
       }
     );
+     this.loadInvoices();
 
 
     this.cdr.markForCheck();

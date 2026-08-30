@@ -115,6 +115,42 @@
 
 
       <!-- =================================================== -->
+      <!-- Set Invoice Number Section -->
+      <!-- =================================================== -->
+
+      <div
+        class="set-invoice-section"
+        *ngIf="orders.length > 0"
+      >
+        <div class="set-invoice-group">
+          <input
+            type="text"
+            class="set-invoice-input"
+            placeholder="شماره فاکتور جدید را وارد کنید..."
+            [(ngModel)]="invoiceNumberToSet"
+            [disabled]="settingInvoiceNumber"
+            (keydown.enter)="setInvoiceNumberForOrders()"
+          />
+          <button
+            type="button"
+            class="btn-set-invoice"
+            (click)="setInvoiceNumberForOrders()"
+            [disabled]="settingInvoiceNumber || !invoiceNumberToSet.trim()"
+          >
+            <span *ngIf="!settingInvoiceNumber">📝 ثبت شماره فاکتور</span>
+            <span *ngIf="settingInvoiceNumber">⏳ در حال ثبت...</span>
+          </button>
+        </div>
+        <div
+          *ngIf="setInvoiceError"
+          class="set-invoice-error"
+        >
+          {{ setInvoiceError }}
+        </div>
+      </div>
+
+
+      <!-- =================================================== -->
       <!-- Selected Phone -->
       <!-- =================================================== -->
 
@@ -175,201 +211,93 @@
         class="invoice-list"
       >
 
-        <!-- ================================================= -->
-        <!-- Table Header -->
-        <!-- ================================================= -->
-
+        <!-- هدر جدول -->
         <div class="invoice-table-header">
 
+          <!-- شماره فاکتور -->
           <div class="col-invoice">
-            فاکتور
+            شماره فاکتور
           </div>
 
-          <div class="col-patient">
-            بیمار
-          </div>
-
-          <div class="col-doctor">
-            پزشک
-          </div>
-
+          <!-- نام کلینیک -->
           <div class="col-clinic">
-            کلینیک
+            نام کلینیک
           </div>
 
-          <div class="col-date">
-            تاریخ
+          <!-- نام پزشک -->
+          <div class="col-doctor">
+            نام پزشک
           </div>
 
+          <!-- وضعیت -->
           <div class="col-status">
             وضعیت
           </div>
 
+          <!-- مبلغ نهایی -->
           <div class="col-amount">
             مبلغ نهایی
           </div>
 
+          <!-- عملیات -->
           <div class="col-action">
             عملیات
           </div>
 
         </div>
 
-
-        <!-- ================================================= -->
-        <!-- Invoice Rows -->
-        <!-- ================================================= -->
-
+        <!-- ردیف‌ها -->
         <div
           class="invoice-row"
-          *ngFor="
-            let order of orders;
-            let invoiceIndex = index
-          "
+          *ngFor="let order of orders; let invoiceIndex = index"
         >
 
-          <!-- Invoice -->
-
+          <!-- شماره فاکتور -->
           <div class="col-invoice">
-
-            <span class="mobile-label">
-              فاکتور
-            </span>
-
-            <div class="invoice-number">
-
-              <span class="invoice-icon">
-                #
-              </span>
-
-              <div>
-
-                <strong>
-                  {{ order.invoiceId }}
-                </strong>
-
-                <small>
-                  فاکتور {{ invoiceIndex + 1 }}
-                </small>
-
-              </div>
-
-            </div>
-
+            <span class="mobile-label">شماره فاکتور</span>
+            <strong>{{ order.invoiceNumber || '—' }}</strong>
           </div>
 
-
-          <!-- Patient -->
-
-          <div class="col-patient">
-
-            <span class="mobile-label">
-              بیمار
-            </span>
-
-            <strong>
-              {{ order.patientName || '—' }}
-            </strong>
-
-          </div>
-
-
-          <!-- Doctor -->
-
-          <div class="col-doctor">
-
-            <span class="mobile-label">
-              پزشک
-            </span>
-
-            <span>
-              {{ order.doctorName || '—' }}
-            </span>
-
-          </div>
-
-
-          <!-- Clinic -->
-
+          <!-- نام کلینیک -->
           <div class="col-clinic">
-
-            <span class="mobile-label">
-              کلینیک
-            </span>
-
-            <span>
-              {{ order.clinicName || '—' }}
-            </span>
-
+            <span class="mobile-label">نام کلینیک</span>
+            <span>{{ order.clinicName || '—' }}</span>
           </div>
 
-
-          <!-- Date -->
-
-          <div class="col-date">
-
-            <span class="mobile-label">
-              تاریخ
-            </span>
-
-            <span>
-              {{ order.entryDate || '—' }}
-            </span>
-
+          <!-- نام پزشک -->
+          <div class="col-doctor">
+            <span class="mobile-label">نام پزشک</span>
+            <span>{{ order.doctorName || '—' }}</span>
           </div>
 
-
-          <!-- Status -->
-
+          <!-- وضعیت -->
           <div class="col-status">
-
-            <span class="mobile-label">
-              وضعیت
-            </span>
-
+            <span class="mobile-label">وضعیت</span>
             <span
               class="status-badge"
               [ngClass]="getStatusClass(order.statusCode)"
             >
               {{ order.statusCode || '—' }}
             </span>
-
           </div>
 
-
-          <!-- Amount -->
-
+          <!-- مبلغ نهایی -->
           <div class="col-amount">
-
-            <span class="mobile-label">
-              مبلغ نهایی
-            </span>
-
-            <strong>
-              {{ formatMoney(order.finalAmount) }}
-            </strong>
-
+            <span class="mobile-label">مبلغ نهایی</span>
+            <strong>{{ formatMoney(order.finalAmount) }}</strong>
           </div>
 
-
-          <!-- Action -->
-
+          <!-- عملیات -->
           <div class="col-action">
-
+            <span class="mobile-label">عملیات</span>
             <button
               type="button"
               class="btn-view"
               (click)="viewOrder(order.invoiceId)"
             >
-
-              <span class="view-icon">
-                👁
-              </span>
-
+              <span class="view-icon">👁</span>
               نمایش
-
             </button>
-
           </div>
 
         </div>
@@ -455,7 +383,8 @@
           class="btn-send"
           [disabled]="
             sending ||
-            orders.length === 0
+            orders.length === 0 ||
+            !allOrdersHaveInvoiceNumber
           "
           (click)="sendSms()"
         >
@@ -463,20 +392,21 @@
           <ng-container
             *ngIf="!sending; else sendingTemplate"
           >
-
             📱 ارسال پیامک جهت واریز صورتحساب
-
           </ng-container>
 
-
           <ng-template #sendingTemplate>
-
             ⏳ در حال ارسال پیامک...
-
           </ng-template>
 
         </button>
 
+        <div
+          *ngIf="orders.length > 0 && !allOrdersHaveInvoiceNumber"
+          class="hint-text"
+        >
+          ⚠️ برای فعال‌سازی دکمه ارسال، ابتدا شماره فاکتور را ثبت کنید.
+        </div>
 
         <button
           type="button"
@@ -484,9 +414,7 @@
           [disabled]="sending"
           (click)="close()"
         >
-
           بستن
-
         </button>
 
       </div>
@@ -520,11 +448,10 @@
       ✕
     </button>
 
-
     <order-detail
       *ngIf="selectedOrderId !== null"
       [orderId]="selectedOrderId"
-       [disableEdit]="false"
+      [disableEdit]="false"
       (closed)="closeOrderDialog()"
     >
     </order-detail>
@@ -535,75 +462,98 @@
 
 
 <!-- ========================================================= -->
-<!-- مودال موفقیت -->
+<!-- مودال موفقیت (کامل) -->
 <!-- ========================================================= -->
 
 <div
   *ngIf="showSuccessModal"
   class="success-modal-backdrop"
-  (click)="$event.stopPropagation()"
+  (click)="closeSuccessModal()"
 >
-  <div class="success-modal-content">
-    <div class="success-modal-header">
-      <h3>موفق</h3>
-      <button
-        class="success-close-button"
-        type="button"
-        (click)="closeSuccessModal()"
-      >
-        &times;
-      </button>
+  <div
+    class="success-modal-content"
+    (click)="$event.stopPropagation()"
+  >
+
+    <button
+      type="button"
+      class="success-close-button"
+      (click)="closeSuccessModal()"
+      aria-label="بستن"
+    >
+      ×
+    </button>
+
+    <div class="success-icon-wrapper">
+      <div class="success-icon">✓</div>
     </div>
+
+    <div class="success-modal-header">
+      <h3>ثبت موفق</h3>
+    </div>
+
     <div class="success-modal-body">
-      <div class="success-icon">
-        ✓
-      </div>
       <p>{{ successMessage }}</p>
     </div>
+
     <div class="success-modal-footer">
       <button
-        class="success-confirm-button"
         type="button"
+        class="success-confirm-button"
         (click)="closeSuccessModal()"
       >
-        تایید
+        متوجه شدم
       </button>
     </div>
+
   </div>
 </div>
 
 
 <!-- ========================================================= -->
-<!-- مودال خطا -->
+<!-- مودال خطا (کامل) -->
 <!-- ========================================================= -->
 
 <div
   *ngIf="showErrorModal"
   class="error-modal-backdrop"
-  (click)="$event.stopPropagation()"
+  (click)="closeErrorModal()"
 >
-  <div class="error-modal-content">
+  <div
+    class="error-modal-content"
+    (click)="$event.stopPropagation()"
+  >
+
+    <button
+      type="button"
+      class="error-close-button"
+      (click)="closeErrorModal()"
+      aria-label="بستن"
+    >
+      ×
+    </button>
+
+    <div class="error-icon-wrapper">
+      <div class="error-icon">!</div>
+    </div>
+
     <div class="error-modal-header">
       <h3>خطا</h3>
-      <button
-        class="close-button"
-        type="button"
-        (click)="closeErrorModal()"
-      >
-        &times;
-      </button>
     </div>
+
     <div class="error-modal-body">
       <p>{{ errorModalMessage }}</p>
     </div>
+
     <div class="error-modal-footer">
       <button
-        class="confirm-button"
         type="button"
+        class="error-confirm-button"
         (click)="closeErrorModal()"
       >
-        تایید
+        متوجه شدم
       </button>
     </div>
+
   </div>
 </div>

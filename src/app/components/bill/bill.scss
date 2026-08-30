@@ -186,6 +186,62 @@ $background-light: #f8fafc;
 
 
 // ============================================================
+// Set Invoice Section
+// ============================================================
+
+.set-invoice-section {
+  padding: 0.8rem 1rem;
+  background: #f0f7ff;
+  border-bottom: 1px solid #d0e0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 16px;
+  border-radius: 10px;
+}
+
+.set-invoice-group {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .set-invoice-input {
+    flex: 1;
+    min-width: 200px;
+    padding: 0.5rem 1rem;
+    border: 1px solid #b0c8e0;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    direction: rtl;
+    background: #fff;
+  }
+
+  .btn-set-invoice {
+    padding: 0.5rem 1.2rem;
+    background: #2e7d32;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    white-space: nowrap;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.set-invoice-error {
+  color: #c62828;
+  font-size: 0.9rem;
+  padding-right: 0.5rem;
+}
+
+
+// ============================================================
 // Invoice List
 // ============================================================
 
@@ -245,48 +301,6 @@ $background-light: #f8fafc;
     padding: 8px;
     text-align: center;
     min-width: 0;
-  }
-}
-
-
-// ============================================================
-// Invoice Number
-// ============================================================
-
-.invoice-number {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-
-  .invoice-icon {
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f0fdfa;
-    color: $primary-color;
-    border-radius: 8px;
-    font-weight: 800;
-    font-size: 12px;
-  }
-
-  div {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
-  }
-
-  strong {
-    color: $text-main;
-    font-size: 13px;
-  }
-
-  small {
-    color: $text-light;
-    font-size: 10px;
   }
 }
 
@@ -486,7 +500,7 @@ $background-light: #f8fafc;
 
 .action-footer {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
   gap: 12px;
   margin-top: 20px;
@@ -513,6 +527,12 @@ $background-light: #f8fafc;
     opacity: 0.55;
     cursor: not-allowed;
   }
+}
+
+.hint-text {
+  color: #e67e22;
+  font-size: 0.85rem;
+  text-align: center;
 }
 
 .btn-cancel {
@@ -567,7 +587,7 @@ $background-light: #f8fafc;
 
 
 // ============================================================
-// Error State (در صورت عدم استفاده از مودال)
+// Error State
 // ============================================================
 
 .error-state {
@@ -685,12 +705,10 @@ $background-light: #f8fafc;
     }
   }
 
-  // حذف header جدولی در موبایل
   .invoice-table-header {
     display: none;
   }
 
-  // تبدیل هر فاکتور به کارت
   .invoice-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -868,123 +886,143 @@ $background-light: #f8fafc;
 
 
 // ============================================================
-// مودال موفقیت
+// مودال موفقیت (کامل)
 // ============================================================
 
 .success-modal-backdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.58);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 4000; /* از 1001 به 4000 افزایش یافت */
-  animation: fadeIn 0.3s ease-out;
+  justify-content: center;
+  padding: 20px;
+  z-index: 9999;
+  animation: successBackdropIn 0.25s ease-out;
 }
 
 .success-modal-content {
-  background-color: #fff;
-  padding: 20px 30px;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  width: 90%;
-  max-width: 500px;
-  text-align: right;
-  animation: successModalIn 0.3s ease-out;
-}
-
-.success-modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
-  margin-bottom: 15px;
-
-  h3 {
-    color: #198754;
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 700;
-  }
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 42px 35px 32px;
+  text-align: center;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.18), 0 10px 25px rgba(16, 185, 129, 0.12);
+  border: 1px solid #d1fae5;
+  animation: successModalIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .success-close-button {
-  background: none;
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  width: 36px;
+  height: 36px;
   border: none;
-  font-size: 1.8rem;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 25px;
+  line-height: 1;
   cursor: pointer;
-  color: #aaa;
-  padding: 0 5px;
-  transition: color 0.2s ease;
+  transition: all 0.2s ease;
 
   &:hover {
-    color: #777;
+    background: #fee2e2;
+    color: #dc2626;
+    transform: rotate(90deg);
+  }
+}
+
+.success-icon-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.success-icon {
+  width: 82px;
+  height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #ecfdf5;
+  color: #059669;
+  border: 7px solid #d1fae5;
+  font-size: 43px;
+  font-weight: 800;
+  box-shadow: 0 0 0 10px rgba(16, 185, 129, 0.06);
+  animation: successIconPop 0.5s 0.15s both;
+}
+
+.success-modal-header {
+  margin-bottom: 12px;
+
+  h3 {
+    margin: 0;
+    color: #047857;
+    font-size: 1.65rem;
+    font-weight: 800;
   }
 }
 
 .success-modal-body {
-  margin-bottom: 20px;
-  color: #333;
-  font-size: 1.1rem;
-  line-height: 1.6;
-  display: flex;
-  align-items: center;
-  gap: 15px;
-
-  .success-icon {
-    flex-shrink: 0;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background-color: #d1e7dd;
-    color: #198754;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    font-weight: 700;
-    border: 1px solid #a3cfbb;
-  }
+  margin-bottom: 25px;
 
   p {
     margin: 0;
+    color: #475569;
+    font-size: 1.05rem;
+    line-height: 1.9;
   }
 }
 
 .success-modal-footer {
-  border-top: 1px solid #eee;
-  padding-top: 15px;
-  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid #ecfdf5;
 }
 
 .success-confirm-button {
-  background-color: #198754;
-  color: white;
-  padding: 10px 25px;
+  width: 100%;
   border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1rem;
+  border-radius: 16px;
+  padding: 13px 25px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
   font-family: inherit;
-  font-weight: 600;
-  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.28);
+  transition: all 0.2s ease;
 
   &:hover {
-    background-color: #157347;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(25, 135, 84, 0.25);
+    background: linear-gradient(135deg, #059669, #047857);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(16, 185, 129, 0.35);
   }
   &:active {
     transform: translateY(0);
-    box-shadow: none;
   }
+}
+
+@keyframes successBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes successModalIn {
   from {
     opacity: 0;
-    transform: translateY(-20px) scale(0.97);
+    transform: translateY(25px) scale(0.92);
   }
   to {
     opacity: 1;
@@ -992,90 +1030,207 @@ $background-light: #f8fafc;
   }
 }
 
+@keyframes successIconPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  60% {
+    transform: scale(1.12);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 
 // ============================================================
-// مودال خطا
+// مودال خطا (کامل)
 // ============================================================
 
 .error-modal-backdrop {
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: rgba(15, 23, 42, 0.58);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 4000;
-  animation: fadeIn 0.3s ease-out;
+  justify-content: center;
+  padding: 20px;
+  z-index: 9999;
+  animation: errorBackdropIn 0.25s ease-out;
 }
 
 .error-modal-content {
-  background-color: #fff;
-  padding: 20px 30px;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  width: 90%;
-  max-width: 500px;
-  text-align: right;
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 42px 35px 32px;
+  text-align: center;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.18), 0 10px 25px rgba(239, 68, 68, 0.12);
+  border: 1px solid #fecaca;
+  animation: errorModalIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.error-modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
-  margin-bottom: 15px;
+.error-close-button {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 25px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
 
-  h3 {
-    color: #d9534f;
-    margin: 0;
+  &:hover {
+    background: #fee2e2;
+    color: #dc2626;
+    transform: rotate(90deg);
   }
 }
 
-.close-button {
-  background: none;
-  border: none;
-  font-size: 1.8rem;
-  cursor: pointer;
-  color: #aaa;
-  padding: 0 5px;
+.error-icon-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 22px;
+}
 
-  &:hover {
-    color: #777;
+.error-icon {
+  width: 82px;
+  height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #fef2f2;
+  color: #dc2626;
+  border: 7px solid #fecaca;
+  font-size: 43px;
+  font-weight: 800;
+  box-shadow: 0 0 0 10px rgba(239, 68, 68, 0.06);
+  animation: errorIconPop 0.5s 0.15s both;
+}
+
+.error-modal-header {
+  margin-bottom: 12px;
+
+  h3 {
+    margin: 0;
+    color: #b91c1c;
+    font-size: 1.65rem;
+    font-weight: 800;
   }
 }
 
 .error-modal-body {
-  margin-bottom: 20px;
-  color: #333;
-  font-size: 1.1rem;
-  line-height: 1.6;
+  margin-bottom: 25px;
 
   p {
     margin: 0;
+    color: #475569;
+    font-size: 1.05rem;
+    line-height: 1.9;
   }
 }
 
 .error-modal-footer {
-  border-top: 1px solid #eee;
-  padding-top: 15px;
-  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid #fee2e2;
 }
 
-.confirm-button {
-  background-color: #d9534f;
-  color: white;
-  padding: 10px 25px;
+.error-confirm-button {
+  width: 100%;
   border: none;
-  border-radius: 5px;
-  cursor: pointer;
+  border-radius: 16px;
+  padding: 13px 25px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  font-family: inherit;
   font-size: 1rem;
-  transition: background-color 0.2s ease;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.28);
+  transition: all 0.2s ease;
 
   &:hover {
-    background-color: #c9302c;
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(239, 68, 68, 0.35);
+  }
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+@keyframes errorBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes errorModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(25px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes errorIconPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  60% {
+    transform: scale(1.12);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+
+// ============================================================
+// Mobile for modals
+// ============================================================
+
+@media (max-width: 600px) {
+  .success-modal-content,
+  .error-modal-content {
+    max-width: 100%;
+    padding: 38px 22px 25px;
+    border-radius: 24px;
+  }
+
+  .success-icon,
+  .error-icon {
+    width: 72px;
+    height: 72px;
+    font-size: 37px;
+  }
+
+  .success-modal-header h3,
+  .error-modal-header h3 {
+    font-size: 1.4rem;
+  }
+
+  .success-modal-body p,
+  .error-modal-body p {
+    font-size: 0.95rem;
   }
 }
