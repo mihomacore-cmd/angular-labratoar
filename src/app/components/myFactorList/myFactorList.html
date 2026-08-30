@@ -1,0 +1,156 @@
+<!-- myFactorList.html -->
+<div class="page-container" dir="rtl">
+
+  <!-- Header -->
+  <div class="page-header">
+    <h2>لیست فاکتورها</h2>
+    <div class="subtitle">مدیریت و ارسال پیامک برای فاکتورها</div>
+  </div>
+
+  <!-- Search -->
+  <div class="filter-section">
+    <div class="filter-header">جستجوی پیشرفته</div>
+    <div class="filter-body">
+      <div class="filter-row">
+        <!-- جستجوی سریع -->
+        <div class="form-group">
+          <label>جستجوی سریع</label>
+          <input type="text" placeholder="کلینیک، پزشک، بیمار، سربرگ یا شماره فاکتور..." [(ngModel)]="quickSearch" (input)="onSearch()">
+        </div>
+        <!-- بیمار -->
+        <div class="form-group">
+          <label>نام بیمار</label>
+          <input type="text" placeholder="نام بیمار را وارد کنید..." [(ngModel)]="advancedPatient" (input)="onSearch()">
+        </div>
+        <!-- پزشک -->
+        <div class="form-group">
+          <label>نام پزشک</label>
+          <input type="text" placeholder="نام پزشک را وارد کنید..." [(ngModel)]="advancedDoctor" (input)="onSearch()">
+        </div>
+        <!-- کلینیک -->
+        <div class="form-group">
+          <label>نام کلینیک</label>
+          <input type="text" placeholder="نام کلینیک را وارد کنید..." [(ngModel)]="advancedClinic" (input)="onSearch()">
+        </div>
+        <!-- وضعیت -->
+        <div class="form-group">
+          <label>وضعیت</label>
+          <select [(ngModel)]="advancedStatus" (change)="onSearch()">
+            <option value="">همه وضعیت‌ها</option>
+            <option value="در انتظار پرداخت">در انتظار پرداخت</option>
+            <option value="انتظار ارسال فاکتور">انتظار ارسال فاکتور</option>
+            <option value="پرداخت شده">پرداخت شده</option>
+            <option value="در حال ساخت">در حال ساخت</option>
+            <option value="تحویل داده شده">تحویل داده شده</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <button type="button" class="btn btn-primary" (click)="onSearch()">جستجو</button>
+        <button type="button" class="btn btn-outline" (click)="onReset()">بازنشانی</button>
+      </div>
+    </div>
+
+    <div class="filter-footer">
+      <span>نتیجه جستجو: {{ filteredInvoices.length }} مورد یافت شد</span>
+      <span *ngIf="totalCount > 0" style="margin-right: 20px;">{{ totalCount }} فاکتور انتخاب شده</span>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrapper">
+    <ng-container *ngIf="filteredInvoices && filteredInvoices.length > 0; else noData">
+      <table class="invoice-table">
+        <thead>
+          <tr>
+            <th style="width: 70px;">انتخاب</th>
+            <th>نام کلینیک</th>
+            <th>نام پزشک</th>
+            <th>سربرگ</th>
+            <th>شماره فاکتور</th>
+            <th>نام بیمار</th>
+            <th>مبلغ (ریال)</th>
+            <th>تاریخ ورود</th>
+            <th>تاریخ خروج</th>
+            <th style="min-width: 180px;">وضعیت</th>
+            <th style="min-width: 100px;">عملیات</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let invoice of filteredInvoices; trackBy: trackById">
+            <td class="selection-cell">
+              <ng-container *ngIf="invoice.statusId === 4">
+                <input type="checkbox"
+                  [checked]="invoice.isSelected === true"
+                  [disabled]="!invoice.isSelected && !isInvoiceSelectable(invoice)"
+                  (change)="toggleInvoiceSelection(invoice)"
+                  [title]="!invoice.isSelected && !isInvoiceSelectable(invoice) ? 'شماره تلفن این فاکتور با فاکتورهای انتخاب‌شده متفاوت است' : 'انتخاب فاکتور'">
+              </ng-container>
+            </td>
+            <td><span class="truncate-text" [title]="invoice.clinic">{{ invoice.clinic }}</span></td>
+            <td><span class="truncate-text" [title]="invoice.doctor">{{ invoice.doctor }}</span></td>
+            <td><span class="truncate-text" [title]="invoice.header">{{ invoice.header }}</span></td>
+            <td>{{ invoice.number }}</td>
+            <td><span class="truncate-text" [title]="invoice.patient">{{ invoice.patient }}</span></td>
+            <td>{{ invoice.amount | number }}</td>
+            <td>{{ invoice.dateIn }}</td>
+            <td>{{ invoice.dateOut }}</td>
+            <td><span class="status-badge" [class]="getStatusClass(invoice.status)">{{ getStatusText(invoice.status) }}</span></td>
+            <td class="action-cell">
+              <div class="dropdown">
+                <button type="button" class="dropdown-toggle" (click)="toggleDropdown(invoice.id); $event.stopPropagation()" title="بیشتر">
+                  <span class="dots-vertical">⋮</span>
+                </button>
+                <ul class="dropdown-menu" [class.show]="openDropdownId === invoice.id">
+                  <li><button type="button" class="dropdown-item" (click)="viewOrder(invoice.id)">نمایش</button></li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-container>
+
+    <ng-template #noData>
+      <div class="empty-state" style="text-align: center; padding: 2rem; color: #666;">
+        <p>هیچ فاکتوری برای نمایش وجود ندارد.</p>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Selection Info -->
+  <div class="selection-info" *ngIf="totalCount > 0">
+    <span>شماره تلفن انتخاب‌شده: </span>
+    <strong>{{ selectedPhoneNumber }}</strong>
+    <span> | تعداد فاکتور: {{ totalCount }}</span>
+    <span> | مجموع: {{ totalAmount | number }} ریال</span>
+  </div>
+
+  <!-- Send Invoice Bar -->
+  <div class="action-bar">
+    <button type="button" class="btn btn-send" [disabled]="totalCount === 0" (click)="sendSms()">
+      ارسال صورتحساب جهت واریز
+      <span class="summary-text">
+        <ng-container *ngIf="totalCount === 0; else hasSelected">(هیچ فاکتوری انتخاب نشده)</ng-container>
+        <ng-template #hasSelected>( تعداد: {{ totalCount }} ، مجموع مبلغ: {{ totalAmount | number }} ریال )</ng-template>
+      </span>
+    </button>
+  </div>
+
+  <!-- Order Details Dialog -->
+  <div *ngIf="isOrderDialogOpen" class="order-dialog-backdrop" (click)="closeOrderDialog()">
+    <div class="order-dialog-content" (click)="$event.stopPropagation()">
+      <button type="button" class="dialog-close-btn" (click)="closeOrderDialog()">✕</button>
+      <order-detail [orderId]="selectedOrderId" [disableEdit]="false" (closed)="closeOrderDialog()"></order-detail>
+    </div>
+  </div>
+
+  <!-- Bill Preview Dialog -->
+  <div *ngIf="showBillDialog" class="order-dialog-backdrop" (click)="closeBillDialog()">
+    <div class="order-dialog-content" (click)="$event.stopPropagation()">
+      <app-bill-preview [invoiceIds]="selectedInvoiceIds" (closed)="closeBillDialog()"></app-bill-preview>
+    </div>
+  </div>
+
+</div>

@@ -126,6 +126,13 @@ export const routes: Routes = [
          import('./components/registerClinicDoctor/registerClinicDoctor').then(
       (m) => m.RegisterClinicDoctorComponent
        ),
+      },
+        {
+        path: 'myFactor',
+       loadComponent: () =>
+         import('./components/myFactorList/myFactorList').then(
+      (m) => m.MyFactorListComponent
+       ),
       }
 
 
