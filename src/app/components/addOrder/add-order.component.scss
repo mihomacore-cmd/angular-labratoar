@@ -1190,3 +1190,8 @@ tbody tr:hover td {
     font-size: 0.95rem;
   }
 }
+.invoice-disabled {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+  color: #999;
+}

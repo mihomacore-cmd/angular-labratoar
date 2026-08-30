@@ -1,91 +1,151 @@
-<form class="order-card" dir="rtl" [formGroup]="form" (ngSubmit)="onSubmit()">
+<form
+  class="order-card"
+  dir="rtl"
+  [formGroup]="form"
+  (ngSubmit)="onSubmit()"
+>
   <h1>ثبت سفارش جدید</h1>
 
   <div class="top-fields-grid">
+
+    <!-- نام کلینیک -->
     <div class="field-item">
+      <label for="clinic">نام کلینیک</label>
 
-              <label for="clinic">نام کلینیک</label>
-              <select
-                id="clinic"
-                formControlName="clinicId"
-                (change)="onClinicChange()"
-              >                <option
-                  *ngFor="let clinic of clinics"
-                  [value]="clinic.id"
-                >
-                  {{ clinic.name }}
-                </option>
-              </select>
-            </div>
+      <select
+        id="clinic"
+        formControlName="clinicId"
+        (change)="onClinicChange()"
+      >
+        <option
+          *ngFor="let clinic of clinics"
+          [value]="clinic.id"
+        >
+          {{ clinic.name }}
+        </option>
+      </select>
+    </div>
 
-                    <div class="field-item">
-                  <label for="doctor">نام پزشک</label>
-                  <select
-                    id="doctor"
-                    formControlName="clinicDoctorId"
-                    (change)="onDoctorChange()"
-                    [disabled]="!doctors.length"
-                  >                    <option
-                      *ngFor="let doctor of doctors"
-                      [value]="doctor.id"
-                    >
-                      {{ doctor.doctorName }}
-                    </option>
-                  </select>
-                </div>
 
+    <!-- نام پزشک -->
+    <div class="field-item">
+      <label for="doctor">نام پزشک</label>
+
+      <select
+        id="doctor"
+        formControlName="clinicDoctorId"
+        (change)="onDoctorChange()"
+        [disabled]="!doctors.length"
+      >
+        <option
+          *ngFor="let doctor of doctors"
+          [value]="doctor.id"
+        >
+          {{ doctor.doctorName }}
+        </option>
+      </select>
+    </div>
+
+
+    <!-- سربرگ -->
     <div class="field-item">
       <label for="headerField">سربرگ</label>
-      <input id="headerField" type="text" formControlName="headerField" placeholder="قلب / ارتوپدی ...">
+
+      <input
+        id="headerField"
+        type="text"
+        formControlName="headerField"
+        placeholder="قلب / ارتوپدی ..."
+      >
     </div>
 
+
+    <!-- نام بیمار -->
     <div class="field-item">
       <label for="patientName">نام بیمار</label>
-      <input id="patientName" type="text" formControlName="patientName" placeholder="نام بیمار">
+
+      <input
+        id="patientName"
+        type="text"
+        formControlName="patientName"
+        placeholder="نام بیمار"
+      >
     </div>
 
-    <div class="field-item">
-      <label for="invoiceNumber">شماره فاکتور</label>
-      <input id="invoiceNumber" type="text" formControlName="invoiceNumber" placeholder="مثلاً INV-1001">
-      <small class="error-text" *ngIf="form.hasError('invoiceNumberRequired') && form.controls.invoiceNumber.touched">
-        برای فاکتور روزانه، شماره فاکتور الزامی است.
-      </small>
-    </div>
 
+    <!-- نوع فاکتور -->
     <div class="field-item">
       <label>نوع فاکتور</label>
+
       <div class="radio-group">
+
         <label>
-          <input type="radio" formControlName="invoiceType" value="daily">
+          <input
+            type="radio"
+            formControlName="invoiceType"
+            value="daily"
+            (change)="onInvoiceTypeChange()"
+          >
           روزانه
         </label>
+
         <label>
-          <input type="radio" formControlName="invoiceType" value="monthly">
+          <input
+            type="radio"
+            formControlName="invoiceType"
+            value="monthly"
+            (change)="onInvoiceTypeChange()"
+          >
           ماهیانه
         </label>
+
       </div>
     </div>
 
 
-<!-- شماره تلفن -->
-<div class="field-item">
+        <div class="field-item">
+          <label for="invoiceNumber">شماره فاکتور</label>
 
-  <label for="phone">شماره تلفن</label>
+          <input
+            id="invoiceNumber"
+            type="text"
+            formControlName="invoiceNumber"
+            placeholder="مثلاً INV-1001"
+            [readonly]="form.controls.invoiceType.value === 'monthly'"
+            [class.invoice-disabled]="form.controls.invoiceType.value === 'monthly'"
+            (click)="onInvoiceNumberClick()"
+          >
 
-  <input
-    id="phone"
-    type="text"
-    formControlName="phone"
-    readonly
-  >
+          <small
+            class="error-text"
+            *ngIf="
+              form.controls.invoiceNumber.touched &&
+              form.controls.invoiceNumber.hasError('required')
+            "
+          >
+            برای فاکتور روزانه، شماره فاکتور الزامی است.
+          </small>
+        </div>
 
-</div>
+    <!-- شماره تلفن -->
+    <div class="field-item">
+      <label for="phone">شماره تلفن</label>
+
+      <input
+        id="phone"
+        type="text"
+        formControlName="phone"
+        readonly
+      >
+    </div>
 
 
-    <!-- تاریخ ورود با آیکون و پاپ‌آپ -->
+    <!-- تاریخ ورود -->
     <div class="field-item">
       <label>تاریخ ورود</label>
+
       <div class="date-wrapper">
+
         <input
           type="text"
           readonly
@@ -94,60 +154,115 @@
           placeholder="انتخاب تاریخ"
           (click)="showEntryCalendar = !showEntryCalendar"
         />
-        <span class="calendar-icon" (click)="showEntryCalendar = !showEntryCalendar">📅</span>
+
+        <span
+          class="calendar-icon"
+          (click)="showEntryCalendar = !showEntryCalendar"
+        >
+          📅
+        </span>
+
         <app-persian-calendar
           *ngIf="showEntryCalendar"
           class="calendar-popup"
           (confirm)="onEntryDateSelected($event)"
           (cancel)="closeEntryCalendar()"
         ></app-persian-calendar>
+
       </div>
     </div>
 
-<!-- تاریخ خروج با آیکون و پاپ‌آپ -->
-<div class="field-item">
-  <label>تاریخ خروج</label>
-  <div class="date-wrapper">
-    <input
-      type="text"
-      readonly
-      class="date-input"
-      [value]="form.controls.exitDate.value || ''"
-      placeholder="انتخاب تاریخ"
-      (click)="showExitCalendar = !showExitCalendar"
-    />
-    <span class="calendar-icon" (click)="showExitCalendar = !showExitCalendar">📅</span>
-    <app-persian-calendar
-      *ngIf="showExitCalendar"
-      class="calendar-popup"
-      [minDate]="entryDateValue"
-      (confirm)="onExitDateSelected($event)"
-      (cancel)="closeExitCalendar()"
-      (invalidSelection)="onInvalidExitDate()"
-    ></app-persian-calendar>
-  </div>
-  
-  <!-- نمایش خطای اعتبارسنجی (در صورت وجود) -->
-  <div *ngIf="form.controls.exitDate.touched && form.hasError('exitDateInvalid')" class="error-text">
-    تاریخ خروج نباید از تاریخ ورود کوچک‌تر باشد.
-  </div>
-</div>
+
+    <!-- تاریخ خروج -->
+    <div class="field-item">
+
+      <label>تاریخ خروج</label>
+
+      <div class="date-wrapper">
+
+        <input
+          type="text"
+          readonly
+          class="date-input"
+          [value]="form.controls.exitDate.value || ''"
+          placeholder="انتخاب تاریخ"
+          (click)="showExitCalendar = !showExitCalendar"
+        />
+
+        <span
+          class="calendar-icon"
+          (click)="showExitCalendar = !showExitCalendar"
+        >
+          📅
+        </span>
+
+        <app-persian-calendar
+          *ngIf="showExitCalendar"
+          class="calendar-popup"
+          [minDate]="entryDateValue"
+          (confirm)="onExitDateSelected($event)"
+          (cancel)="closeExitCalendar()"
+          (invalidSelection)="onInvalidExitDate()"
+        ></app-persian-calendar>
+
+      </div>
+
+      <!-- خطای تاریخ خروج -->
+      <div
+        *ngIf="
+          form.controls.exitDate.touched &&
+          form.hasError('exitDateInvalid')
+        "
+        class="error-text"
+      >
+        تاریخ خروج نباید از تاریخ ورود کوچک‌تر باشد.
+      </div>
+
+    </div>
+
+
     <div></div>
+
   </div>
 
+
+  <!-- دکمه پاک کردن -->
   <div class="clear-btn-row">
-    <button type="button" class="clear-btn" (click)="clearTopFields()">پاک کردن فیلدها</button>
+
+    <button
+      type="button"
+      class="clear-btn"
+      (click)="clearTopFields()"
+    >
+      پاک کردن فیلدها
+    </button>
+
   </div>
+
 
   <hr class="separator">
 
+
+  <!-- آیتم‌های سفارش -->
   <div class="table-toolbar">
+
     <h2>آیتم‌های سفارش</h2>
-    <button type="button" class="add-row-btn" (click)="addItem()">+ افزودن آیتم</button>
+
+    <button
+      type="button"
+      class="add-row-btn"
+      (click)="addItem()"
+    >
+      + افزودن آیتم
+    </button>
+
   </div>
 
+
   <div class="table-wrapper">
+
     <table id="orderTable">
+
       <thead>
         <tr>
           <th>نوع</th>
@@ -160,55 +275,131 @@
       </thead>
 
       <tbody formArrayName="items">
+
         <tr
-          *ngFor="let row of items.controls; let i = index; trackBy: trackByIndex"
+          *ngFor="
+            let row of items.controls;
+            let i = index;
+            trackBy: trackByIndex
+          "
           [formGroupName]="i"
         >
+
           <td>
-            <input type="text" class="table-input" formControlName="serviceType" placeholder="مثلاً ایمپلنت">
+            <input
+              type="text"
+              class="table-input"
+              formControlName="serviceType"
+              placeholder="مثلاً ایمپلنت"
+            >
           </td>
+
           <td>
-            <input type="text" class="table-input" formControlName="toothNumber" placeholder="۱۲">
+            <input
+              type="text"
+              class="table-input"
+              formControlName="toothNumber"
+              placeholder="۱۲"
+            >
           </td>
+
           <td>
-            <input type="number" class="table-input" formControlName="quantity" min="1">
+            <input
+              type="number"
+              class="table-input"
+              formControlName="quantity"
+              min="1"
+            >
           </td>
+
           <td>
-            <input type="number" class="table-input" formControlName="unitPrice" min="0">
+            <input
+              type="number"
+              class="table-input"
+              formControlName="unitPrice"
+              min="0"
+            >
           </td>
+
           <td>
-            <span class="price-num">{{ formatMoney(rowTotal(i)) }}</span>
+            <span class="price-num">
+              {{ formatMoney(rowTotal(i)) }}
+            </span>
           </td>
+
           <td>
-            <button type="button" class="delete-row-btn" (click)="removeItem(i)">✕</button>
+
+            <button
+              type="button"
+              class="delete-row-btn"
+              (click)="removeItem(i)"
+            >
+              ✕
+            </button>
+
           </td>
+
         </tr>
+
       </tbody>
+
     </table>
+
   </div>
 
+
+  <!-- توضیحات و فایل -->
   <div class="global-fields">
+
     <div class="global-desc">
-      <label for="description">توضیحات کلی سفارش (رنگ، مواد، نکات ویژه)</label>
+
+      <label for="description">
+        توضیحات کلی سفارش (رنگ، مواد، نکات ویژه)
+      </label>
+
       <textarea
         id="description"
         formControlName="description"
         placeholder="توضیحات مربوط به کل سفارش اینجا وارد شود ..."
       ></textarea>
+
     </div>
+
 
     <div class="global-file">
-      <label for="attachments">بارگذاری فایل (مدارک، تصاویر)</label>
-      <input id="attachments" type="file" multiple (change)="onFilesSelected($event)">
-      <div class="file-list" *ngIf="selectedFiles.length">
+
+      <label for="attachments">
+        بارگذاری فایل (مدارک، تصاویر)
+      </label>
+
+      <input
+        id="attachments"
+        type="file"
+        multiple
+        (change)="onFilesSelected($event)"
+      >
+
+      <div
+        class="file-list"
+        *ngIf="selectedFiles.length"
+      >
         {{ selectedFiles.length }} فایل انتخاب شد
       </div>
+
     </div>
+
   </div>
 
+
+  <!-- تخفیف -->
   <div class="discount-section">
+
     <div class="discount-item">
-      <label for="discountAmount">مبلغ تخفیف (ریال):</label>
+
+      <label for="discountAmount">
+        مبلغ تخفیف (ریال):
+      </label>
+
       <input
         id="discountAmount"
         type="number"
@@ -216,28 +407,64 @@
         min="0"
         placeholder="مثلاً 500000"
       >
+
     </div>
+
   </div>
 
+
+  <!-- مجموع -->
   <div class="totals-strip">
+
     <div class="total-box">
+
       <span>جمع کل</span>
-      <strong>{{ formatMoney(grossTotal) }}</strong>
+
+      <strong>
+        {{ formatMoney(grossTotal) }}
+      </strong>
+
     </div>
+
+
     <div class="total-box">
+
       <span>تخفیف</span>
-      <strong>{{ formatMoney(form.controls.discountAmount.value) }}</strong>
+
+      <strong>
+        {{ formatMoney(form.controls.discountAmount.value) }}
+      </strong>
+
     </div>
+
+
     <div class="total-box total-box--emphasis">
+
       <span>قابل پرداخت</span>
-      <strong>{{ formatMoney(netTotal) }}</strong>
+
+      <strong>
+        {{ formatMoney(netTotal) }}
+      </strong>
+
     </div>
+
   </div>
 
+
+  <!-- ثبت -->
   <div class="submit-area">
-    <button class="submit-btn" type="submit">ثبت سفارش</button>
+
+    <button
+      class="submit-btn"
+      type="submit"
+    >
+      ثبت سفارش
+    </button>
+
   </div>
+
 </form>
+
 
 <!-- مودال خطا -->
 <div
@@ -245,6 +472,7 @@
   *ngIf="showErrorModal"
   (click)="closeErrorModal()"
 >
+
   <div
     class="error-modal-content"
     (click)="$event.stopPropagation()"
@@ -259,21 +487,34 @@
       ×
     </button>
 
+
     <div class="error-icon-wrapper">
+
       <div class="error-icon">
         !
       </div>
+
     </div>
+
 
     <div class="error-modal-header">
+
       <h3>خطا</h3>
+
     </div>
+
 
     <div class="error-modal-body">
-      <p>{{ errorMessage }}</p>
+
+      <p>
+        {{ errorMessage }}
+      </p>
+
     </div>
 
+
     <div class="error-modal-footer">
+
       <button
         type="button"
         class="error-confirm-button"
@@ -281,9 +522,11 @@
       >
         متوجه شدم
       </button>
+
     </div>
 
   </div>
+
 </div>
 
 
@@ -293,6 +536,7 @@
   *ngIf="showSuccessModal"
   (click)="closeSuccessModal()"
 >
+
   <div
     class="success-modal-content"
     (click)="$event.stopPropagation()"
@@ -307,21 +551,34 @@
       ×
     </button>
 
+
     <div class="success-icon-wrapper">
+
       <div class="success-icon">
         ✓
       </div>
+
     </div>
+
 
     <div class="success-modal-header">
+
       <h3>ثبت موفق</h3>
+
     </div>
+
 
     <div class="success-modal-body">
-      <p>{{ successMessage }}</p>
+
+      <p>
+        {{ successMessage }}
+      </p>
+
     </div>
 
+
     <div class="success-modal-footer">
+
       <button
         type="button"
         class="success-confirm-button"
@@ -329,7 +586,9 @@
       >
         متوجه شدم
       </button>
+
     </div>
 
   </div>
+
 </div>
