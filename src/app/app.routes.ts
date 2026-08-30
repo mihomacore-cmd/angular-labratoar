@@ -118,8 +118,15 @@ export const routes: Routes = [
          import('./components/myOrders/myOrder').then(
       (m) => m.MyOrder
        ),
-      }
+      },
 
+        {
+        path: 'registerClinic',
+       loadComponent: () =>
+         import('./components/registerClinicDoctor/registerClinicDoctor').then(
+      (m) => m.RegisterClinicDoctorComponent
+       ),
+      }
 
 
 

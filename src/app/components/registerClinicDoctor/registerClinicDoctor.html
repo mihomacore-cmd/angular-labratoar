@@ -1,0 +1,420 @@
+<div class="page-container" dir="rtl">
+
+  <div class="form-card">
+
+    <!-- Header -->
+    <div class="form-header">
+      <div class="header-icon">
+        <span>+</span>
+      </div>
+      <div class="header-content">
+        <h1>ثبت پزشک و کلینیک</h1>
+        <p>اطلاعات پزشک را برای دسترسی به کلینیک ثبت کنید.</p>
+      </div>
+    </div>
+
+    <!-- Error Alert (قدیمی - می‌توانید حذف کنید) -->
+    <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+      <span class="alert-icon">!</span>
+      <span>{{ errorMessage }}</span>
+      <button type="button" class="alert-close" (click)="errorMessage = ''" aria-label="بستن">×</button>
+    </div>
+
+    <!-- Success Alert (قدیمی - می‌توانید حذف کنید) -->
+    <div *ngIf="successMessage" class="alert alert-success" role="alert">
+      <span class="alert-icon">✓</span>
+      <span>{{ successMessage }}</span>
+      <button type="button" class="alert-close" (click)="successMessage = ''" aria-label="بستن">×</button>
+    </div>
+
+    <!-- ========== حذف result-card ========== -->
+    <!-- دیگر نیازی به این بخش نیست، چون اطلاعات در مودال نمایش داده می‌شود -->
+    <!-- 
+    <div *ngIf="registrationResult" class="result-card">
+      ...
+    </div>
+    -->
+
+    <!-- Main Form -->
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
+
+      <!-- Section 1 -->
+      <div class="form-section">
+        <div class="section-title">
+          <span class="section-number">۱</span>
+          <div>
+            <h2>انتخاب کلینیک و پزشک</h2>
+          </div>
+        </div>
+
+        <div class="fields-grid">
+
+          <!-- Clinic -->
+          <!-- Clinic -->
+<div class="form-group">
+  <label for="clinicId">
+    کلینیک
+    <span class="required">*</span>
+  </label>
+  <div class="select-with-button">
+    <div class="select-wrapper">
+      <select
+        id="clinicId"
+        formControlName="clinicId"
+        [class.invalid]="isFieldInvalid('clinicId')"
+        (focus)="loadClinics()"
+        [disabled]="loadingClinics"
+      >
+        <option value="">
+          {{ loadingClinics ? 'در حال دریافت...' : 'انتخاب کلینیک' }}
+        </option>
+        <option *ngFor="let clinic of clinics" [value]="clinic.id">
+          {{ clinic.name }}
+        </option>
+      </select>
+      <span *ngIf="loadingClinics" class="select-spinner"></span>
+    </div>
+    <button
+      type="button"
+      class="add-button"
+      (click)="openAddClinicModal()"
+      title="افزودن کلینیک"
+      [disabled]="loadingClinics"
+    >
+      +
+    </button>
+  </div>
+  <small class="field-error" *ngIf="isFieldInvalid('clinicId')">
+    انتخاب کلینیک الزامی است.
+  </small>
+</div>
+
+<!-- Doctor -->
+<div class="form-group">
+  <label for="doctorId">
+    پزشک
+    <span class="required">*</span>
+  </label>
+  <div class="select-with-button">
+    <div class="select-wrapper">
+      <select
+        id="doctorId"
+        formControlName="doctorId"
+        [class.invalid]="isFieldInvalid('doctorId')"
+        (focus)="loadDoctors()"
+        [disabled]="loadingDoctors"
+      >
+        <option value="">
+          {{ loadingDoctors ? 'در حال دریافت...' : 'انتخاب پزشک' }}
+        </option>
+        <option *ngFor="let doctor of doctors" [value]="doctor.id">
+          {{ doctor.name }}
+        </option>
+      </select>
+      <span *ngIf="loadingDoctors" class="select-spinner"></span>
+    </div>
+    <button
+      type="button"
+      class="add-button"
+      (click)="openAddDoctorModal()"
+      title="افزودن پزشک"
+      [disabled]="loadingDoctors"
+    >
+      +
+    </button>
+  </div>
+  <small class="field-error" *ngIf="isFieldInvalid('doctorId')">
+    انتخاب پزشک الزامی است.
+  </small>
+</div>
+
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Section 2 -->
+      <div class="form-section">
+        <div class="section-title">
+          <span class="section-number">۲</span>
+          <div>
+            <h2>اطلاعات حساب کاربری</h2>
+          </div>
+        </div>
+
+        <div class="fields-grid">
+
+          <!-- Registration Number -->
+          <div class="form-group">
+            <label for="registrationNumber">
+              شماره ثبت / تماس
+              <span class="required">*</span>
+            </label>
+            <input
+              id="registrationNumber"
+              type="text"
+              formControlName="registrationNumber"
+              placeholder="شماره ثبت یا شماره تماس"
+              autocomplete="off"
+              [class.invalid]="isFieldInvalid('registrationNumber')"
+            />
+            <small class="field-error" *ngIf="isFieldInvalid('registrationNumber')">
+              شماره ثبت / تماس الزامی است.
+            </small>
+          </div>
+
+          <!-- Username -->
+          <div class="form-group">
+            <label for="username">
+              نام کاربری
+              <span class="required">*</span>
+            </label>
+            <input
+              id="username"
+              type="text"
+              formControlName="username"
+              placeholder="نام کاربری"
+              autocomplete="username"
+              [class.invalid]="isFieldInvalid('username')"
+            />
+            <small class="field-error" *ngIf="isFieldInvalid('username')">
+              نام کاربری الزامی است.
+            </small>
+          </div>
+
+          <!-- Password -->
+          <div class="form-group">
+            <label for="password">
+              رمز عبور
+              <span class="optional">اختیاری</span>
+            </label>
+            <input
+              id="password"
+              type="password"
+              formControlName="password"
+              placeholder="در صورت خالی بودن خودکار تولید می‌شود"
+              autocomplete="new-password"
+            />
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            <label for="email">
+              ایمیل
+              <span class="optional">اختیاری</span>
+            </label>
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              placeholder="example@domain.com"
+              autocomplete="email"
+              [class.invalid]="isFieldInvalid('email')"
+            />
+            <small class="field-error" *ngIf="isFieldInvalid('email')">
+              فرمت ایمیل صحیح نیست.
+            </small>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <div class="form-actions">
+        <button type="submit" class="submit-button" [disabled]="submitting">
+          <span *ngIf="submitting" class="spinner"></span>
+          <span>{{ submitting ? 'در حال ثبت...' : 'ثبت پزشک' }}</span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- =========================================================
+       Add Clinic Modal
+       ========================================================= -->
+  <div *ngIf="showClinicModal" class="modal-overlay" (click)="closeAddClinicModal()">
+    <div class="modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="addClinicTitle">
+      <div class="modal-header">
+        <div>
+          <h2 id="addClinicTitle">افزودن کلینیک</h2>
+          <p>نام کلینیک را وارد کنید.</p>
+        </div>
+        <button type="button" class="modal-close" (click)="closeAddClinicModal()" [disabled]="addingClinic">×</button>
+      </div>
+      <div class="modal-body">
+        <label for="newClinicName">نام کلینیک <span class="required">*</span></label>
+        <input
+          id="newClinicName"
+          type="text"
+          [(ngModel)]="newClinicName"
+          [ngModelOptions]="{standalone: true}"
+          placeholder="نام کلینیک"
+          autocomplete="off"
+          (keyup.enter)="addClinic()"
+        />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="cancel-button" (click)="closeAddClinicModal()" [disabled]="addingClinic">انصراف</button>
+        <button
+          type="button"
+          class="modal-submit-button"
+          (click)="addClinic()"
+          [disabled]="addingClinic || !newClinicName.trim()"
+        >
+          <span *ngIf="addingClinic" class="spinner spinner-light"></span>
+          {{ addingClinic ? 'در حال ثبت...' : 'افزودن کلینیک' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       Add Doctor Modal
+       ========================================================= -->
+  <div *ngIf="showDoctorModal" class="modal-overlay" (click)="closeAddDoctorModal()">
+    <div class="modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="addDoctorTitle">
+      <div class="modal-header">
+        <div>
+          <h2 id="addDoctorTitle">افزودن پزشک</h2>
+          <p>نام پزشک را وارد کنید.</p>
+        </div>
+        <button type="button" class="modal-close" (click)="closeAddDoctorModal()" [disabled]="addingDoctor">×</button>
+      </div>
+      <div class="modal-body">
+        <label for="newDoctorName">نام پزشک <span class="required">*</span></label>
+        <input
+          id="newDoctorName"
+          type="text"
+          [(ngModel)]="newDoctorName"
+          [ngModelOptions]="{standalone: true}"
+          placeholder="مثلاً دکتر علی رضایی"
+          autocomplete="off"
+          (keyup.enter)="addDoctor()"
+        />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="cancel-button" (click)="closeAddDoctorModal()" [disabled]="addingDoctor">انصراف</button>
+        <button
+          type="button"
+          class="modal-submit-button"
+          (click)="addDoctor()"
+          [disabled]="addingDoctor || !newDoctorName.trim()"
+        >
+          <span *ngIf="addingDoctor" class="spinner spinner-light"></span>
+          {{ addingDoctor ? 'در حال ثبت...' : 'افزودن پزشک' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       مودال موفقیت (با نمایش جزئیات ثبت)
+       ========================================================= -->
+  <div
+    class="success-modal-backdrop"
+    *ngIf="showSuccessModal"
+    (click)="closeSuccessModal()"
+  >
+    <div class="success-modal-content" (click)="$event.stopPropagation()">
+      <button
+        type="button"
+        class="success-close-button"
+        (click)="closeSuccessModal()"
+        aria-label="بستن"
+      >
+        ×
+      </button>
+      <div class="success-icon-wrapper">
+        <div class="success-icon">✓</div>
+      </div>
+      <div class="success-modal-header">
+        <h3>ثبت موفق</h3>
+      </div>
+      <div class="success-modal-body">
+        <p>{{ successModalMessage }}</p>
+
+        <!-- نمایش جزئیات ثبت‌شده -->
+        <div *ngIf="registrationDetails" class="registration-details">
+          <div class="detail-item">
+            <span>کلینیک:</span>
+            <strong>{{ registrationDetails.clinicName }}</strong>
+          </div>
+          <div class="detail-item">
+            <span>پزشک:</span>
+            <strong>{{ registrationDetails.doctorName }}</strong>
+          </div>
+          <div class="detail-item">
+            <span>شماره ثبت:</span>
+            <strong>{{ registrationDetails.registrationNumber }}</strong>
+          </div>
+          <div class="detail-item">
+            <span>نام کاربری:</span>
+            <strong>{{ registrationDetails.username }}</strong>
+          </div>
+          <div *ngIf="registrationDetails.generatedPassword" class="detail-item">
+            <span>رمز عبور:</span>
+            <strong dir="ltr">{{ registrationDetails.generatedPassword }}</strong>
+            <!-- دکمه کپی (اختیاری) -->
+            <button
+              type="button"
+              class="copy-button-small"
+              (click)="copyGeneratedPassword()"
+              title="کپی رمز عبور"
+            >
+              کپی
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="success-modal-footer">
+        <button
+          type="button"
+          class="success-confirm-button"
+          (click)="closeSuccessModal()"
+        >
+          متوجه شدم
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       مودال خطا
+       ========================================================= -->
+  <div
+    class="error-modal-backdrop"
+    *ngIf="showErrorModal"
+    (click)="closeErrorModal()"
+  >
+    <div class="error-modal-content" (click)="$event.stopPropagation()">
+      <button
+        type="button"
+        class="error-close-button"
+        (click)="closeErrorModal()"
+        aria-label="بستن"
+      >
+        ×
+      </button>
+      <div class="error-icon-wrapper">
+        <div class="error-icon">!</div>
+      </div>
+      <div class="error-modal-header">
+        <h3>خطا</h3>
+      </div>
+      <div class="error-modal-body">
+        <p>{{ errorModalMessage }}</p>
+      </div>
+      <div class="error-modal-footer">
+        <button
+          type="button"
+          class="error-confirm-button"
+          (click)="closeErrorModal()"
+        >
+          متوجه شدم
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
