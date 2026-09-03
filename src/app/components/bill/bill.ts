@@ -270,7 +270,7 @@ private successAction: 'setInvoice' | 'sendSms' = 'setInvoice';
       clinicName: data.clinicName || '',
       doctorName: data.doctorName || '',
       patientName: data.patientName || '',
-      statusCode: data.statusCode || '',
+      statusCode:  '',
       invoiceType: this.getInvoiceTypeDisplay(data.invoiceType),
       invoiceNumber: data.invoiceNumber || '',
       phoneNumber: data.phoneNumber || '',

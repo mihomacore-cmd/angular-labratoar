@@ -1169,3 +1169,371 @@ table {
     transform: translateY(0) scale(1);
   }
 }
+
+
+// =====================================================
+// وضعیت مالی سفارش
+// =====================================================
+
+.payment-section {
+  margin-top: 2.5rem;
+  padding: 1.8rem 2rem;
+
+  background: #f8fafc;
+
+  border: 1px solid $border-color;
+  border-radius: 16px;
+
+  box-sizing: border-box;
+
+  box-shadow:
+    0 4px 16px rgba(15, 23, 42, 0.04);
+
+  // -----------------------------------------------
+  // Header
+  // -----------------------------------------------
+
+  .payment-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 1rem;
+
+    padding-bottom: 1.2rem;
+    margin-bottom: 1.5rem;
+
+    border-bottom: 1px solid $border-color;
+
+    h3 {
+      margin: 0;
+
+      font-size: 1.3rem;
+      font-weight: 700;
+
+      color: $text-main;
+    }
+  }
+
+  // -----------------------------------------------
+  // Payment status
+  // -----------------------------------------------
+
+  .payment-status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 40px;
+
+    padding: 0.45rem 1rem;
+
+    border-radius: 999px;
+
+    font-size: 0.95rem;
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    border: 1px solid transparent;
+
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease;
+
+    &.settled {
+      background: #dcfce7;
+      color: #15803d;
+      border-color: #bbf7d0;
+    }
+
+    &.unsettled {
+      background: #fef3c7;
+      color: #b45309;
+      border-color: #fde68a;
+    }
+  }
+
+  // -----------------------------------------------
+  // Grid
+  // -----------------------------------------------
+
+  .payment-grid {
+    display: grid;
+
+    grid-template-columns:
+      repeat(4, minmax(180px, 1fr));
+
+    gap: 1rem;
+  }
+
+  // -----------------------------------------------
+  // Payment item
+  // -----------------------------------------------
+
+  .payment-item {
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+
+    gap: 0.55rem;
+
+    min-height: 95px;
+
+    padding: 1rem 1.1rem;
+
+    background: white;
+
+    border: 1px solid $border-color;
+    border-radius: 12px;
+
+    box-sizing: border-box;
+
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+
+      box-shadow:
+        0 6px 16px rgba(15, 23, 42, 0.07);
+
+      border-color: #cbd5e1;
+    }
+
+    label {
+      display: block;
+
+      margin: 0;
+
+      color: $text-light;
+
+      font-size: 0.9rem;
+      font-weight: 500;
+
+      line-height: 1.5;
+    }
+
+    strong {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+
+      margin: 0;
+
+      color: $text-main;
+
+      font-size: 1.05rem;
+      font-weight: 700;
+
+      line-height: 1.6;
+
+      direction: rtl;
+    }
+
+    // ---------------------------------------------
+    // پرداخت شده
+    // ---------------------------------------------
+
+    strong.paid {
+      color: #15803d;
+    }
+
+    // ---------------------------------------------
+    // پرداخت نشده
+    // ---------------------------------------------
+
+    strong.unpaid {
+      color: $danger-color;
+    }
+  }
+}
+
+// =====================================================
+// بهبود Summary
+// =====================================================
+
+.summary-wrapper {
+
+  margin-top: 2rem;
+
+  .summary-section {
+    display: grid;
+
+    grid-template-columns:
+      repeat(3, minmax(180px, 1fr));
+
+    gap: 1rem;
+
+    margin-top: 0;
+
+    padding: 0;
+
+    border-top: none;
+  }
+
+  .summary-item {
+    min-height: 100px;
+
+    padding: 1rem 1.2rem;
+
+    background: #f8fafc;
+
+    border: 1px solid $border-color;
+    border-radius: 12px;
+
+    box-sizing: border-box;
+
+    label {
+      display: block;
+
+      margin-bottom: 0.5rem;
+
+      color: $text-light;
+
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    span {
+      display: block;
+
+      font-size: 1.25rem;
+      font-weight: 700;
+
+      color: $text-main;
+    }
+
+    .price-discount {
+      color: $danger-color;
+    }
+
+    .price-final {
+      color: $primary-color;
+
+      font-size: 1.45rem;
+    }
+  }
+}
+
+// =====================================================
+// Responsive Payment Section
+// =====================================================
+
+@media (max-width: 1200px) {
+
+  .payment-section {
+
+    .payment-grid {
+      grid-template-columns:
+        repeat(3, minmax(180px, 1fr));
+    }
+  }
+
+  .summary-wrapper {
+
+    .summary-section {
+      grid-template-columns:
+        repeat(3, minmax(160px, 1fr));
+    }
+  }
+}
+
+
+@media (max-width: 992px) {
+
+  .payment-section {
+
+    padding: 1.5rem;
+
+    .payment-section-header {
+      flex-direction: column;
+      align-items: flex-start;
+
+      .payment-status-badge {
+        width: fit-content;
+      }
+    }
+
+    .payment-grid {
+      grid-template-columns:
+        repeat(2, minmax(180px, 1fr));
+    }
+  }
+
+  .summary-wrapper {
+
+    .summary-section {
+      grid-template-columns:
+        repeat(2, minmax(180px, 1fr));
+    }
+  }
+}
+
+
+@media (max-width: 768px) {
+
+  .payment-section {
+
+    padding: 1.2rem;
+
+    .payment-section-header {
+
+      h3 {
+        font-size: 1.15rem;
+      }
+
+      .payment-status-badge {
+        width: 100%;
+
+        text-align: center;
+      }
+    }
+
+    .payment-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .payment-item {
+      min-height: auto;
+    }
+  }
+
+  .summary-wrapper {
+
+    .summary-section {
+      grid-template-columns: 1fr;
+    }
+
+    .summary-item {
+      min-height: auto;
+    }
+  }
+}
+
+
+// =====================================================
+// خیلی کوچک
+// =====================================================
+
+@media (max-width: 480px) {
+
+  .payment-section {
+
+    .payment-item {
+      padding: 0.9rem;
+
+      label {
+        font-size: 0.85rem;
+      }
+
+      strong {
+        font-size: 1rem;
+      }
+    }
+  }
+}

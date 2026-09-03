@@ -134,29 +134,60 @@ export class OrderDetailsComponent implements OnInit {
 
   orderInfo = {
 
-    clinicId: null as number | null,
+  
 
-    clinicName: '',
+  clinicId: null as number | null,
+  clinicName: '',
 
-    clinicDoctorId: null as number | null,
+  clinicDoctorId: null as number | null,
 
-    doctorName: '',
+  doctorName: '',
+  patientName: '',
+  phoneNumber: '',
 
-    patientName: '',
 
-    status: null as number | null,
 
-    statusCode: '',   // <-- دریافت متن وضعیت از سرور
+  orderStatus: '',
 
-    invoiceType: '',
+  
 
-    phoneNumber: '',
+  invoiceType: '',
+  invoiceNumber: '',
 
-    entryDate: '',
-    exitDate: '',
+  // =========================
+  // تاریخ
+  // =========================
 
-    attachments: [] as Attachment[]
-  };
+  entryDate: '',
+  exitDate: '',
+
+  // =========================
+  // اطلاعات مالی
+  // =========================
+
+  discountAmount: 0,
+  grossTotal: 0,
+  netTotal: 0,
+
+  initialPaymentPercent: null as number | null,
+  initialPaymentAmount: 0,
+  initialPaidAmount: 0,
+
+  finalPaymentAmount: 0,
+  finalPaidAmount: 0,
+
+  paidAmount: 0,
+  remainingAmount: 0,
+
+  settled: false,
+  paymentStatus: '',
+
+  // =========================
+  // فایل‌ها
+  // =========================
+
+  attachments: [] as Attachment[]
+};
 
 
   // ============================================================
@@ -401,55 +432,109 @@ successMessage = '';
           // Order info
           // ====================================================
 
-          this.orderInfo = {
+              this.orderInfo = {
 
-            clinicId:
-              data.clinicId ?? null,
+        // =========================
+        // اطلاعات اصلی
+        // =========================
 
-            clinicName:
-              data.clinicName || '',
+        clinicId:
+          data.clinicId ?? null,
 
-            clinicDoctorId:
-              data.clinicDoctorId ?? null,
+        clinicName:
+          data.clinicName || '',
 
-            doctorName:
-              data.doctorName || '',
+        clinicDoctorId:
+          data.clinicDoctorId ?? null,
 
-            patientName:
-              data.patientName || '',
+        doctorName:
+          data.doctorName || '',
 
-            status:
-              data.status || null,
+        patientName:
+          data.patientName || '',
 
-            statusCode:
-              data.statusCode  || '',   // <-- اصلاح شده
+        phoneNumber:
+          data.phoneNumber || '',
 
-            invoiceType:
-              invoiceTypeKey,
+        // =========================
+        // وضعیت سفارش
+        // =========================
 
-            phoneNumber:
-              data.phoneNumber || '',
+        orderStatus:
+          data.orderStatus || '',
 
-            entryDate,
+        // =========================
+        // فاکتور
+        // =========================
 
-            exitDate,
+        invoiceType:
+          invoiceTypeKey,
 
-            attachments:
-              (data.attachments || []).map((att: any) => ({
+        invoiceNumber:
+          data.invoiceNumber || '',
 
-                id: att.id,
+        // =========================
+        // تاریخ
+        // =========================
 
-                fileName: att.fileName,
+        entryDate,
 
-                fileType: att.fileType,
+        exitDate,
 
-                fileSize: att.fileSize,
+        // =========================
+        // مالی
+        // =========================
 
-                viewUrl: att.viewUrl,
+        discountAmount:
+          data.discountAmount ?? 0,
 
-                downloadUrl: att.downloadUrl
-              }))
-          };
+        grossTotal:
+          data.grossTotal ?? 0,
+
+        netTotal:
+          data.netTotal ?? 0,
+
+        initialPaymentPercent:
+          data.initialPaymentPercent ?? null,
+
+        initialPaymentAmount:
+          data.initialPaymentAmount ?? 0,
+
+        initialPaidAmount:
+          data.initialPaidAmount ?? 0,
+
+        finalPaymentAmount:
+          data.finalPaymentAmount ?? 0,
+
+        finalPaidAmount:
+          data.finalPaidAmount ?? 0,
+
+        paidAmount:
+          data.paidAmount ?? 0,
+
+        remainingAmount:
+          data.remainingAmount ?? 0,
+
+        settled:
+          data.settled ?? false,
+
+        paymentStatus:
+          data.paymentStatus || '',
+
+        // =========================
+        // Attachments
+        // =========================
+
+        attachments:
+          (data.attachments || []).map(att => ({
+            id: att.id,
+            fileName: att.fileName,
+            fileType: att.fileType,
+            fileSize: att.fileSize,
+            viewUrl: att.viewUrl,
+            downloadUrl: att.downloadUrl
+          }))
+              };
 
 
           // ====================================================
@@ -1140,60 +1225,52 @@ closeSuccessModal(): void {
     // Payload
     // ========================================================
 
-    const payload = {
+  const payload = {
 
-      // مهم:
-      // این همان id رکورد clinic_doctor است
+  clinicDoctorId:
+    this.orderInfo.clinicDoctorId,
 
-      clinicDoctorId:
-        this.orderInfo.clinicDoctorId,
+  patientName:
+    this.orderInfo.patientName,
 
-      patientName:
-        this.orderInfo.patientName,
+  phoneNumber:
+    this.orderInfo.phoneNumber,
 
-      statusId:
-        this.orderInfo.status,
+  entryDate:
+    entryDateGreg,
 
-      invoiceType:
-        this.orderInfo.invoiceType,
+  exitDate:
+    exitDateGreg,
 
-      phoneNumber:
-        this.orderInfo.phoneNumber,
+  items:
+    this.items.map(item => ({
+      serviceType:
+        String(item.serviceType || '').trim(),
 
-      entryDate:
-        entryDateGreg,
+      toothNumber:
+        String(item.toothNumber || '').trim(),
 
-      exitDate:
-        exitDateGreg,
+      quantity:
+        Number(item.quantity || 0),
 
-      items:
-        this.items.map(item => ({
+      unitPrice:
+        Number(item.unitPrice || 0),
 
-          serviceType:
-            String(item.serviceType || '').trim(),
+      totalPrice:
+        Number(
+          item.quantity || 0
+        ) *
+        Number(
+          item.unitPrice || 0
+        )
+    })),
 
-          toothNumber:
-            String(item.toothNumber || '').trim(),
+  discountAmount:
+    Number(this.discountAmount || 0),
 
-          quantity:
-            Number(item.quantity || 0),
-
-          unitPrice:
-            Number(item.unitPrice || 0),
-
-          totalPrice:
-            this.rowTotal(
-              this.items.indexOf(item)
-            )
-        })),
-
-      discountAmount:
-        Number(this.discountAmount || 0),
-
-      deletedAttachmentIds:
-        this.deletedAttachmentIds
-    };
-
+  deletedAttachmentIds:
+    this.deletedAttachmentIds
+};
 
     console.log(
       '📤 Payload:',
@@ -1474,18 +1551,32 @@ viewAttachment(file: Attachment): void {
   // Get status text (تبدیل عدد به متن)
   // ============================================================
 
-  getStatusText(statusCode: number | null): string {
-    const statusMap: { [key: number]: string } = {
-      1: 'در انتظار پرداخت',
-      2: 'در حال ساخت',
-      3: 'تحویل داده شده',
-      4: 'انتظار ارسال فاکتور',
-      5: 'پرداخت شده'
-    };
-    return statusCode !== null && statusMap[statusCode]
-      ? statusMap[statusCode]
-      : 'نامشخص';
+getOrderStatusText(status: string | null | undefined): string {
+
+  switch (status) {
+
+    case 'WAITING_INITIAL_PAYMENT':
+      return 'در انتظار پرداخت اولیه';
+
+    case 'IN_PRODUCTION':
+      return 'در حال ساخت';
+
+    case 'WAITING_FINAL_PAYMENT':
+      return 'در انتظار پرداخت نهایی';
+
+    case 'WAITING_INVOICE_SEND':
+      return 'انتظار ارسال فاکتور';
+
+    case 'WAITING_PAYMENT':
+      return 'در انتظار پرداخت';
+
+    case 'DELIVERED':
+      return 'تحویل داده شده';
+
+    default:
+      return 'نامشخص';
   }
+}
 
 // orderDetail.component.ts
 downloadAttachment(file: Attachment): void {

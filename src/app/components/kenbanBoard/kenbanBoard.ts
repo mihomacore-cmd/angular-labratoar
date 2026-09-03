@@ -124,20 +124,20 @@ export class KanbanBoardComponent implements OnInit {
 
         console.log('داده‌های دریافتی:', response);
 
-        this.paymentItems =
-          this.mapToKanbanItem(
-            response['در انتظار پرداخت'] || []
-          );
+          this.paymentItems =
+            this.mapToKanbanItem(
+              response.paymentWaiting || []
+            );
 
-        this.buildingItems =
-          this.mapToKanbanItem(
-            response['در حال ساخت'] || []
-          );
+          this.buildingItems =
+            this.mapToKanbanItem(
+              response.building || []
+            );
 
-        this.deliveredItems =
-          this.mapToKanbanItem(
-            response['تحویل داده شده'] || []
-          );
+          this.deliveredItems =
+            this.mapToKanbanItem(
+              response.delivered || []
+            );
 
         this.totalCount =
           this.paymentItems.length +
