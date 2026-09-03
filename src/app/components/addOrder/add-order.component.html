@@ -103,29 +103,31 @@
     </div>
 
 
-        <div class="field-item">
-          <label for="invoiceNumber">شماره فاکتور</label>
+        <div
+  class="field-item"
+  *ngIf="form.controls.invoiceType.value === 'daily'"
+>
+  <label for="invoiceNumber">
+    شماره فاکتور
+  </label>
 
-          <input
-            id="invoiceNumber"
-            type="text"
-            formControlName="invoiceNumber"
-            placeholder="مثلاً INV-1001"
-            [readonly]="form.controls.invoiceType.value === 'monthly'"
-            [class.invoice-disabled]="form.controls.invoiceType.value === 'monthly'"
-            (click)="onInvoiceNumberClick()"
-          >
+  <input
+    id="invoiceNumber"
+    type="text"
+    formControlName="invoiceNumber"
+    placeholder="مثلاً INV-1001"
+  >
 
-          <small
-            class="error-text"
-            *ngIf="
-              form.controls.invoiceNumber.touched &&
-              form.controls.invoiceNumber.hasError('required')
-            "
-          >
-            برای فاکتور روزانه، شماره فاکتور الزامی است.
-          </small>
-        </div>
+  <small
+    class="error-text"
+    *ngIf="
+      form.controls.invoiceNumber.touched &&
+      form.controls.invoiceNumber.hasError('required')
+    "
+  >
+    برای فاکتور روزانه، شماره فاکتور الزامی است.
+  </small>
+</div>
 
     <!-- شماره تلفن -->
     <div class="field-item">
@@ -138,6 +140,63 @@
         readonly
       >
     </div>
+
+
+
+          <div
+            class="field-item"
+            *ngIf="form.controls.invoiceType.value === 'daily'"
+          >
+            <label for="initialPaymentPercent">
+              درصد پیش‌پرداخت
+            </label>
+
+            <div class="percent-input-wrapper">
+
+              <input
+                id="initialPaymentPercent"
+                type="number"
+                formControlName="initialPaymentPercent"
+                min="1"
+                max="100"
+                placeholder="مثلاً 60"
+              />
+
+              <span class="percent-symbol">
+                %
+              </span>
+
+            </div>
+
+            <small
+              class="error-text"
+              *ngIf="
+                form.controls.initialPaymentPercent.touched &&
+                form.controls.initialPaymentPercent.hasError('required')
+              "
+            >
+              درصد پیش‌پرداخت الزامی است.
+            </small>
+
+            <small
+              class="error-text"
+              *ngIf="
+                form.controls.initialPaymentPercent.touched &&
+                (
+                  form.controls.initialPaymentPercent.hasError('min') ||
+                  form.controls.initialPaymentPercent.hasError('max')
+                )
+              "
+            >
+              درصد پیش‌پرداخت باید بین 1 تا 100 باشد.
+            </small>
+
+          </div>
+
+
+
+
+
 
 
     <!-- تاریخ ورود -->
@@ -366,27 +425,28 @@
     </div>
 
 
-    <div class="global-file">
+    <div
+  class="global-file"
+  *ngIf="form.controls.invoiceType.value === 'daily'"
+>
+  <label for="attachments">
+    بارگذاری فایل فاکتور
+  </label>
 
-      <label for="attachments">
-        بارگذاری فایل (مدارک، تصاویر)
-      </label>
+  <input
+    id="attachments"
+    type="file"
+    multiple
+    (change)="onFilesSelected($event)"
+  >
 
-      <input
-        id="attachments"
-        type="file"
-        multiple
-        (change)="onFilesSelected($event)"
-      >
-
-      <div
-        class="file-list"
-        *ngIf="selectedFiles.length"
-      >
-        {{ selectedFiles.length }} فایل انتخاب شد
-      </div>
-
-    </div>
+  <div
+    class="file-list"
+    *ngIf="selectedFiles.length"
+  >
+    {{ selectedFiles.length }} فایل انتخاب شد
+  </div>
+</div>
 
   </div>
 
@@ -414,42 +474,77 @@
 
 
   <!-- مجموع -->
-  <div class="totals-strip">
+<div class="totals-strip">
 
-    <div class="total-box">
+  <!-- جمع کل -->
+  <div class="total-box">
 
-      <span>جمع کل</span>
+    <span>جمع کل</span>
 
-      <strong>
-        {{ formatMoney(grossTotal) }}
-      </strong>
-
-    </div>
-
-
-    <div class="total-box">
-
-      <span>تخفیف</span>
-
-      <strong>
-        {{ formatMoney(form.controls.discountAmount.value) }}
-      </strong>
-
-    </div>
-
-
-    <div class="total-box total-box--emphasis">
-
-      <span>قابل پرداخت</span>
-
-      <strong>
-        {{ formatMoney(netTotal) }}
-      </strong>
-
-    </div>
+    <strong>
+      {{ formatMoney(grossTotal) }}
+    </strong>
 
   </div>
 
+
+  <!-- تخفیف -->
+  <div class="total-box">
+
+    <span>تخفیف</span>
+
+    <strong>
+      {{ formatMoney(form.controls.discountAmount.value) }}
+    </strong>
+
+  </div>
+
+
+  <!-- قابل پرداخت -->
+  <div class="total-box total-box--emphasis">
+
+    <span>قابل پرداخت</span>
+
+    <strong>
+      {{ formatMoney(netTotal) }}
+    </strong>
+
+  </div>
+
+
+  <!-- پیش پرداخت -->
+  <div
+    class="total-box total-box--prepayment"
+    *ngIf="form.controls.invoiceType.value === 'daily'"
+  >
+
+    <span>
+      پیش‌پرداخت
+      ({{ form.controls.initialPaymentPercent.value || 0 }}٪)
+    </span>
+
+    <strong>
+      {{ formatMoney(initialPaymentAmount) }}
+    </strong>
+
+  </div>
+
+
+  <!-- مبلغ نهایی -->
+  <div
+    class="total-box total-box--remaining"
+    *ngIf="form.controls.invoiceType.value === 'daily'"
+  >
+
+    <span>مبلغ باقی‌مانده</span>
+
+    <strong>
+      {{ formatMoney(finalPaymentAmount) }}
+    </strong>
+
+  </div>
+
+</div>
 
   <!-- ثبت -->
   <div class="submit-area">

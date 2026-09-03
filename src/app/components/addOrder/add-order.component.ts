@@ -56,6 +56,7 @@ export interface OrderPayload {
   patientName: string;
   invoiceNumber: string;
   invoiceType: InvoiceType;
+  initialPaymentPercent: number | null;
   entryDate: string;
   exitDate: string;
   discountAmount: number;
@@ -84,6 +85,7 @@ type OrderFormControls = {
   phone: FormControl<string>;
   entryDate: FormControl<string | null>;
   exitDate: FormControl<string | null>;
+  initialPaymentPercent: FormControl<number | null>;
   discountAmount: FormControl<number>;
   description: FormControl<string>;
   items: FormArray<FormGroup<OrderItemForm>>;
@@ -230,6 +232,15 @@ export class AddOrderComponent implements OnInit {
         'daily'
       ),
 
+
+          initialPaymentPercent: this.fb.control<number | null>(
+            60,
+            [
+              Validators.required,
+              Validators.min(1),
+              Validators.max(100),
+            ]
+          ),
       phone: this.fb.nonNullable.control(
         '',
         [
@@ -299,50 +310,72 @@ export class AddOrderComponent implements OnInit {
 
   onInvoiceTypeChange(): void {
 
-    const invoiceType =
-      this.form.controls.invoiceType.value;
+  const invoiceType =
+    this.form.controls.invoiceType.value;
 
-    const invoiceNumberControl =
-      this.form.controls.invoiceNumber;
+  const invoiceNumberControl =
+    this.form.controls.invoiceNumber;
 
-
-    /*
-     * اگر نوع فاکتور ماهیانه باشد:
-     *
-     * 1. شماره فاکتور پاک می‌شود.
-     * 2. Validator حذف می‌شود.
-     * 3. کنترل غیرفعال می‌شود.
-     */
-    if (invoiceType === 'monthly') {
-
-      invoiceNumberControl.setValue('');
-
-      invoiceNumberControl.clearValidators();
-
-      invoiceNumberControl.disable();
-
-      invoiceNumberControl.updateValueAndValidity();
-
-      return;
-    }
+  const initialPaymentPercentControl =
+    this.form.controls.initialPaymentPercent;
 
 
-    /*
-     * اگر نوع فاکتور روزانه باشد:
-     *
-     * 1. کنترل فعال می‌شود.
-     * 2. شماره فاکتور اجباری می‌شود.
-     */
-    invoiceNumberControl.enable();
+  // ==========================================
+  // MONTHLY
+  // ==========================================
 
-    invoiceNumberControl.setValidators([
-      Validators.required,
-    ]);
+  if (invoiceType === 'monthly') {
 
+    // Invoice Number
+    invoiceNumberControl.setValue('');
+    invoiceNumberControl.clearValidators();
+    invoiceNumberControl.disable();
     invoiceNumberControl.updateValueAndValidity();
 
+
+    // Initial Payment Percent
+    initialPaymentPercentControl.setValue(null);
+    initialPaymentPercentControl.clearValidators();
+    initialPaymentPercentControl.disable();
+    initialPaymentPercentControl.updateValueAndValidity();
+
+    return;
   }
 
+
+  // ==========================================
+  // DAILY
+  // ==========================================
+
+  invoiceNumberControl.enable();
+
+  invoiceNumberControl.setValidators([
+    Validators.required,
+  ]);
+
+  invoiceNumberControl.updateValueAndValidity();
+
+
+  initialPaymentPercentControl.enable();
+
+  initialPaymentPercentControl.setValidators([
+    Validators.required,
+    Validators.min(1),
+    Validators.max(100),
+  ]);
+
+  /*
+   * اگر Daily شد و مقدار نداشت،
+   * مقدار پیش‌فرض 60 قرار بده
+   */
+  if (
+    initialPaymentPercentControl.value === null
+  ) {
+    initialPaymentPercentControl.setValue(60);
+  }
+
+  initialPaymentPercentControl.updateValueAndValidity();
+}
 
   // ============================================================
   // تاریخ خروج باید بعد یا مساوی تاریخ ورود باشد
@@ -425,54 +458,41 @@ export class AddOrderComponent implements OnInit {
   // ============================================================
   // پاک کردن فیلدهای بالای فرم
   // ============================================================
+clearTopFields(): void {
 
-  clearTopFields(): void {
+  this.form.patchValue({
 
-    this.form.patchValue({
+    clinicDoctorId: null,
 
-      clinicDoctorId: 0,
+    clinicId: null,
 
-      clinicId: 0,
+    headerField: '',
 
-      headerField: '',
+    patientName: '',
 
-      patientName: '',
+    invoiceNumber: '',
 
-      invoiceNumber: '',
+    invoiceType: 'daily',
 
-      /*
-       * بعد از پاک کردن فرم،
-       * نوع فاکتور دوباره روزانه می‌شود.
-       */
-      invoiceType: 'daily',
+    phone: '',
 
-      phone: '',
+    entryDate: null,
 
-      entryDate: null,
+    exitDate: null,
 
-      exitDate: null,
+    initialPaymentPercent: 60,
 
-      discountAmount: 0,
+    discountAmount: 0,
 
-      description: '',
+    description: '',
 
-    });
+  });
 
+  this.onInvoiceTypeChange();
 
-    /*
-     * مهم:
-     * چون ممکن است قبل از پاک کردن،
-     * نوع فاکتور ماهیانه بوده باشد و
-     * invoiceNumber غیرفعال شده باشد،
-     * این متد آن را دوباره فعال و اجباری می‌کند.
-     */
-    this.onInvoiceTypeChange();
-
-
-    this.form.markAsPristine();
-    this.form.markAsUntouched();
-
-  }
+  this.form.markAsPristine();
+  this.form.markAsUntouched();
+}
 
 
   // ============================================================
@@ -924,6 +944,13 @@ export class AddOrderComponent implements OnInit {
       invoiceType:
         raw.invoiceType,
 
+      initialPaymentPercent:
+        raw.invoiceType === 'daily'
+          ? this.normalizeNumber(raw.initialPaymentPercent)
+          : null,
+
+
+
       entryDate:
         this.convertPersianToGregorian(
           raw.entryDate ?? ''
@@ -1223,5 +1250,47 @@ export class AddOrderComponent implements OnInit {
     this.showErrorModal = true;
   }
 }
+
+
+get finalPaymentAmount(): number {
+
+  if (
+    this.form.controls.invoiceType.value !== 'daily'
+  ) {
+    return 0;
+  }
+
+  return Math.max(
+    this.netTotal - this.initialPaymentAmount,
+    0
+  );
+}
+
+get initialPaymentAmount(): number {
+
+  if (
+    this.form.controls.invoiceType.value !== 'daily'
+  ) {
+    return 0;
+  }
+
+  const percent =
+    this.normalizeNumber(
+      this.form.controls.initialPaymentPercent.value
+    );
+
+  const total =
+    this.netTotal;
+
+  if (percent <= 0) {
+    return 0;
+  }
+
+  return Math.round(
+    total * percent / 100
+  );
+}
+
+
 
 }
