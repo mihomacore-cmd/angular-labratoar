@@ -10,7 +10,9 @@ import {
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import { AttachmentService } from '../../servicies/attachmentService/attachmentService';
+
 import {
   KanbanService,
   OrderDetailResponse
@@ -60,8 +62,8 @@ export interface Clinic {
 // ============================================================
 
 export interface ClinicDoctor {
-  id: number;          // id جدول clinic_doctor
-  doctorId: number;    // id پزشک
+  id: number;
+  doctorId: number;
   doctorName: string;
   phone: string;
 }
@@ -87,7 +89,8 @@ export class OrderDetailsComponent implements OnInit {
   private readonly kanbanService = inject(KanbanService);
   private readonly orderService = inject(AddOrderService);
   private readonly cdr = inject(ChangeDetectorRef);
-  private readonly attachmentService = inject (AttachmentService);
+  private readonly attachmentService = inject(AttachmentService);
+
 
   // ============================================================
   // Inputs / Outputs
@@ -95,9 +98,10 @@ export class OrderDetailsComponent implements OnInit {
 
   @Input() orderId: number | null = null;
 
+  @Input() disableEdit = false;
+
   @Output() closed = new EventEmitter<void>();
 
-  @Input() disableEdit: boolean = false;
 
   // ============================================================
   // Loading / Error
@@ -134,60 +138,89 @@ export class OrderDetailsComponent implements OnInit {
 
   orderInfo = {
 
-  
+    // =========================
+    // اطلاعات اصلی
+    // =========================
 
-  clinicId: null as number | null,
-  clinicName: '',
+    clinicId: null as number | null,
 
-  clinicDoctorId: null as number | null,
+    clinicName: '',
 
-  doctorName: '',
-  patientName: '',
-  phoneNumber: '',
+    clinicDoctorId: null as number | null,
+
+    doctorName: '',
+
+    patientName: '',
+
+    /*
+     * مهم:
+     *
+     * phoneNumber فقط از ClinicDoctor
+     * دریافت می‌شود و در UI قابل ویرایش نیست.
+     */
+    phoneNumber: '',
 
 
+    // =========================
+    // وضعیت سفارش
+    // =========================
 
-  orderStatus: '',
+    orderStatus: '',
 
-  
 
-  invoiceType: '',
-  invoiceNumber: '',
+    // =========================
+    // فاکتور
+    // =========================
 
-  // =========================
-  // تاریخ
-  // =========================
+    invoiceType: 'DAILY',
 
-  entryDate: '',
-  exitDate: '',
+    invoiceNumber: '',
 
-  // =========================
-  // اطلاعات مالی
-  // =========================
 
-  discountAmount: 0,
-  grossTotal: 0,
-  netTotal: 0,
+    // =========================
+    // تاریخ
+    // =========================
 
-  initialPaymentPercent: null as number | null,
-  initialPaymentAmount: 0,
-  initialPaidAmount: 0,
+    entryDate: '',
 
-  finalPaymentAmount: 0,
-  finalPaidAmount: 0,
+    exitDate: '',
 
-  paidAmount: 0,
-  remainingAmount: 0,
 
-  settled: false,
-  paymentStatus: '',
+    // =========================
+    // اطلاعات مالی
+    // =========================
 
-  // =========================
-  // فایل‌ها
-  // =========================
+    discountAmount: 0,
 
-  attachments: [] as Attachment[]
-};
+    grossTotal: 0,
+
+    netTotal: 0,
+
+    initialPaymentPercent: null as number | null,
+
+    initialPaymentAmount: 0,
+
+    initialPaidAmount: 0,
+
+    finalPaymentAmount: 0,
+
+    finalPaidAmount: 0,
+
+    paidAmount: 0,
+
+    remainingAmount: 0,
+
+    settled: false,
+
+    paymentStatus: '',
+
+
+    // =========================
+    // فایل‌ها
+    // =========================
+
+    attachments: [] as Attachment[]
+  };
 
 
   // ============================================================
@@ -195,8 +228,6 @@ export class OrderDetailsComponent implements OnInit {
   // ============================================================
 
   items: any[] = [];
-
-  discountAmount = 0;
 
 
   // ============================================================
@@ -218,13 +249,15 @@ export class OrderDetailsComponent implements OnInit {
 
   validationErrorMessage = '';
 
-// ============================================================
-// Success modal
-// ============================================================
 
-showSuccessModal = false;
+  // ============================================================
+  // Success modal
+  // ============================================================
 
-successMessage = '';
+  showSuccessModal = false;
+
+  successMessage = '';
+
 
   // ============================================================
   // Deleted attachments
@@ -239,18 +272,21 @@ successMessage = '';
 
   get entryDateValue(): JalaliDate | undefined {
 
-    const val = this.orderInfo.entryDate;
+    const value = this.orderInfo.entryDate;
 
-    if (!val) {
+    if (!value) {
       return undefined;
     }
 
-    const parts = val.split('/').map(Number);
+    const parts = value
+      .split('/')
+      .map(Number);
 
     if (
       parts.length === 3 &&
-      parts.every(p => !isNaN(p))
+      parts.every(part => !isNaN(part))
     ) {
+
       return {
         year: parts[0],
         month: parts[1],
@@ -272,7 +308,8 @@ successMessage = '';
 
     if (!this.orderId) {
 
-      this.errorMessage = 'شناسه سفارش معتبر نیست.';
+      this.errorMessage =
+        'شناسه سفارش معتبر نیست.';
 
       setTimeout(() => {
         this.closeDialog();
@@ -291,28 +328,30 @@ successMessage = '';
 
   private loadClinics(): void {
 
-    this.orderService.getClinics().subscribe({
+    this.orderService
+      .getClinics()
+      .subscribe({
 
-      next: (clinics) => {
+        next: (clinics) => {
 
-        this.clinics = clinics;
+          this.clinics = clinics;
 
-        this.cdr.detectChanges();
-      },
+          this.cdr.detectChanges();
+        },
 
-      error: (error) => {
+        error: (error) => {
 
-        console.error(
-          '❌ خطا در دریافت کلینیک‌ها:',
-          error
-        );
+          console.error(
+            '❌ خطا در دریافت کلینیک‌ها:',
+            error
+          );
 
-        this.errorMessage =
-          'دریافت لیست کلینیک‌ها با خطا مواجه شد.';
+          this.errorMessage =
+            'دریافت لیست کلینیک‌ها با خطا مواجه شد.';
 
-        this.cdr.detectChanges();
-      }
-    });
+          this.cdr.detectChanges();
+        }
+      });
   }
 
 
@@ -321,52 +360,65 @@ successMessage = '';
   // ============================================================
 
   private loadDoctorsByClinic(
-  clinicId: number,
-  selectedClinicDoctorId: number | null = null
-): void {
+    clinicId: number,
+    selectedClinicDoctorId: number | null = null
+  ): void {
 
-  this.doctors = [];
+    this.doctors = [];
 
-  this.orderService
-    .getDoctorsByClinic(clinicId)
-    .subscribe({
+    this.orderService
+      .getDoctorsByClinic(clinicId)
+      .subscribe({
 
-      next: (doctors) => {
+        next: (doctors) => {
 
-        this.doctors = doctors;
+          this.doctors = doctors;
 
-        // فقط مقدار Select را مشخص کن
-        if (selectedClinicDoctorId !== null) {
+          if (selectedClinicDoctorId !== null) {
 
-          const selectedDoctor = this.doctors.find(
-            doctor =>
-              Number(doctor.id) === Number(selectedClinicDoctorId)
+            const selectedDoctor =
+              this.doctors.find(
+                doctor =>
+                  Number(doctor.id) ===
+                  Number(selectedClinicDoctorId)
+              );
+
+            if (selectedDoctor) {
+
+              this.selectedDoctorId =
+                selectedDoctor.id;
+
+              /*
+               * شماره تلفن همیشه از رکورد ClinicDoctor
+               * گرفته می‌شود.
+               */
+              this.orderInfo.phoneNumber =
+                selectedDoctor.phone || '';
+
+              this.orderInfo.doctorName =
+                selectedDoctor.doctorName || '';
+            }
+          }
+
+          this.cdr.detectChanges();
+        },
+
+        error: (error) => {
+
+          console.error(
+            '❌ خطا در دریافت پزشکان:',
+            error
           );
 
-          if (selectedDoctor) {
-            this.selectedDoctorId = selectedDoctor.id;
-          }
+          this.doctors = [];
+
+          this.errorMessage =
+            'دریافت پزشکان کلینیک با خطا مواجه شد.';
+
+          this.cdr.detectChanges();
         }
-
-        this.cdr.detectChanges();
-      },
-
-      error: (error) => {
-
-        console.error(
-          '❌ خطا در دریافت پزشکان:',
-          error
-        );
-
-        this.doctors = [];
-
-        this.errorMessage =
-          'دریافت پزشکان کلینیک با خطا مواجه شد.';
-
-        this.cdr.detectChanges();
-      }
-    });
-}
+      });
+  }
 
 
   // ============================================================
@@ -397,19 +449,23 @@ successMessage = '';
           // Invoice type
           // ====================================================
 
-          let invoiceTypeKey = 'daily';
+          let invoiceTypeKey = 'DAILY';
 
-          if (data.invoiceType === 'روزانه') {
+          if (
+            data.invoiceType === 'ماهانه' ||
+            data.invoiceType === 'MONTHLY' ||
+            data.invoiceType === 'monthly'
+          ) {
 
-            invoiceTypeKey = 'daily';
+            invoiceTypeKey = 'MONTHLY';
 
-          } else if (data.invoiceType === 'ماهانه') {
+          } else if (
+            data.invoiceType === 'روزانه' ||
+            data.invoiceType === 'DAILY' ||
+            data.invoiceType === 'daily'
+          ) {
 
-            invoiceTypeKey = 'monthly';
-
-          } else if (data.invoiceType) {
-
-            invoiceTypeKey = data.invoiceType;
+            invoiceTypeKey = 'DAILY';
           }
 
 
@@ -432,109 +488,85 @@ successMessage = '';
           // Order info
           // ====================================================
 
-              this.orderInfo = {
+          this.orderInfo = {
 
-        // =========================
-        // اطلاعات اصلی
-        // =========================
+            clinicId:
+              data.clinicId ?? null,
 
-        clinicId:
-          data.clinicId ?? null,
+            clinicName:
+              data.clinicName || '',
 
-        clinicName:
-          data.clinicName || '',
+            clinicDoctorId:
+              data.clinicDoctorId ?? null,
 
-        clinicDoctorId:
-          data.clinicDoctorId ?? null,
+            doctorName:
+              data.doctorName || '',
 
-        doctorName:
-          data.doctorName || '',
+            patientName:
+              data.patientName || '',
 
-        patientName:
-          data.patientName || '',
+            phoneNumber:
+              data.phoneNumber || '',
 
-        phoneNumber:
-          data.phoneNumber || '',
+            orderStatus:
+              data.orderStatus || '',
 
-        // =========================
-        // وضعیت سفارش
-        // =========================
+            invoiceType:
+              invoiceTypeKey,
 
-        orderStatus:
-          data.orderStatus || '',
+            invoiceNumber:
+              data.invoiceNumber || '',
 
-        // =========================
-        // فاکتور
-        // =========================
+            entryDate,
 
-        invoiceType:
-          invoiceTypeKey,
+            exitDate,
 
-        invoiceNumber:
-          data.invoiceNumber || '',
+            discountAmount:
+              data.discountAmount ?? 0,
 
-        // =========================
-        // تاریخ
-        // =========================
+            grossTotal:
+              data.grossTotal ?? 0,
 
-        entryDate,
+            netTotal:
+              data.netTotal ?? 0,
 
-        exitDate,
+            initialPaymentPercent:
+              data.initialPaymentPercent ?? null,
 
-        // =========================
-        // مالی
-        // =========================
+            initialPaymentAmount:
+              data.initialPaymentAmount ?? 0,
 
-        discountAmount:
-          data.discountAmount ?? 0,
+            initialPaidAmount:
+              data.initialPaidAmount ?? 0,
 
-        grossTotal:
-          data.grossTotal ?? 0,
+            finalPaymentAmount:
+              data.finalPaymentAmount ?? 0,
 
-        netTotal:
-          data.netTotal ?? 0,
+            finalPaidAmount:
+              data.finalPaidAmount ?? 0,
 
-        initialPaymentPercent:
-          data.initialPaymentPercent ?? null,
+            paidAmount:
+              data.paidAmount ?? 0,
 
-        initialPaymentAmount:
-          data.initialPaymentAmount ?? 0,
+            remainingAmount:
+              data.remainingAmount ?? 0,
 
-        initialPaidAmount:
-          data.initialPaidAmount ?? 0,
+            settled:
+              data.settled ?? false,
 
-        finalPaymentAmount:
-          data.finalPaymentAmount ?? 0,
+            paymentStatus:
+              data.paymentStatus || '',
 
-        finalPaidAmount:
-          data.finalPaidAmount ?? 0,
-
-        paidAmount:
-          data.paidAmount ?? 0,
-
-        remainingAmount:
-          data.remainingAmount ?? 0,
-
-        settled:
-          data.settled ?? false,
-
-        paymentStatus:
-          data.paymentStatus || '',
-
-        // =========================
-        // Attachments
-        // =========================
-
-        attachments:
-          (data.attachments || []).map(att => ({
-            id: att.id,
-            fileName: att.fileName,
-            fileType: att.fileType,
-            fileSize: att.fileSize,
-            viewUrl: att.viewUrl,
-            downloadUrl: att.downloadUrl
-          }))
-              };
+            attachments:
+              (data.attachments || []).map(att => ({
+                id: att.id,
+                fileName: att.fileName,
+                fileType: att.fileType,
+                fileSize: att.fileSize,
+                viewUrl: att.viewUrl,
+                downloadUrl: att.downloadUrl
+              }))
+          };
 
 
           // ====================================================
@@ -554,15 +586,13 @@ successMessage = '';
 
 
           // ====================================================
-          // Load doctors of selected clinic
+          // Load doctors
           // ====================================================
 
           if (this.selectedClinicId) {
 
             this.loadDoctorsByClinic(
-
               this.selectedClinicId,
-
               this.selectedDoctorId
             );
           }
@@ -593,19 +623,10 @@ successMessage = '';
 
 
           // ====================================================
-          // Discount
-          // ====================================================
-
-          this.discountAmount =
-            data.discountAmount || 0;
-
-
-          // ====================================================
           // Validate dates
           // ====================================================
 
           this.validateExitDate();
-
 
           this.loading = false;
 
@@ -634,35 +655,58 @@ successMessage = '';
   // Clinic changed
   // ============================================================
 
-  onClinicChange(clinicId: number | string | null): void {
+  onClinicChange(
+    clinicId: number | string | null
+  ): void {
 
-  const id =
-    clinicId !== null && clinicId !== ''
-      ? Number(clinicId)
-      : null;
+    const id =
+      clinicId !== null &&
+      clinicId !== ''
+        ? Number(clinicId)
+        : null;
 
-  this.selectedClinicId = id;
 
-  // چون کاربر واقعاً کلینیک را تغییر داده
-  this.orderInfo.clinicId = id;
-  this.orderInfo.clinicName =
-    this.clinics.find(c => c.id === id)?.name || '';
+    this.selectedClinicId = id;
 
-  // پزشک قبلی دیگر معتبر نیست
-  this.selectedDoctorId = null;
 
-  this.orderInfo.clinicDoctorId = null;
-  this.orderInfo.doctorName = '';
-  this.orderInfo.phoneNumber = '';
+    // ==========================================================
+    // بروزرسانی کلینیک
+    // ==========================================================
 
-  this.doctors = [];
+    this.orderInfo.clinicId = id;
 
-  if (!id) {
-    return;
+    this.orderInfo.clinicName =
+      this.clinics.find(
+        clinic => clinic.id === id
+      )?.name || '';
+
+
+    // ==========================================================
+    // پزشک قبلی دیگر معتبر نیست
+    // ==========================================================
+
+    this.selectedDoctorId = null;
+
+    this.orderInfo.clinicDoctorId = null;
+
+    this.orderInfo.doctorName = '';
+
+    /*
+     * شماره تلفن پزشک قبلی هم باید پاک شود.
+     * شماره جدید بعد از انتخاب پزشک پر می‌شود.
+     */
+    this.orderInfo.phoneNumber = '';
+
+    this.doctors = [];
+
+
+    if (!id) {
+      return;
+    }
+
+
+    this.loadDoctorsByClinic(id);
   }
-
-  this.loadDoctorsByClinic(id);
-}
 
 
   // ============================================================
@@ -685,6 +729,10 @@ successMessage = '';
     this.orderInfo.clinicDoctorId = id;
 
 
+    // ==========================================================
+    // هیچ پزشکی انتخاب نشده
+    // ==========================================================
+
     if (!id) {
 
       this.orderInfo.doctorName = '';
@@ -695,14 +743,9 @@ successMessage = '';
     }
 
 
-    /*
-     * توجه:
-     *
-     * اینجا doctor.id را پیدا می‌کنیم
-     * نه doctor.doctorId
-     *
-     * چون مقدار select باید clinicDoctor.id باشد.
-     */
+    // ==========================================================
+    // پیدا کردن ClinicDoctor
+    // ==========================================================
 
     const selectedDoctor =
       this.doctors.find(
@@ -721,16 +764,20 @@ successMessage = '';
     }
 
 
+    // ==========================================================
     // نام پزشک
+    // ==========================================================
 
     this.orderInfo.doctorName =
-      selectedDoctor.doctorName;
+      selectedDoctor.doctorName || '';
 
 
-    // شماره تلفن
+    // ==========================================================
+    // شماره تلفن پزشک
+    // ==========================================================
 
     this.orderInfo.phoneNumber =
-      selectedDoctor.phone;
+      selectedDoctor.phone || '';
   }
 
 
@@ -738,56 +785,66 @@ successMessage = '';
   // Edit mode
   // ============================================================
 
-toggleEditMode(): void {
+  toggleEditMode(): void {
 
-  if (!this.isEditMode) {
-
-    // ==========================================
+    // ==========================================================
     // ورود به حالت ویرایش
-    // ==========================================
+    // ==========================================================
 
-    this.selectedClinicId = this.orderInfo.clinicId;
+    if (!this.isEditMode) {
 
-    this.selectedDoctorId = this.orderInfo.clinicDoctorId;
+      this.selectedClinicId =
+        this.orderInfo.clinicId;
 
-    this.isEditMode = true;
+      this.selectedDoctorId =
+        this.orderInfo.clinicDoctorId;
 
-    // اگر کلینیک قبلی وجود دارد، پزشکان آن را بگیر
-    if (this.selectedClinicId) {
-      this.loadDoctorsByClinic(
-        this.selectedClinicId,
-        this.selectedDoctorId
-      );
+      this.isEditMode = true;
+
+
+      if (this.selectedClinicId) {
+
+        this.loadDoctorsByClinic(
+          this.selectedClinicId,
+          this.selectedDoctorId
+        );
+      }
+
+      this.cdr.detectChanges();
+
+      return;
     }
 
-    this.cdr.detectChanges();
 
-    return;
+    // ==========================================================
+    // لغو ویرایش
+    // ==========================================================
+
+    this.isEditMode = false;
+
+    this.deletedAttachmentIds = [];
+
+    this.showEntryDatePicker = false;
+
+    this.showExitDatePicker = false;
+
+    this.exitDateInvalid = false;
+
+    this.showValidationModal = false;
+
+    this.validationErrorMessage = '';
+
+
+    /*
+     * با لغو ویرایش، کل اطلاعات از Backend
+     * دوباره دریافت می‌شود.
+     */
+    if (this.orderId) {
+
+      this.loadOrderDetail(this.orderId);
+    }
   }
 
-
-  // ==========================================
-  // لغو ویرایش
-  // ==========================================
-
-  this.isEditMode = false;
-
-  this.deletedAttachmentIds = [];
-
-  this.showEntryDatePicker = false;
-
-  this.showExitDatePicker = false;
-
-  this.exitDateInvalid = false;
-
-  this.showValidationModal = false;
-
-  this.validationErrorMessage = '';
-
-  if (this.orderId) {
-    this.loadOrderDetail(this.orderId);
-  }
-}
 
   // ============================================================
   // Entry date
@@ -984,12 +1041,16 @@ toggleEditMode(): void {
   }
 
 
-closeSuccessModal(): void {
+  // ============================================================
+  // Success modal
+  // ============================================================
 
-  this.showSuccessModal = false;
+  closeSuccessModal(): void {
 
-  this.successMessage = '';
-}
+    this.showSuccessModal = false;
+
+    this.successMessage = '';
+  }
 
 
   // ============================================================
@@ -997,6 +1058,10 @@ closeSuccessModal(): void {
   // ============================================================
 
   addItem(): void {
+
+    if (!this.isEditMode) {
+      return;
+    }
 
     this.items.push({
 
@@ -1014,6 +1079,11 @@ closeSuccessModal(): void {
 
 
   removeItem(index: number): void {
+
+    if (!this.isEditMode) {
+      return;
+    }
+
 
     if (this.items.length === 1) {
 
@@ -1033,6 +1103,7 @@ closeSuccessModal(): void {
       return;
     }
 
+
     this.items.splice(index, 1);
   }
 
@@ -1040,6 +1111,10 @@ closeSuccessModal(): void {
   rowTotal(index: number): number {
 
     const item = this.items[index];
+
+    if (!item) {
+      return 0;
+    }
 
     return (
       Number(item.quantity || 0) *
@@ -1070,29 +1145,82 @@ closeSuccessModal(): void {
     return Math.max(
 
       this.totalAmount -
-      Number(this.discountAmount || 0),
+      Number(this.orderInfo.discountAmount || 0),
 
       0
     );
   }
 
 
-  formatMoney(value: number): string {
+formatMoney(value: number | null | undefined): string {
+  const amount = Number(value ?? 0);
 
-    if (
-      value === undefined ||
-      value === null ||
-      isNaN(value)
-    ) {
-
-      return '۰ ریال';
-    }
-
-    return (
-      value.toLocaleString('fa-IR') +
-      ' ریال'
-    );
+  if (!Number.isFinite(amount)) {
+    return '0';
   }
+
+  return new Intl.NumberFormat('en-US', {
+    maximumFractionDigits: 0
+  }).format(amount);
+}
+  // ============================================================
+  // مدیریت ورودی مبالغ (فقط ذخیره‌سازی عدد خام)
+  // ============================================================
+
+onMoneyInput(
+  event: Event,
+  field:
+    | 'grossTotal'
+    | 'discountAmount'
+    | 'netTotal'
+    | 'initialPaymentAmount'
+    | 'initialPaidAmount'
+    | 'finalPaymentAmount'
+    | 'finalPaidAmount'
+    | 'paidAmount'
+    | 'remainingAmount'
+): void {
+  const input = event.target as HTMLInputElement;
+
+  // فقط عددها
+  const rawValue = input.value.replace(/[^\d]/g, '');
+
+  if (!rawValue) {
+    this.orderInfo[field] = 0;
+    input.value = '';
+    return;
+  }
+
+  const numericValue = Number(rawValue);
+
+  this.orderInfo[field] = numericValue;
+
+  // سه رقم سه رقم
+  input.value = this.formatMoney(numericValue);
+}
+
+
+  // ============================================================
+  // فرمت‌کردن مبلغ آیتم هنگام خروج از فیلد (blur)
+  // ============================================================
+
+ onMoneyBlur(
+  event: Event,
+  field:
+    | 'grossTotal'
+    | 'discountAmount'
+    | 'netTotal'
+    | 'initialPaymentAmount'
+    | 'initialPaidAmount'
+    | 'finalPaymentAmount'
+    | 'finalPaidAmount'
+    | 'paidAmount'
+    | 'remainingAmount'
+): void {
+  const input = event.target as HTMLInputElement;
+
+  input.value = this.formatMoney(this.orderInfo[field]);
+}
 
 
   // ============================================================
@@ -1100,6 +1228,10 @@ closeSuccessModal(): void {
   // ============================================================
 
   onFileSelected(event: Event): void {
+
+    if (!this.isEditMode) {
+      return;
+    }
 
     const input =
       event.target as HTMLInputElement;
@@ -1111,7 +1243,11 @@ closeSuccessModal(): void {
     }
 
 
-    for (let i = 0; i < files.length; i++) {
+    for (
+      let i = 0;
+      i < files.length;
+      i++
+    ) {
 
       const file = files[i];
 
@@ -1134,11 +1270,15 @@ closeSuccessModal(): void {
 
   removeAttachment(index: number): void {
 
+    if (!this.isEditMode) {
+      return;
+    }
+
     const attachment =
       this.orderInfo.attachments[index];
 
 
-    if (attachment.id) {
+    if (attachment?.id) {
 
       this.deletedAttachmentIds.push(
         attachment.id
@@ -1160,10 +1300,13 @@ closeSuccessModal(): void {
   submitOrder(): void {
 
     if (!this.isEditMode) {
-
       return;
     }
 
+
+    // ==========================================================
+    // Validate dates
+    // ==========================================================
 
     this.validateExitDate();
 
@@ -1179,9 +1322,9 @@ closeSuccessModal(): void {
     }
 
 
-    // ========================================================
-    // بررسی کلینیک و پزشک
-    // ========================================================
+    // ==========================================================
+    // Validate clinic
+    // ==========================================================
 
     if (!this.orderInfo.clinicId) {
 
@@ -1194,6 +1337,10 @@ closeSuccessModal(): void {
     }
 
 
+    // ==========================================================
+    // Validate doctor
+    // ==========================================================
+
     if (!this.orderInfo.clinicDoctorId) {
 
       this.validationErrorMessage =
@@ -1205,9 +1352,45 @@ closeSuccessModal(): void {
     }
 
 
-    // ========================================================
+    // ==========================================================
+    // پیدا کردن پزشک انتخاب‌شده
+    // ==========================================================
+
+    const selectedDoctor =
+      this.doctors.find(
+        doctor =>
+          Number(doctor.id) ===
+          Number(this.orderInfo.clinicDoctorId)
+      );
+
+
+    if (!selectedDoctor) {
+
+      this.validationErrorMessage =
+        'پزشک انتخاب‌شده در کلینیک پیدا نشد.';
+
+      this.showValidationModal = true;
+
+      return;
+    }
+
+
+    /*
+     * بسیار مهم:
+     *
+     * شماره تلفن را از orderInfo که قابل ویرایش نیست
+     * نمی‌گیریم؛ مستقیماً از ClinicDoctor می‌گیریم.
+     *
+     * بنابراین حتی اگر مقدار UI دستکاری شود،
+     * Payload شماره اشتباه ارسال نمی‌کند.
+     */
+    const doctorPhone =
+      selectedDoctor.phone || '';
+
+
+    // ==========================================================
     // Dates
-    // ========================================================
+    // ==========================================================
 
     const entryDateGreg =
       this.convertToGregorian(
@@ -1221,56 +1404,185 @@ closeSuccessModal(): void {
       );
 
 
-    // ========================================================
+    // ==========================================================
     // Payload
-    // ========================================================
+    // ==========================================================
 
-  const payload = {
+    const payload = {
 
-  clinicDoctorId:
-    this.orderInfo.clinicDoctorId,
+      // =========================
+      // Clinic / Doctor
+      // =========================
 
-  patientName:
-    this.orderInfo.patientName,
+      clinicId:
+        this.orderInfo.clinicId,
 
-  phoneNumber:
-    this.orderInfo.phoneNumber,
+      clinicDoctorId:
+        this.orderInfo.clinicDoctorId,
 
-  entryDate:
-    entryDateGreg,
 
-  exitDate:
-    exitDateGreg,
+      // =========================
+      // Patient
+      // =========================
 
-  items:
-    this.items.map(item => ({
-      serviceType:
-        String(item.serviceType || '').trim(),
+      patientName:
+        String(
+          this.orderInfo.patientName || ''
+        ).trim(),
 
-      toothNumber:
-        String(item.toothNumber || '').trim(),
 
-      quantity:
-        Number(item.quantity || 0),
+      /*
+       * phoneNumber قابل ویرایش نیست
+       * و مستقیماً از ClinicDoctor می‌آید.
+       */
+      phoneNumber:
+        doctorPhone,
 
-      unitPrice:
-        Number(item.unitPrice || 0),
 
-      totalPrice:
+      // =========================
+      // Order
+      // =========================
+
+      orderStatus:
+        this.orderInfo.orderStatus,
+
+      invoiceType:
+        this.orderInfo.invoiceType,
+
+      invoiceNumber:
+        String(
+          this.orderInfo.invoiceNumber || ''
+        ).trim(),
+
+
+      // =========================
+      // Dates
+      // =========================
+
+      entryDate:
+        entryDateGreg,
+
+      exitDate:
+        exitDateGreg,
+
+
+      // =========================
+      // Items
+      // =========================
+
+      items:
+        this.items.map(item => ({
+
+          serviceType:
+            String(
+              item.serviceType || ''
+            ).trim(),
+
+          toothNumber:
+            String(
+              item.toothNumber || ''
+            ).trim(),
+
+          quantity:
+            Number(
+              item.quantity || 0
+            ),
+
+          unitPrice:
+            Number(
+              item.unitPrice || 0
+            ),
+
+          totalPrice:
+            Number(
+              item.quantity || 0
+            ) *
+            Number(
+              item.unitPrice || 0
+            )
+        })),
+
+
+      // =========================
+      // Financial
+      // =========================
+
+      discountAmount:
         Number(
-          item.quantity || 0
-        ) *
+          this.orderInfo.discountAmount || 0
+        ),
+
+      grossTotal:
         Number(
-          item.unitPrice || 0
-        )
-    })),
+          this.orderInfo.grossTotal || 0
+        ),
 
-  discountAmount:
-    Number(this.discountAmount || 0),
+      netTotal:
+        Number(
+          this.orderInfo.netTotal || 0
+        ),
 
-  deletedAttachmentIds:
-    this.deletedAttachmentIds
-};
+
+      // =========================
+      // Initial Payment
+      // =========================
+
+      initialPaymentPercent:
+        this.orderInfo.initialPaymentPercent === null
+          ? null
+          : Number(
+              this.orderInfo.initialPaymentPercent
+            ),
+
+      initialPaymentAmount:
+        Number(
+          this.orderInfo.initialPaymentAmount || 0
+        ),
+
+      initialPaidAmount:
+        Number(
+          this.orderInfo.initialPaidAmount || 0
+        ),
+
+
+      // =========================
+      // Final Payment
+      // =========================
+
+      finalPaymentAmount:
+        Number(
+          this.orderInfo.finalPaymentAmount || 0
+        ),
+
+      finalPaidAmount:
+        Number(
+          this.orderInfo.finalPaidAmount || 0
+        ),
+
+
+      // =========================
+      // Payment
+      // =========================
+
+      paidAmount:
+        Number(
+          this.orderInfo.paidAmount || 0
+        ),
+
+      remainingAmount:
+        Number(
+          this.orderInfo.remainingAmount || 0
+        ),
+
+
+      // =========================
+      // Attachments
+      // =========================
+
+      deletedAttachmentIds:
+        this.deletedAttachmentIds
+    };
+
 
     console.log(
       '📤 Payload:',
@@ -1278,9 +1590,9 @@ closeSuccessModal(): void {
     );
 
 
-    // ========================================================
+    // ==========================================================
     // FormData
-    // ========================================================
+    // ==========================================================
 
     const formData =
       new FormData();
@@ -1292,9 +1604,9 @@ closeSuccessModal(): void {
     );
 
 
-    // ========================================================
+    // ==========================================================
     // New files
-    // ========================================================
+    // ==========================================================
 
     this.orderInfo.attachments.forEach(
       attachment => {
@@ -1302,11 +1614,8 @@ closeSuccessModal(): void {
         if (attachment.fileObject) {
 
           formData.append(
-
             'files',
-
             attachment.fileObject,
-
             attachment.fileName
           );
         }
@@ -1314,9 +1623,9 @@ closeSuccessModal(): void {
     );
 
 
-    // ========================================================
+    // ==========================================================
     // Send
-    // ========================================================
+    // ==========================================================
 
     this.kanbanService
       .updateOrderWithFiles(
@@ -1325,21 +1634,33 @@ closeSuccessModal(): void {
       )
       .subscribe({
 
-       next: (response) => {
-                // خروج از حالت ویرایش
-                this.isEditMode = false;
+        next: (response) => {
 
-                // پاک کردن لیست فایل‌های حذف‌شده
-                this.deletedAttachmentIds = [];
+          console.log(
+            '✅ سفارش با موفقیت بروزرسانی شد:',
+            response
+          );
 
-                // نمایش پیام موفقیت
-                this.successMessage =
-                  'تغییرات سفارش با موفقیت ثبت شد.';
 
-                this.showSuccessModal = true;
+          this.isEditMode = false;
 
-                this.cdr.detectChanges();
-              },
+          this.deletedAttachmentIds = [];
+
+          this.successMessage =
+            'تغییرات سفارش با موفقیت ثبت شد.';
+
+          this.showSuccessModal = true;
+
+          /*
+           * بعد از ذخیره، اطلاعات جدید Backend را بگیر
+           * تا clinic/doctor/phone و سایر مقادیر دقیق باشند.
+           */
+          if (this.orderId) {
+            this.loadOrderDetail(this.orderId);
+          }
+
+          this.cdr.detectChanges();
+        },
 
         error: (error) => {
 
@@ -1413,10 +1734,19 @@ closeSuccessModal(): void {
     jalaliStr: string
   ): string {
 
+    if (!jalaliStr) {
+      return '';
+    }
+
     try {
 
       const parts =
         jalaliStr.split('/');
+
+      if (parts.length !== 3) {
+        return '';
+      }
+
 
       const year =
         parseInt(parts[0]);
@@ -1428,6 +1758,15 @@ closeSuccessModal(): void {
         parseInt(parts[2]);
 
 
+      if (
+        isNaN(year) ||
+        isNaN(month) ||
+        isNaN(day)
+      ) {
+        return '';
+      }
+
+
       const gregorianDate =
         Jalali.toGregorian(
           year,
@@ -1437,12 +1776,15 @@ closeSuccessModal(): void {
 
 
       const y =
-        gregorianDate.getUTCFullYear();
+        gregorianDate
+          .getUTCFullYear();
+
 
       const m =
         String(
           gregorianDate.getUTCMonth() + 1
         ).padStart(2, '0');
+
 
       const d =
         String(
@@ -1459,153 +1801,271 @@ closeSuccessModal(): void {
   }
 
 
-
-viewAttachment(file: Attachment): void {
-
-  if (!file.id) {
-    console.error('❌ شناسه فایل موجود نیست.');
-    return;
-  }
-
-  // تب را بلافاصله با کلیک کاربر باز می‌کنیم
-  const newTab = window.open('', '_blank');
-
-  if (!newTab) {
-
-    console.error('❌ مرورگر اجازه باز کردن تب جدید را نداد.');
-
-    this.validationErrorMessage =
-      'مرورگر اجازه باز کردن تب جدید را نداد. لطفاً Popup را فعال کنید.';
-
-    this.showValidationModal = true;
-
-    return;
-  }
-
-  // فعلاً در تب پیام Loading نمایش بده
-  newTab.document.write(`
-    <html>
-      <head>
-        <title>در حال بارگذاری فایل...</title>
-      </head>
-      <body style="
-        display:flex;
-        justify-content:center;
-        align-items:center;
-        height:100vh;
-        font-family:sans-serif;
-      ">
-        <h3>⏳ در حال بارگذاری فایل...</h3>
-      </body>
-    </html>
-  `);
-
-  // درخواست فایل از Backend
-  this.attachmentService
-    .viewAttachment(file.id)
-    .subscribe({
-
-      next: (blob: Blob) => {
-
-        console.log('✅ فایل دریافت شد');
-        console.log('📦 Blob:', blob);
-        console.log('📄 File type:', blob.type);
-        console.log('📏 File size:', blob.size);
-
-        // ساخت URL موقت برای Blob
-        const fileUrl =
-          URL.createObjectURL(blob);
-
-        // تب باز شده را به فایل هدایت می‌کنیم
-        newTab.location.href = fileUrl;
-
-        // آزاد کردن URL بعد از مدتی
-        setTimeout(() => {
-
-          URL.revokeObjectURL(fileUrl);
-
-        }, 60000);
-      },
-
-      error: (error) => {
-
-        console.error(
-          '❌ خطا در دریافت فایل:',
-          error
-        );
-
-        // اگر Backend خطا داد، تب را ببند
-        newTab.close();
-
-        this.validationErrorMessage =
-          'نمایش فایل با خطا مواجه شد.';
-
-        this.showValidationModal = true;
-
-        this.cdr.detectChanges();
-      }
-    });
-}
-
   // ============================================================
-  // Get status text (تبدیل عدد به متن)
+  // View attachment
   // ============================================================
 
-getOrderStatusText(status: string | null | undefined): string {
+  viewAttachment(file: Attachment): void {
 
-  switch (status) {
+    if (!file.id) {
 
-    case 'WAITING_INITIAL_PAYMENT':
-      return 'در انتظار پرداخت اولیه';
+      console.error(
+        '❌ شناسه فایل موجود نیست.'
+      );
 
-    case 'IN_PRODUCTION':
-      return 'در حال ساخت';
-
-    case 'WAITING_FINAL_PAYMENT':
-      return 'در انتظار پرداخت نهایی';
-
-    case 'WAITING_INVOICE_SEND':
-      return 'انتظار ارسال فاکتور';
-
-    case 'WAITING_PAYMENT':
-      return 'در انتظار پرداخت';
-
-    case 'DELIVERED':
-      return 'تحویل داده شده';
-
-    default:
-      return 'نامشخص';
-  }
-}
-
-// orderDetail.component.ts
-downloadAttachment(file: Attachment): void {
-  if (!file.id) {
-    console.error('❌ شناسه فایل موجود نیست.');
-    return;
-  }
-
-  this.attachmentService.downloadAttachment(file.id).subscribe({
-    next: (blob: Blob) => {
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = file.fileName; // نام فایل اصلی
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    },
-    error: (error) => {
-      console.error('❌ خطا در دانلود فایل:', error);
-      this.validationErrorMessage = 'دانلود فایل با خطا مواجه شد.';
-      this.showValidationModal = true;
-      this.cdr.detectChanges();
+      return;
     }
-  });
+
+
+    const newTab =
+      window.open(
+        '',
+        '_blank'
+      );
+
+
+    if (!newTab) {
+
+      console.error(
+        '❌ مرورگر اجازه باز کردن تب جدید را نداد.'
+      );
+
+      this.validationErrorMessage =
+        'مرورگر اجازه باز کردن تب جدید را نداد. لطفاً Popup را فعال کنید.';
+
+      this.showValidationModal = true;
+
+      return;
+    }
+
+
+    newTab.document.write(`
+      <html>
+        <head>
+          <title>در حال بارگذاری فایل...</title>
+        </head>
+
+        <body style="
+          display:flex;
+          justify-content:center;
+          align-items:center;
+          height:100vh;
+          font-family:sans-serif;
+        ">
+          <h3>⏳ در حال بارگذاری فایل...</h3>
+        </body>
+      </html>
+    `);
+
+
+    this.attachmentService
+      .viewAttachment(file.id)
+      .subscribe({
+
+        next: (blob: Blob) => {
+
+          const fileUrl =
+            URL.createObjectURL(blob);
+
+          newTab.location.href =
+            fileUrl;
+
+
+          setTimeout(() => {
+
+            URL.revokeObjectURL(
+              fileUrl
+            );
+
+          }, 60000);
+        },
+
+        error: (error) => {
+
+          console.error(
+            '❌ خطا در دریافت فایل:',
+            error
+          );
+
+          newTab.close();
+
+          this.validationErrorMessage =
+            'نمایش فایل با خطا مواجه شد.';
+
+          this.showValidationModal = true;
+
+          this.cdr.detectChanges();
+        }
+      });
+  }
+
+
+  // ============================================================
+  // Download attachment
+  // ============================================================
+
+  downloadAttachment(
+    file: Attachment
+  ): void {
+
+    if (!file.id) {
+
+      console.error(
+        '❌ شناسه فایل موجود نیست.'
+      );
+
+      return;
+    }
+
+
+    this.attachmentService
+      .downloadAttachment(file.id)
+      .subscribe({
+
+        next: (blob: Blob) => {
+
+          const url =
+            window.URL.createObjectURL(blob);
+
+
+          const a =
+            document.createElement('a');
+
+          a.href = url;
+
+          a.download =
+            file.fileName;
+
+
+          document.body.appendChild(a);
+
+          a.click();
+
+          document.body.removeChild(a);
+
+          window.URL.revokeObjectURL(url);
+        },
+
+        error: (error) => {
+
+          console.error(
+            '❌ خطا در دانلود فایل:',
+            error
+          );
+
+          this.validationErrorMessage =
+            'دانلود فایل با خطا مواجه شد.';
+
+          this.showValidationModal = true;
+
+          this.cdr.detectChanges();
+        }
+      });
+  }
+
+
+  // ============================================================
+  // Order status options
+  // ============================================================
+
+  readonly orderStatusOptions = [
+
+    {
+      value: 'WAITING_INITIAL_PAYMENT',
+      label: 'در انتظار پرداخت اولیه'
+    },
+
+    {
+      value: 'IN_PRODUCTION',
+      label: 'در حال ساخت'
+    },
+
+    {
+      value: 'WAITING_FINAL_PAYMENT',
+      label: 'در انتظار پرداخت نهایی'
+    },
+
+    {
+      value: 'WAITING_INVOICE_SEND',
+      label: 'انتظار ارسال فاکتور'
+    },
+
+    {
+      value: 'WAITING_PAYMENT',
+      label: 'در انتظار پرداخت'
+    },
+
+    {
+      value: 'DELIVERED',
+      label: 'تحویل داده شده'
+    }
+  ];
+
+
+  // ============================================================
+  // Get status text
+  // ============================================================
+
+  getOrderStatusText(
+    status: string | null | undefined
+  ): string {
+
+    switch (status) {
+
+      case 'WAITING_INITIAL_PAYMENT':
+        return 'در انتظار پرداخت اولیه';
+
+      case 'IN_PRODUCTION':
+        return 'در حال ساخت';
+
+      case 'WAITING_FINAL_PAYMENT':
+        return 'در انتظار پرداخت نهایی';
+
+      case 'WAITING_INVOICE_SEND':
+        return 'انتظار ارسال فاکتور';
+
+      case 'WAITING_PAYMENT':
+        return 'در انتظار پرداخت';
+
+      case 'DELIVERED':
+        return 'تحویل داده شده';
+
+      default:
+        return 'نامشخص';
+    }
+  }
+
+onItemMoneyInput(
+  event: Event,
+  item: any,
+  field: 'unitPrice'
+): void {
+  const input = event.target as HTMLInputElement;
+
+  const rawValue = input.value.replace(/[^\d]/g, '');
+
+  if (!rawValue) {
+    item[field] = 0;
+    input.value = '';
+    return;
+  }
+
+  const numericValue = Number(rawValue);
+
+  item[field] = numericValue;
+
+  input.value = this.formatMoney(numericValue);
 }
 
+onItemMoneyBlur(
+  event: Event,
+  item: any,
+  field: 'unitPrice'
+): void {
+  const input = event.target as HTMLInputElement;
 
+  input.value = this.formatMoney(item[field]);
+}
   // ============================================================
   // Close
   // ============================================================

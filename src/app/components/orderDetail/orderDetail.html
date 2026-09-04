@@ -83,8 +83,6 @@
           نام کلینیک
         </label>
 
-
-        <!-- نمایش -->
         <input
           *ngIf="!isEditMode"
           id="clinic"
@@ -94,8 +92,6 @@
           readonly
         >
 
-
-        <!-- ویرایش -->
         <select
           *ngIf="isEditMode"
           id="clinic"
@@ -103,6 +99,10 @@
           [(ngModel)]="selectedClinicId"
           (ngModelChange)="onClinicChange($event)"
         >
+
+          <option [ngValue]="null">
+            انتخاب کلینیک
+          </option>
 
           <option
             *ngFor="let clinic of clinics"
@@ -125,8 +125,6 @@
           نام پزشک
         </label>
 
-
-        <!-- نمایش -->
         <input
           *ngIf="!isEditMode"
           id="doctor"
@@ -136,8 +134,6 @@
           readonly
         >
 
-
-        <!-- ویرایش -->
         <select
           *ngIf="isEditMode"
           id="doctor"
@@ -149,6 +145,10 @@
           [(ngModel)]="selectedDoctorId"
           (ngModelChange)="onDoctorChange($event)"
         >
+
+          <option [ngValue]="null">
+            انتخاب پزشک
+          </option>
 
           <option
             *ngFor="let doctor of doctors"
@@ -163,7 +163,7 @@
 
 
       <!-- ===================================================== -->
-      <!-- شماره تماس پزشک -->
+      <!-- شماره تماس پزشک - فقط نمایش -->
       <!-- ===================================================== -->
       <div class="info-item">
 
@@ -177,6 +177,7 @@
           class="form-input"
           [value]="orderInfo.phoneNumber || ''"
           readonly
+          tabindex="-1"
           placeholder="شماره تلفن"
         >
 
@@ -209,13 +210,36 @@
       <!-- ===================================================== -->
       <div class="info-item">
 
-        <label>
+        <label for="orderStatus">
           وضعیت سفارش
         </label>
 
-        <span class="form-input display-mode">
+        <span
+          *ngIf="!isEditMode"
+          class="form-input display-mode"
+        >
           {{ getOrderStatusText(orderInfo.orderStatus) }}
         </span>
+
+        <select
+          *ngIf="isEditMode"
+          id="orderStatus"
+          class="form-input"
+          [(ngModel)]="orderInfo.orderStatus"
+        >
+
+          <option [ngValue]="''">
+            انتخاب وضعیت
+          </option>
+
+          <option
+            *ngFor="let status of orderStatusOptions"
+            [ngValue]="status.value"
+          >
+            {{ status.label }}
+          </option>
+
+        </select>
 
       </div>
 
@@ -225,21 +249,39 @@
       <!-- ===================================================== -->
       <div class="info-item">
 
-        <label>
+        <label for="invoiceType">
           نوع فاکتور
         </label>
 
-        <span class="form-input display-mode">
-
+        <span
+          *ngIf="!isEditMode"
+          class="form-input display-mode"
+        >
           {{
-            orderInfo.invoiceType === 'daily'
+            orderInfo.invoiceType === 'DAILY'
               ? 'روزانه'
-              : orderInfo.invoiceType === 'monthly'
+              : orderInfo.invoiceType === 'MONTHLY'
                 ? 'ماهانه'
                 : 'نامشخص'
           }}
-
         </span>
+
+        <select
+          *ngIf="isEditMode"
+          id="invoiceType"
+          class="form-input"
+          [(ngModel)]="orderInfo.invoiceType"
+        >
+
+          <option [ngValue]="'DAILY'">
+            روزانه
+          </option>
+
+          <option [ngValue]="'MONTHLY'">
+            ماهانه
+          </option>
+
+        </select>
 
       </div>
 
@@ -247,10 +289,7 @@
       <!-- ===================================================== -->
       <!-- شماره فاکتور -->
       <!-- ===================================================== -->
-      <div
-        class="info-item"
-        *ngIf="orderInfo.invoiceNumber"
-      >
+      <div class="info-item">
 
         <label for="invoiceNumber">
           شماره فاکتور
@@ -260,8 +299,9 @@
           id="invoiceNumber"
           type="text"
           class="form-input"
-          [value]="orderInfo.invoiceNumber"
-          readonly
+          [(ngModel)]="orderInfo.invoiceNumber"
+          [disabled]="!isEditMode"
+          placeholder="شماره فاکتور"
         >
 
       </div>
@@ -296,7 +336,6 @@
           </button>
 
         </div>
-
 
         <app-persian-calendar
           *ngIf="showEntryDatePicker"
@@ -338,14 +377,12 @@
 
         </div>
 
-
         <div
           *ngIf="exitDateInvalid"
           class="error-text"
         >
           تاریخ خروج نباید از تاریخ ورود کوچک‌تر باشد.
         </div>
-
 
         <app-persian-calendar
           *ngIf="showExitDatePicker"
@@ -394,12 +431,31 @@
           <thead>
 
             <tr>
-              <th>نوع</th>
-              <th>شماره دندان</th>
-              <th>تعداد</th>
-              <th>قیمت واحد (ریال)</th>
-              <th>مجموع (ریال)</th>
-              <th>حذف</th>
+
+              <th>
+                نوع
+              </th>
+
+              <th>
+                شماره دندان
+              </th>
+
+              <th>
+                تعداد
+              </th>
+
+              <th>
+                قیمت واحد
+              </th>
+
+              <th>
+                مجموع
+              </th>
+
+              <th>
+                حذف
+              </th>
+
             </tr>
 
           </thead>
@@ -415,6 +471,9 @@
 
               <tr>
 
+                <!-- ================================================= -->
+                <!-- نوع خدمات -->
+                <!-- ================================================= -->
                 <td>
 
                   <input
@@ -428,6 +487,9 @@
                 </td>
 
 
+                <!-- ================================================= -->
+                <!-- شماره دندان -->
+                <!-- ================================================= -->
                 <td>
 
                   <input
@@ -441,6 +503,9 @@
                 </td>
 
 
+                <!-- ================================================= -->
+                <!-- تعداد -->
+                <!-- ================================================= -->
                 <td>
 
                   <input
@@ -454,19 +519,28 @@
                 </td>
 
 
+                <!-- ================================================= -->
+                <!-- قیمت واحد -->
+                <!-- ================================================= -->
                 <td>
 
                   <input
-                    type="number"
-                    class="table-input"
-                    [(ngModel)]="item.unitPrice"
+                    type="text"
+                    inputmode="numeric"
+                    class="table-input money-input"
+                    [value]="formatMoney(item.unitPrice)"
+                    (input)="onItemMoneyInput($event, item, 'unitPrice')"
+                    (blur)="onItemMoneyBlur($event, item, 'unitPrice')"
                     [disabled]="!isEditMode"
-                    min="0"
+                    placeholder="قیمت واحد"
                   >
 
                 </td>
 
 
+                <!-- ================================================= -->
+                <!-- مجموع -->
+                <!-- ================================================= -->
                 <td class="price-cell">
 
                   {{ formatMoney(rowTotal(i)) }}
@@ -474,6 +548,9 @@
                 </td>
 
 
+                <!-- ================================================= -->
+                <!-- حذف -->
+                <!-- ================================================= -->
                 <td>
 
                   <button
@@ -509,7 +586,6 @@
         📎 فایل‌های پیوست
       </h3>
 
-
       <div class="upload-wrapper">
 
         <label
@@ -544,11 +620,9 @@
             📄
           </span>
 
-
           <span class="file-name">
             {{ file.fileName }}
           </span>
-
 
           <span class="file-size">
             (
@@ -557,11 +631,9 @@
             )
           </span>
 
-
           <span class="file-type">
             [{{ file.fileType }}]
           </span>
-
 
           <div class="file-actions">
 
@@ -574,7 +646,6 @@
               نمایش
             </button>
 
-
             <button
               type="button"
               class="download-link"
@@ -582,7 +653,6 @@
             >
               دانلود
             </button>
-
 
             <button
               type="button"
@@ -607,44 +677,110 @@
     <!-- ======================================================= -->
     <div class="summary-wrapper">
 
+      <!-- توضیح واحد مبالغ -->
+      <div class="money-unit-note">
+        مبالغ به ریال است
+      </div>
+
+
       <div class="summary-section">
 
+        <!-- =================================================== -->
+        <!-- مبلغ کل -->
+        <!-- =================================================== -->
         <div class="summary-item">
 
-          <label>
+          <label for="grossTotal">
             مبلغ کل
           </label>
 
-          <span class="price-total">
+          <!-- نمایش -->
+          <span
+            *ngIf="!isEditMode"
+            class="price-total"
+          >
             {{ formatMoney(orderInfo.grossTotal) }}
           </span>
+
+          <!-- ویرایش -->
+          <input
+            *ngIf="isEditMode"
+            id="grossTotal"
+            type="text"
+            inputmode="numeric"
+            class="form-input money-input"
+            [value]="formatMoney(orderInfo.grossTotal)"
+            (input)="onMoneyInput($event, 'grossTotal')"
+            (blur)="onMoneyBlur($event, 'grossTotal')"
+            placeholder="مبلغ کل"
+          >
 
         </div>
 
 
+        <!-- =================================================== -->
+        <!-- مبلغ تخفیف -->
+        <!-- =================================================== -->
         <div class="summary-item">
 
-          <label>
+          <label for="discountAmount">
             مبلغ تخفیف
           </label>
 
-          <span class="price-discount">
+          <!-- نمایش -->
+          <span
+            *ngIf="!isEditMode"
+            class="price-discount"
+          >
             -
             {{ formatMoney(orderInfo.discountAmount) }}
           </span>
 
+          <!-- ویرایش -->
+          <input
+            *ngIf="isEditMode"
+            id="discountAmount"
+            type="text"
+            inputmode="numeric"
+            class="form-input money-input"
+            [value]="formatMoney(orderInfo.discountAmount)"
+            (input)="onMoneyInput($event, 'discountAmount')"
+            (blur)="onMoneyBlur($event, 'discountAmount')"
+            placeholder="تخفیف"
+          >
+
         </div>
 
 
+        <!-- =================================================== -->
+        <!-- مبلغ نهایی -->
+        <!-- =================================================== -->
         <div class="summary-item">
 
-          <label>
+          <label for="netTotal">
             مبلغ نهایی
           </label>
 
-          <span class="price-final">
+          <!-- نمایش -->
+          <span
+            *ngIf="!isEditMode"
+            class="price-final"
+          >
             {{ formatMoney(orderInfo.netTotal) }}
           </span>
+
+          <!-- ویرایش -->
+          <input
+            *ngIf="isEditMode"
+            id="netTotal"
+            type="text"
+            inputmode="numeric"
+            class="form-input money-input"
+            [value]="formatMoney(orderInfo.netTotal)"
+            (input)="onMoneyInput($event, 'netTotal')"
+            (blur)="onMoneyBlur($event, 'netTotal')"
+            placeholder="مبلغ نهایی"
+          >
 
         </div>
 
@@ -684,7 +820,6 @@
           وضعیت مالی سفارش
         </h3>
 
-
         <span
           class="payment-status-badge"
           [class.settled]="orderInfo.settled"
@@ -702,20 +837,40 @@
       </div>
 
 
+      <!-- توضیح واحد مبالغ -->
+      <div class="money-unit-note payment-money-note">
+        مبالغ به ریال است
+      </div>
+
+
       <div class="payment-grid">
 
         <!-- ================================================= -->
-        <!-- مبلغ نهایی -->
+        <!-- مبلغ نهایی سفارش -->
         <!-- ================================================= -->
         <div class="payment-item">
 
-          <label>
+          <label for="paymentNetTotal">
             مبلغ نهایی سفارش
           </label>
 
-          <strong>
+          <!-- نمایش -->
+          <strong *ngIf="!isEditMode">
             {{ formatMoney(orderInfo.netTotal) }}
           </strong>
+
+          <!-- ویرایش -->
+          <input
+            *ngIf="isEditMode"
+            id="paymentNetTotal"
+            type="text"
+            inputmode="numeric"
+            class="form-input money-input"
+            [value]="formatMoney(orderInfo.netTotal)"
+            (input)="onMoneyInput($event, 'netTotal')"
+            (blur)="onMoneyBlur($event, 'netTotal')"
+            placeholder="مبلغ نهایی"
+          >
 
         </div>
 
@@ -723,20 +878,29 @@
         <!-- ================================================= -->
         <!-- درصد پیش پرداخت -->
         <!-- ================================================= -->
-        <div
-          class="payment-item"
-          *ngIf="
-            orderInfo.initialPaymentPercent !== null
-          "
-        >
+        <div class="payment-item">
 
-          <label>
+          <label for="initialPaymentPercent">
             درصد پیش‌پرداخت
           </label>
 
-          <strong>
-            {{ orderInfo.initialPaymentPercent }}%
+          <!-- نمایش -->
+          <strong *ngIf="!isEditMode">
+            {{ orderInfo.initialPaymentPercent ?? 0 }}%
           </strong>
+
+          <!-- ویرایش -->
+          <input
+            *ngIf="isEditMode"
+            id="initialPaymentPercent"
+            type="number"
+            class="form-input"
+            [(ngModel)]="orderInfo.initialPaymentPercent"
+            min="0"
+            max="100"
+            step="0.01"
+            placeholder="درصد"
+          >
 
         </div>
 
@@ -746,13 +910,27 @@
         <!-- ================================================= -->
         <div class="payment-item">
 
-          <label>
+          <label for="initialPaymentAmount">
             مبلغ پیش‌پرداخت
           </label>
 
-          <strong>
+          <!-- نمایش -->
+          <strong *ngIf="!isEditMode">
             {{ formatMoney(orderInfo.initialPaymentAmount) }}
           </strong>
+
+          <!-- ویرایش -->
+          <input
+            *ngIf="isEditMode"
+            id="initialPaymentAmount"
+            type="text"
+            inputmode="numeric"
+            class="form-input money-input"
+            [value]="formatMoney(orderInfo.initialPaymentAmount)"
+            (input)="onMoneyInput($event, 'initialPaymentAmount')"
+            (blur)="onMoneyBlur($event, 'initialPaymentAmount')"
+            placeholder="مبلغ پیش‌پرداخت"
+          >
 
         </div>
 
@@ -762,11 +940,13 @@
         <!-- ================================================= -->
         <div class="payment-item">
 
-          <label>
+          <label for="initialPaidAmount">
             پیش‌پرداخت انجام شده
           </label>
 
+          <!-- نمایش -->
           <strong
+            *ngIf="!isEditMode"
             [class.paid]="
               orderInfo.initialPaidAmount >=
               orderInfo.initialPaymentAmount
@@ -790,26 +970,48 @@
 
           </strong>
 
+          <!-- ویرایش -->
+          <input
+            *ngIf="isEditMode"
+            id="initialPaidAmount"
+            type="text"
+            inputmode="numeric"
+            class="form-input money-input"
+            [value]="formatMoney(orderInfo.initialPaidAmount)"
+            (input)="onMoneyInput($event, 'initialPaidAmount')"
+            (blur)="onMoneyBlur($event, 'initialPaidAmount')"
+            placeholder="پیش‌پرداخت انجام شده"
+          >
+
         </div>
 
 
         <!-- ================================================= -->
         <!-- مبلغ پرداخت نهایی -->
         <!-- ================================================= -->
-        <div
-          class="payment-item"
-          *ngIf="
-            orderInfo.finalPaymentAmount > 0
-          "
-        >
+        <div class="payment-item">
 
-          <label>
+          <label for="finalPaymentAmount">
             مبلغ پرداخت نهایی
           </label>
 
-          <strong>
+          <!-- نمایش -->
+          <strong *ngIf="!isEditMode">
             {{ formatMoney(orderInfo.finalPaymentAmount) }}
           </strong>
+
+          <!-- ویرایش -->
+          <input
+            *ngIf="isEditMode"
+            id="finalPaymentAmount"
+            type="text"
+            inputmode="numeric"
+            class="form-input money-input"
+            [value]="formatMoney(orderInfo.finalPaymentAmount)"
+            (input)="onMoneyInput($event, 'finalPaymentAmount')"
+            (blur)="onMoneyBlur($event, 'finalPaymentAmount')"
+            placeholder="مبلغ پرداخت نهایی"
+          >
 
         </div>
 
@@ -817,18 +1019,15 @@
         <!-- ================================================= -->
         <!-- پرداخت نهایی انجام شده -->
         <!-- ================================================= -->
-        <div
-          class="payment-item"
-          *ngIf="
-            orderInfo.finalPaymentAmount > 0
-          "
-        >
+        <div class="payment-item">
 
-          <label>
+          <label for="finalPaidAmount">
             پرداخت نهایی انجام شده
           </label>
 
+          <!-- نمایش -->
           <strong
+            *ngIf="!isEditMode"
             [class.paid]="
               orderInfo.finalPaidAmount >=
               orderInfo.finalPaymentAmount
@@ -852,6 +1051,19 @@
 
           </strong>
 
+          <!-- ویرایش -->
+          <input
+            *ngIf="isEditMode"
+            id="finalPaidAmount"
+            type="text"
+            inputmode="numeric"
+            class="form-input money-input"
+            [value]="formatMoney(orderInfo.finalPaidAmount)"
+            (input)="onMoneyInput($event, 'finalPaidAmount')"
+            (blur)="onMoneyBlur($event, 'finalPaidAmount')"
+            placeholder="پرداخت نهایی انجام شده"
+          >
+
         </div>
 
 
@@ -860,15 +1072,30 @@
         <!-- ================================================= -->
         <div class="payment-item">
 
-          <label>
+          <label for="paidAmount">
             مجموع پرداخت‌شده
           </label>
 
-          <strong class="paid">
-
+          <!-- نمایش -->
+          <strong
+            *ngIf="!isEditMode"
+            class="paid"
+          >
             {{ formatMoney(orderInfo.paidAmount) }}
-
           </strong>
+
+          <!-- ویرایش -->
+          <input
+            *ngIf="isEditMode"
+            id="paidAmount"
+            type="text"
+            inputmode="numeric"
+            class="form-input money-input"
+            [value]="formatMoney(orderInfo.paidAmount)"
+            (input)="onMoneyInput($event, 'paidAmount')"
+            (blur)="onMoneyBlur($event, 'paidAmount')"
+            placeholder="مجموع پرداخت‌شده"
+          >
 
         </div>
 
@@ -878,11 +1105,13 @@
         <!-- ================================================= -->
         <div class="payment-item">
 
-          <label>
+          <label for="remainingAmount">
             مانده حساب
           </label>
 
+          <!-- نمایش -->
           <strong
+            *ngIf="!isEditMode"
             [class.paid]="
               orderInfo.remainingAmount === 0
             "
@@ -894,6 +1123,19 @@
             {{ formatMoney(orderInfo.remainingAmount) }}
 
           </strong>
+
+          <!-- ویرایش -->
+          <input
+            *ngIf="isEditMode"
+            id="remainingAmount"
+            type="text"
+            inputmode="numeric"
+            class="form-input money-input"
+            [value]="formatMoney(orderInfo.remainingAmount)"
+            (input)="onMoneyInput($event, 'remainingAmount')"
+            (blur)="onMoneyBlur($event, 'remainingAmount')"
+            placeholder="مانده حساب"
+          >
 
         </div>
 
@@ -932,7 +1174,6 @@
 
     </div>
 
-
     <div class="success-modal-body">
 
       <div class="success-icon">
@@ -944,7 +1185,6 @@
       </p>
 
     </div>
-
 
     <div class="success-modal-footer">
 
@@ -990,7 +1230,6 @@
 
     </div>
 
-
     <div class="error-modal-body">
 
       <p>
@@ -998,7 +1237,6 @@
       </p>
 
     </div>
-
 
     <div class="error-modal-footer">
 

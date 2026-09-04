@@ -522,40 +522,39 @@ table {
     }
   }
 
-.upload-wrapper {
-  margin-bottom: 1.5rem;
-}
-
-.upload-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 24px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-
-  &:hover {
-    transform: translateY(-2px);
+  .upload-wrapper {
+    margin-bottom: 1.5rem;
   }
 
-  input[type="file"] {
-    display: none;
-  }
+  .upload-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 
-  &.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+    &:hover {
+      transform: translateY(-2px);
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    &.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
   }
 }
 
-
-}
 .delete-file-btn {
   border: none;
   background: rgba(239, 68, 68, 0.1);
@@ -820,8 +819,6 @@ table {
   }
 }
 
-
-
 /* ============================================================
    View Attachment Button
    ============================================================ */
@@ -889,9 +886,6 @@ table {
   }
 
 }
-
-
-
 
 /* ============================================================
    Download Attachment Button
@@ -1170,7 +1164,6 @@ table {
   }
 }
 
-
 // =====================================================
 // وضعیت مالی سفارش
 // =====================================================
@@ -1443,7 +1436,6 @@ table {
   }
 }
 
-
 @media (max-width: 992px) {
 
   .payment-section {
@@ -1473,7 +1465,6 @@ table {
     }
   }
 }
-
 
 @media (max-width: 768px) {
 
@@ -1515,7 +1506,6 @@ table {
   }
 }
 
-
 // =====================================================
 // خیلی کوچک
 // =====================================================
@@ -1534,6 +1524,553 @@ table {
       strong {
         font-size: 1rem;
       }
+    }
+  }
+}
+
+// =====================================================
+// فیلدهای فرم در حالت ویرایش
+// =====================================================
+
+.form-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+
+  padding: 0.65rem 0.85rem;
+
+  border: 1px solid $border-color;
+  border-radius: 9px;
+
+  background: #ffffff;
+  color: $text-main;
+
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
+
+  &:hover:not(:disabled):not([readonly]) {
+    border-color: #94a3b8;
+  }
+
+  &:focus:not(:disabled):not([readonly]) {
+    border-color: $primary-color;
+
+    box-shadow:
+      0 0 0 3px rgba(13, 148, 136, 0.12);
+
+    background: #ffffff;
+  }
+
+  &:disabled {
+    background: #f1f5f9;
+    color: #64748b;
+
+    border-color: #e2e8f0;
+
+    cursor: not-allowed;
+    opacity: 0.85;
+  }
+
+  &[readonly] {
+    background: #f1f5f9;
+    color: #475569;
+
+    border-color: #e2e8f0;
+
+    cursor: default;
+  }
+
+  &::placeholder {
+    color: #94a3b8;
+    font-weight: 400;
+  }
+}
+
+// =====================================================
+// فیلدهای مبلغ با جداکننده سه رقمی
+// =====================================================
+
+.money-input {
+  direction: ltr !important;
+  text-align: right !important;
+
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+
+  font-weight: 600;
+
+  &::placeholder {
+    text-align: right;
+    direction: rtl;
+  }
+}
+
+// =====================================================
+// Select ها
+// =====================================================
+
+select.form-input {
+  min-height: 44px;
+
+  appearance: auto;
+
+  padding-left: 0.8rem;
+  padding-right: 0.8rem;
+
+  cursor: pointer;
+
+  background-color: #ffffff;
+
+  &:disabled {
+    background-color: #f1f5f9;
+    cursor: not-allowed;
+  }
+
+  option {
+    font-family: inherit;
+    font-size: 1rem;
+    color: $text-main;
+    background: #ffffff;
+  }
+}
+
+// =====================================================
+// شماره تماس پزشک - غیرقابل ویرایش
+// =====================================================
+
+#phone {
+  background: #f1f5f9;
+  color: #475569;
+
+  border-color: #e2e8f0;
+
+  cursor: default;
+
+  font-weight: 600;
+
+  direction: ltr;
+  text-align: right;
+
+  user-select: text;
+
+  &:focus {
+    border-color: #e2e8f0;
+    box-shadow: none;
+  }
+}
+
+// =====================================================
+// حالت نمایش معمولی فیلدها
+// =====================================================
+
+.display-mode {
+  display: flex;
+  align-items: center;
+
+  min-height: 44px;
+
+  box-sizing: border-box;
+
+  background: #f8fafc;
+
+  color: $text-main;
+
+  border: 1px solid $border-color;
+  border-radius: 9px;
+
+  padding: 0.65rem 0.85rem;
+
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+// =====================================================
+// فیلدهای عددی
+// =====================================================
+
+input[type="number"].form-input {
+  direction: ltr;
+  text-align: right;
+
+  font-variant-numeric: tabular-nums;
+
+  /* حذف فلش‌های پیش‌فرض در Chrome */
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    opacity: 1;
+  }
+}
+
+// =====================================================
+// فیلدهای مالی - Summary
+// =====================================================
+
+.summary-item {
+  .form-input {
+    min-height: 46px;
+
+    background: #ffffff;
+
+    font-size: 1rem;
+    font-weight: 600;
+
+    direction: ltr;
+    text-align: right;
+  }
+
+  .price-total,
+  .price-discount,
+  .price-final {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+}
+
+// =====================================================
+// فیلدهای بخش مالی / Payment
+// =====================================================
+
+.payment-item {
+
+  .form-input {
+    min-height: 44px;
+
+    background: #ffffff;
+
+    border: 1px solid #dbe3ea;
+
+    font-size: 0.98rem;
+    font-weight: 600;
+
+    direction: ltr;
+    text-align: right;
+
+    &:focus {
+      border-color: $primary-color;
+
+      box-shadow:
+        0 0 0 3px rgba(13, 148, 136, 0.12);
+    }
+  }
+}
+
+// =====================================================
+// ورودی درصد پیش پرداخت
+// =====================================================
+
+#initialPaymentPercent {
+  direction: ltr;
+  text-align: right;
+
+  &::after {
+    content: '%';
+  }
+}
+
+// =====================================================
+// ورودی‌های مبلغ
+// =====================================================
+
+.payment-item input[type="number"],
+.summary-item input[type="number"] {
+  direction: ltr;
+  text-align: right;
+
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+// =====================================================
+// فیلدهای جدول در حالت ویرایش
+// =====================================================
+
+.table-input {
+  box-sizing: border-box;
+
+  min-height: 40px;
+
+  padding: 0.5rem 0.65rem;
+
+  background: #ffffff;
+
+  border: 1px solid $border-color;
+  border-radius: 7px;
+
+  color: $text-main;
+
+  font-family: inherit;
+  font-size: 0.95rem;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+
+  &:hover:not(:disabled) {
+    border-color: #94a3b8;
+  }
+
+  &:focus:not(:disabled) {
+    border-color: $primary-color;
+
+    background: #ffffff;
+
+    box-shadow:
+      0 0 0 3px rgba(13, 148, 136, 0.1);
+  }
+
+  &:disabled {
+    background: #f1f5f9;
+    color: #64748b;
+
+    cursor: not-allowed;
+
+    opacity: 0.85;
+  }
+}
+
+// =====================================================
+// تاریخ‌ها
+// =====================================================
+
+.date-input {
+  direction: rtl;
+  text-align: right;
+
+  letter-spacing: 0.03em;
+
+  &::placeholder {
+    color: #94a3b8;
+  }
+}
+
+// =====================================================
+// راهنمای فیلد
+// =====================================================
+
+.field-hint {
+  display: block;
+
+  min-height: 18px;
+
+  margin-top: 0.25rem;
+
+  color: #64748b;
+
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+// =====================================================
+// ظاهر بهتر فیلدهای قابل ویرایش
+// =====================================================
+
+.info-grid {
+
+  .info-item {
+
+    .form-input:not(:disabled):not([readonly]) {
+      background: #ffffff;
+    }
+
+    // هنگام ویرایش، فیلدهای قابل تغییر مشخص‌تر باشند
+    select.form-input:not(:disabled),
+    input.form-input:not(:disabled):not([readonly]) {
+      border-color: #cbd5e1;
+    }
+  }
+}
+
+// =====================================================
+// حالت ویرایش کارت
+// =====================================================
+
+.details-card {
+
+  &.edit-mode {
+    .form-input:not(:disabled):not([readonly]) {
+      background: #ffffff;
+    }
+  }
+}
+
+// =====================================================
+// دکمه تقویم
+// =====================================================
+
+.calendar-btn {
+  flex-shrink: 0;
+
+  min-width: 44px;
+
+  border: 1px solid $border-color;
+
+  background: #ffffff;
+
+  color: $text-main;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: #f0fdfa;
+    border-color: $primary-color;
+
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    background: #f1f5f9;
+    color: #94a3b8;
+
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+}
+
+// =====================================================
+// دکمه حذف فایل
+// =====================================================
+
+.delete-file-btn {
+  min-height: 36px;
+
+  padding: 0 14px;
+
+  border: 1px solid #fecaca;
+  border-radius: 9px;
+
+  background: #fef2f2;
+  color: #dc2626;
+
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: #ffffff;
+
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    background: #f8fafc;
+    color: #94a3b8;
+
+    border-color: #e2e8f0;
+
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+}
+
+// =====================================================
+// دکمه افزودن آیتم
+// =====================================================
+
+.add-row-btn {
+  min-height: 44px;
+
+  white-space: nowrap;
+}
+
+// =====================================================
+// فیلدهای موبایل
+// =====================================================
+
+@media (max-width: 768px) {
+
+  .form-input {
+    min-height: 46px;
+
+    font-size: 0.95rem;
+  }
+
+  select.form-input {
+    font-size: 0.95rem;
+  }
+
+  .payment-item {
+
+    .form-input {
+      min-height: 46px;
+    }
+  }
+
+  .summary-item {
+
+    .form-input {
+      min-height: 46px;
+    }
+  }
+
+  .date-input-group {
+    width: 100%;
+
+    .date-input {
+      min-width: 0;
+    }
+
+    .calendar-btn {
+      min-width: 44px;
+      width: 44px;
+    }
+  }
+}
+
+// =====================================================
+// موبایل خیلی کوچک
+// =====================================================
+
+@media (max-width: 480px) {
+
+  .form-input {
+    padding: 0.6rem 0.7rem;
+
+    font-size: 0.9rem;
+  }
+
+  .payment-item {
+    .form-input {
+      font-size: 0.9rem;
+    }
+  }
+
+  .summary-item {
+    .form-input {
+      font-size: 0.9rem;
     }
   }
 }
