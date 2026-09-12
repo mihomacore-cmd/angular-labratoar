@@ -241,13 +241,10 @@ export class AddOrderComponent implements OnInit {
               Validators.max(100),
             ]
           ),
-      phone: this.fb.nonNullable.control(
-        '',
-        [
-          Validators.required,
-          Validators.pattern(/^\+?[0-9]+$/),
-        ]
-      ),
+      phone: this.fb.control<string>({
+        value: '',
+        disabled: true,
+          }),
 
       entryDate: this.fb.control<string | null>(
         null,
@@ -255,8 +252,7 @@ export class AddOrderComponent implements OnInit {
       ),
 
       exitDate: this.fb.control<string | null>(
-        null,
-        [Validators.required]
+        null
       ),
 
       discountAmount: this.fb.nonNullable.control(

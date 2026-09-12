@@ -27,6 +27,7 @@ interface Invoice {
 
   clinic: string;
   doctor: string;
+  clinicDoctorId: string;
   header: string;
   number: string;
   patient: string;
@@ -623,65 +624,18 @@ export class FactorListComponent implements OnInit, OnDestroy {
   // Check Selectable Invoice
   // =========================================================
 
-  isInvoiceSelectable(
-    invoice: Invoice
-  ): boolean {
-
-    /*
-     * فقط statusId = 4 قابل انتخاب است.
-     */
-
-    if (invoice.statusId !== 4) {
-
-      return false;
-    }
-
-
-    /*
-     * اگر خود فاکتور قبلاً انتخاب شده،
-     * اجازه لغو انتخاب داشته باشد.
-     */
-
-    if (invoice.isSelected) {
-
-      return true;
-    }
-
-
-    const selected =
-      this.selectedInvoices;
-
-
-    /*
-     * اگر هیچ فاکتوری انتخاب نشده،
-     * هر فاکتور statusId=4 قابل انتخاب است.
-     */
-
-    if (selected.length === 0) {
-
-      return true;
-    }
-
-
-    const selectedPhone =
-      this.getInvoicePhone(
-        selected[0]
-      );
-
-
-    const invoicePhone =
-      this.getInvoicePhone(
-        invoice
-      );
-
-
-    /*
-     * فقط فاکتورهای دارای شماره تلفن یکسان
-     * قابل انتخاب هستند.
-     */
-
-    return selectedPhone === invoicePhone;
-  }
+ isInvoiceSelectable(invoice: Invoice): boolean {
+  if (invoice.statusId !== 4) return false;
+  if (invoice.isSelected) return true;
+  
+  const selected = this.selectedInvoices;
+  if (selected.length === 0) return true;
+  
+  const selectedClinicDoctorId = selected[0].clinicDoctorId;
+  const invoiceClinicDoctorId = invoice.clinicDoctorId;
+  
+  return selectedClinicDoctorId === invoiceClinicDoctorId;
+}
 
 
   // =========================================================
@@ -776,8 +730,8 @@ export class FactorListComponent implements OnInit, OnDestroy {
 
     switch (status) {
 
-      case 'در انتظار پرداخت':
-        return 'status-pending-payment';
+      case 'WAITING_INVOICE_SEND':
+        return 'در انتظار';
 
       case 'انتظار ارسال فاکتور':
         return 'status-waiting-invoice';
