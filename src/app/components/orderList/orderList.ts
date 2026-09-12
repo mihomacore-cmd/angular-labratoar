@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { InvoiceService } from '../../servicies/invoiceService/InvoiceService';
 
 @Component({
   selector: 'app-order-list',
@@ -8,30 +9,97 @@ import { CommonModule } from '@angular/common';
   templateUrl: './orderList.html',
   styleUrls: ['./orderList.scss']
 })
-export class OrderListComponent {
-  // داده‌های نمونه بر اساس تصویر ارسالی
-  orders = [
-    { clinic: 'تخصصی قلب', section: 'قلب', doctor: 'دکتر احمدی', patient: 'علی محمدی', entryDate: '۱۴۰۲/۰۲/۱۰', exitDate: '۱۴۰۲/۰۲/۱۵', product: 'دارو', quantity: '۱۵۰۰۰', unitPrice: 50000, total: 60000, discount: 0, status: 'پرداخت شده' },
-    { clinic: 'شکی امید', section: 'ارتودنسی', doctor: 'دکتر کیانی', patient: 'فاطمه رضایی', entryDate: '۱۴۰۲/۰۲/۱۲', exitDate: '۱۴۰۲/۰۲/۱۸', product: 'تجهیزات', quantity: '۲', unitPrice: 80000, total: 100000, discount: 10000, status: 'در انتظار' },
-    { clinic: 'آرامش', section: 'گوارش', doctor: 'مهندس حسینی', patient: 'سارا قاسمی', entryDate: '۱۴۰۲/۰۲/۱۴', exitDate: '۱۴۰۲/۰۲/۲۰', product: 'آزمایش', quantity: '۵', unitPrice: 80000, total: 100000, discount: 0, status: 'تاخیر شده' },
-    { clinic: 'پوست', section: 'پوست', doctor: 'دکتر رضایی', patient: 'نازنین احمدی', entryDate: '۱۴۰۲/۰۲/۱۶', exitDate: '۱۴۰۲/۰۲/۲۲', product: 'دارو', quantity: '۵', unitPrice: 80000, total: 100000, discount: 5000, status: 'پرداخت شده' },
-    { clinic: 'دهان', section: 'دندانپزشکی', doctor: 'دکتر حسینی', patient: 'رضا محمدی', entryDate: '۱۴۰۲/۰۲/۱۸', exitDate: '۱۴۰۲/۰۲/۲۵', product: 'تجهیزات', quantity: '۳', unitPrice: 80000, total: 100000, discount: 0, status: 'در انتظار' },
-    { clinic: 'قلب', section: 'قلب', doctor: 'دکتر احمدی', patient: 'فاطمه حسینی', entryDate: '۱۴۰۲/۰۲/۲۰', exitDate: '۱۴۰۲/۰۲/۲۸', product: 'آزمایش', quantity: '۳', unitPrice: 80000, total: 100000, discount: 20000, status: 'تاخیر شده' },
-    { clinic: 'دهان', section: 'دندانپزشکی', doctor: 'دکتر جعفری', patient: 'علی رضایی', entryDate: '۱۴۰۲/۰۲/۲۲', exitDate: '۱۴۰۲/۰۲/۳۰', product: 'دارو', quantity: '۳', unitPrice: 75000, total: 75000, discount: 0, status: 'پرداخت شده' },
-    { clinic: 'گوارش', section: 'گوارش', doctor: 'دکتر امیری', patient: 'زهرا کیانی', entryDate: '۱۴۰۲/۰۲/۲۴', exitDate: '۱۴۰۲/۰۳/۰۵', product: 'تجهیزات', quantity: '۳', unitPrice: 75000, total: 75000, discount: 7500, status: 'در انتظار' }
-  ];
+export class OrderListComponent implements OnInit {
 
-  // توابع کمکی
-  formatMoney(value: number): string {
-    return value.toLocaleString();
+  private invoiceService = inject(InvoiceService);
+
+  orders: any[] = [];
+
+  ngOnInit(): void {
+    this.loadOrders();
   }
 
-  // صرفاً جهت نمایش (بدون سرویس)
-  searchOrders() {
+  loadOrders(): void {
+
+    this.invoiceService.getInvoices().subscribe({
+
+      next: (data) => {
+        console.log('Invoices:', data);
+
+        this.orders = data;
+      },
+
+      error: (error) => {
+        console.error('خطا در دریافت لیست فاکتورها:', error);
+      }
+
+    });
+  }
+
+  formatMoney(value: number | null): string {
+
+    if (value == null) {
+      return '0';
+    }
+
+    return value.toLocaleString('fa-IR');
+  }
+
+getStatusText(status: string): string {
+
+  switch (status) {
+
+    case 'WAITING_INVOICE_SEND':
+      return 'در انتظار پرداخت';
+
+    case 'IN_PRODUCTION':
+      return 'در حال ساخت';
+
+    case 'DELIVERED':
+      return 'تحویل داده شده';
+
+    case 'PAID':
+      return 'پرداخت شده';
+
+    default:
+      return 'نامشخص';
+  }
+}
+
+getStatusClass(status: string): string {
+
+  switch (status) {
+
+    case 'WAITING_INVOICE_SEND':
+      return 'badge-orange';
+
+    case 'IN_PRODUCTION':
+      return 'badge-blue';
+
+    case 'DELIVERED':
+      return 'badge-green';
+
+    case 'PAID':
+      return 'badge-green';
+
+    default:
+      return 'badge-blue';
+  }
+}
+  formatDate(date: string | null): string {
+
+    if (!date) {
+      return '-';
+    }
+
+    return date;
+  }
+
+  searchOrders(): void {
     console.log('جستجو انجام شد');
   }
 
-  resetSearch() {
+  resetSearch(): void {
     console.log('بازنشانی فیلترها');
   }
 }

@@ -69,51 +69,87 @@
         <button class="btn btn-primary" (click)="searchOrders()">جستجو</button>
       </div>
     </div>
+<div class="table-wrapper">
+  <table id="orderListTable">
 
-    <!-- جدول لیست سفارشات -->
-    <div class="table-wrapper">
-      <table id="orderListTable">
-        <thead>
-          <tr>
-            <th>کلینیک</th>
-            <th>سربرگ</th>
-            <th>نام پزشک</th>
-            <th>نام بیمار</th>
-            <th>تاریخ ورود</th>
-            <th>تاریخ خروج</th>
-            <th>نوع محصول</th>
-            <th>مقدار</th>
-            <th>مبلغ واحد (ریال)</th>
-            <th>مبلغ کل (ریال)</th>
-            <th>مبلغ تخفیف (ریال)</th>
-            <th>وضعیت پرداخت</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (order of orders; track i; let i = $index) {
-            <tr>
-              <td>{{ order.clinic }}</td>
-              <td>{{ order.section }}</td>
-              <td>{{ order.doctor }}</td>
-              <td>{{ order.patient }}</td>
-              <td>{{ order.entryDate }}</td>
-              <td>{{ order.exitDate }}</td>
-              <td>{{ order.product }}</td>
-              <td>{{ order.quantity }}</td>
-              <td>{{ formatMoney(order.unitPrice) }}</td>
-              <td>{{ formatMoney(order.total) }}</td>
-              <td>{{ formatMoney(order.discount) }}</td>
-              <td>
-                <!-- بج وضعیت (فقط متن وضعیت) -->
-                <div class="status-badge" [class.badge-green]="order.status === 'پرداخت شده'" [class.badge-blue]="order.status === 'در انتظار'" [class.badge-orange]="order.status === 'تاخیر شده'">
-                  <span>{{ order.status }}</span>
-                </div>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+    <thead>
+      <tr>
+        <th>کلینیک</th>
+        <th>سربرگ</th>
+        <th>نام پزشک</th>
+        <th>نام بیمار</th>
+        <th>تاریخ ورود</th>
+        <th>تاریخ خروج</th>
+        <th>مبلغ کل (ریال)</th>
+        <th>وضعیت</th>
+        <th>عملیات</th>
+      </tr>
+    </thead>
 
-  </div>
+    <tbody>
+
+      @for (order of orders; track order.id) {
+
+        <tr>
+
+          <td>
+            {{ order.clinic || '-' }}
+          </td>
+
+          <td>
+            {{ order.header || '-' }}
+          </td>
+
+          <td>
+            {{ order.doctor || '-' }}
+          </td>
+
+          <td>
+            {{ order.patient || '-' }}
+          </td>
+
+          <td>
+            {{ formatDate(order.dateIn) }}
+          </td>
+
+          <td>
+            {{ formatDate(order.dateOut) }}
+          </td>
+
+          <td>
+            {{ formatMoney(order.amount) }}
+          </td>
+
+          <td>
+            <div
+              class="status-badge"
+              [ngClass]="getStatusClass(order.status)"
+            >
+              <span>
+                {{ getStatusText(order.status) }}
+              </span>
+            </div>
+          </td>
+
+          <td>
+            -
+          </td>
+
+        </tr>
+
+      }
+
+      @if (orders.length === 0) {
+
+        <tr>
+          <td colspan="9">
+            سفارشی برای نمایش وجود ندارد.
+          </td>
+        </tr>
+
+      }
+
+    </tbody>
+
+  </table>
 </div>
