@@ -131,8 +131,17 @@
             </div>
           </td>
 
-          <td>
-            -
+          <td class="actions-cell">
+
+            <button
+              type="button"
+              class="view-order-btn"
+              (click)="openOrderDialog(order.id)"
+            >
+              <span class="view-icon">⌕</span>
+              <span>نمایش</span>
+            </button>
+
           </td>
 
         </tr>
@@ -152,4 +161,44 @@
     </tbody>
 
   </table>
+</div>
+
+
+
+<!-- ========================================================= -->
+<!-- Order Detail Dialog -->
+<!-- ========================================================= -->
+
+<div
+  *ngIf="isOrderDialogOpen"
+  class="order-dialog-backdrop"
+  (click)="closeOrderDialog()"
+>
+
+  <div
+    class="order-dialog-content"
+    (click)="$event.stopPropagation()"
+  >
+
+    <!-- Close -->
+    <button
+      type="button"
+      class="dialog-close-btn"
+      (click)="closeOrderDialog()"
+      aria-label="بستن"
+    >
+      ×
+    </button>
+
+
+    <!-- Order Detail -->
+    <order-detail
+      [orderId]="selectedOrderId"
+      [disableEdit]="false"
+      (closed)="closeOrderDialog()"
+    >
+    </order-detail>
+
+  </div>
+
 </div>
