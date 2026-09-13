@@ -18,6 +18,8 @@ import {
 } from '../../servicies/kenbanService/kenban.service';
 
 import { InvoiceService } from '../../servicies/invoiceService/InvoiceService';
+import { BillService } from '../../servicies/billService/BillService';
+
 import { Jalali } from '../../components/persianCalender/jalali';
 
 
@@ -95,6 +97,8 @@ private successAction: 'setInvoice' | 'sendSms' = 'setInvoice';
 
   private kanbanService = inject(KanbanService);
   private invoiceService = inject(InvoiceService);
+  private billService = inject(BillService);
+
 
 
   // =========================================================
@@ -444,7 +448,7 @@ private successAction: 'setInvoice' | 'sendSms' = 'setInvoice';
     this.settingInvoiceNumber = true;
     this.setInvoiceError = '';
 
-    this.invoiceService.setInvoiceNumber(this.invoiceIds, trimmed).subscribe({
+    this.billService.setInvoiceNumber(this.invoiceIds, trimmed).subscribe({
       next: (responseMessage: string) => {
         this.settingInvoiceNumber = false;
         // استفاده از پیام دریافتی از سرور

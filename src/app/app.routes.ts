@@ -105,10 +105,10 @@ export const routes: Routes = [
       },
 
       {
-        path: 'factorList',
+        path: 'createBill',
        loadComponent: () =>
-         import('./components/factorList/factorList').then(
-      (m) => m.FactorListComponent
+         import('./components/createBill/createBill').then(
+      (m) => m.CreateBillComponent
        ),
       },
 

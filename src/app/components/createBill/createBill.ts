@@ -15,39 +15,63 @@ import {
   takeUntil
 } from 'rxjs/operators';
 
-import { InvoiceService } from '../../servicies/invoiceService/InvoiceService';
+import { BillService } from '../../servicies/billService/BillService';
+
 import { OrderDetailsComponent } from '../orderDetail/orderDetail';
-import { Jalali } from '../../components/persianCalender/jalali';
+
+import { Jalali } from '../persianCalender/jalali';
+
 import { BillPreviewComponent } from '../bill/bill';
 
+
+// =========================================================
+// Invoice Interface
+// =========================================================
 
 interface Invoice {
 
   id: number;
 
   clinic: string;
+
   doctor: string;
-  clinicDoctorId: string;
+
+  clinicDoctorId: number | string;
+
   header: string;
-  number: string;
+
+  number: string | null;
+
   patient: string;
 
   amount: number;
 
   dateIn: string;
+
   dateOut: string;
 
   status: string;
 
   phone: string;
 
+  /**
+   * API جدید statusId ارسال نمی‌کند.
+   *
+   * برای سازگاری با منطق قبلی،
+   * در Angular از روی status ساخته می‌شود.
+   */
   statusId: number;
 
   isSelected?: boolean;
 }
 
 
+// =========================================================
+// Component
+// =========================================================
+
 @Component({
+
   selector: 'app-factor-list',
 
   standalone: true,
@@ -59,13 +83,16 @@ interface Invoice {
     BillPreviewComponent
   ],
 
-  templateUrl: './factorList.html',
+  templateUrl: './createBill.html',
 
-  styleUrls: ['./factorList.scss'],
+  styleUrls: ['./createBill.scss'],
 
   changeDetection: ChangeDetectionStrategy.OnPush
+
 })
-export class FactorListComponent implements OnInit, OnDestroy {
+export class CreateBillComponent
+  implements OnInit, OnDestroy {
+
 
   // =========================================================
   // Cache
@@ -132,8 +159,11 @@ export class FactorListComponent implements OnInit, OnDestroy {
   // =========================================================
 
   constructor(
-    private invoiceService: InvoiceService,
+
+    private billService: BillService,
+
     private cdr: ChangeDetectorRef
+
   ) {}
 
 
@@ -157,6 +187,7 @@ export class FactorListComponent implements OnInit, OnDestroy {
         this.cdr.markForCheck();
 
       });
+
   }
 
 
@@ -169,6 +200,7 @@ export class FactorListComponent implements OnInit, OnDestroy {
     this.destroy$.next();
 
     this.destroy$.complete();
+
   }
 
 
@@ -178,57 +210,133 @@ export class FactorListComponent implements OnInit, OnDestroy {
 
   loadInvoices(): void {
 
-    this.invoiceService.getInvoices().subscribe({
+    this.billService
+      .getFactorsToCreateBill()
+      .pipe(
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
 
-      next: (data: Invoice[]) => {
+        next: (data: any[]) => {
 
-        /*
-         * اطلاعات جدید از API دریافت شده.
-         *
-         * انتخاب‌های قبلی عمداً پاک می‌شوند،
-         * چون اطلاعات جدول مجدداً بارگذاری شده است.
-         */
+          /*
+           * API جدید اطلاعات فاکتورها را برمی‌گرداند.
+           *
+           * statusId در API وجود ندارد،
+           * بنابراین برای سازگاری با منطق انتخاب قبلی،
+           * آن را از status محاسبه می‌کنیم.
+           */
 
-        this.invoices = (data || []).map(
-          (item: Invoice) => ({
+          this.invoices = (data || []).map(
+            (item: any): Invoice => ({
 
-            ...item,
+              id: Number(item.id),
 
-            isSelected: false,
+              clinic: item.clinic ?? '',
 
-            dateIn: this.convertToJalali(
-              item.dateIn
-            ),
+              doctor: item.doctor ?? '',
 
-            dateOut: this.convertToJalali(
-              item.dateOut
-            )
+              clinicDoctorId:
+                item.clinicDoctorId ?? '',
 
-          })
-        );
+              header: item.header ?? '',
+
+              number:
+                item.number ?? null,
+
+              patient:
+                item.patient ?? '',
+
+              amount:
+                Number(item.amount ?? 0),
+
+              dateIn:
+                this.convertToJalali(
+                  item.dateIn
+                ),
+
+              dateOut:
+                this.convertToJalali(
+                  item.dateOut
+                ),
+
+              status:
+                item.status ?? '',
+
+              phone:
+                String(item.phone ?? '').trim(),
+
+              /*
+               * وضعیت API:
+               *
+               * WAITING_INVOICE_SEND
+               *
+               * معادل statusId = 4
+               * در منطق قبلی برنامه است.
+               */
+
+              statusId:
+                this.getStatusId(
+                  item.status
+                ),
+
+              isSelected: false
+
+            })
+          );
 
 
-        this.applyFilters();
+          this.applyFilters();
 
-        this.cdr.markForCheck();
-      },
+          this.cdr.markForCheck();
+
+        },
 
 
-      error: (error) => {
+        error: (error) => {
 
-        console.error(
-          'خطا در دریافت اطلاعات فاکتورها:',
-          error
-        );
+          console.error(
+            'خطا در دریافت اطلاعات فاکتورها:',
+            error
+          );
 
-        this.invoices = [];
+          this.invoices = [];
 
-        this.filteredInvoices = [];
+          this.filteredInvoices = [];
 
-        this.cdr.markForCheck();
-      }
+          this.cdr.markForCheck();
 
-    });
+        }
+
+      });
+
+  }
+
+
+  // =========================================================
+  // Convert Status -> StatusId
+  // =========================================================
+
+  private getStatusId(
+    status: string | null | undefined
+  ): number {
+
+    switch (status) {
+
+      case 'WAITING_INVOICE_SEND':
+
+        return 4;
+
+      case 'انتظار ارسال فاکتور':
+
+        return 4;
+
+      default:
+
+        return 0;
+
+    }
+
   }
 
 
@@ -237,17 +345,20 @@ export class FactorListComponent implements OnInit, OnDestroy {
   // =========================================================
 
   public convertToJalali(
-    dateStr: string
+    dateStr: string | null | undefined
   ): string {
 
     if (!dateStr) {
+
       return '';
+
     }
 
 
     if (this.dateCache.has(dateStr)) {
 
       return this.dateCache.get(dateStr)!;
+
     }
 
 
@@ -256,7 +367,9 @@ export class FactorListComponent implements OnInit, OnDestroy {
       const parts = dateStr.split('-');
 
       if (parts.length < 3) {
+
         return dateStr;
+
       }
 
 
@@ -283,6 +396,7 @@ export class FactorListComponent implements OnInit, OnDestroy {
       ) {
 
         return dateStr;
+
       }
 
 
@@ -318,7 +432,9 @@ export class FactorListComponent implements OnInit, OnDestroy {
     } catch {
 
       return dateStr;
+
     }
+
   }
 
 
@@ -332,7 +448,7 @@ export class FactorListComponent implements OnInit, OnDestroy {
 
 
     // -------------------------------------------------------
-    // جستجوی سریع
+    // Quick Search
     // -------------------------------------------------------
 
     const quick =
@@ -374,11 +490,12 @@ export class FactorListComponent implements OnInit, OnDestroy {
         ).includes(quick)
 
       );
+
     }
 
 
     // -------------------------------------------------------
-    // بیمار
+    // Patient
     // -------------------------------------------------------
 
     const patient =
@@ -396,11 +513,12 @@ export class FactorListComponent implements OnInit, OnDestroy {
         ).includes(patient)
 
       );
+
     }
 
 
     // -------------------------------------------------------
-    // پزشک
+    // Doctor
     // -------------------------------------------------------
 
     const doctor =
@@ -418,11 +536,12 @@ export class FactorListComponent implements OnInit, OnDestroy {
         ).includes(doctor)
 
       );
+
     }
 
 
     // -------------------------------------------------------
-    // کلینیک
+    // Clinic
     // -------------------------------------------------------
 
     const clinic =
@@ -440,11 +559,12 @@ export class FactorListComponent implements OnInit, OnDestroy {
         ).includes(clinic)
 
       );
+
     }
 
 
     // -------------------------------------------------------
-    // وضعیت
+    // Status
     // -------------------------------------------------------
 
     if (this.advancedStatus) {
@@ -454,10 +574,12 @@ export class FactorListComponent implements OnInit, OnDestroy {
         inv.status === this.advancedStatus
 
       );
+
     }
 
 
     this.filteredInvoices = result;
+
   }
 
 
@@ -474,6 +596,7 @@ export class FactorListComponent implements OnInit, OnDestroy {
       .toLowerCase()
       .replace(/ي/g, 'ی')
       .replace(/ك/g, 'ک');
+
   }
 
 
@@ -484,6 +607,7 @@ export class FactorListComponent implements OnInit, OnDestroy {
   onSearch(): void {
 
     this.searchSubject.next();
+
   }
 
 
@@ -507,6 +631,7 @@ export class FactorListComponent implements OnInit, OnDestroy {
     this.applyFilters();
 
     this.cdr.markForCheck();
+
   }
 
 
@@ -516,13 +641,6 @@ export class FactorListComponent implements OnInit, OnDestroy {
 
   get selectedInvoices(): Invoice[] {
 
-    /*
-     * از invoices استفاده می‌کنیم، نه filteredInvoices.
-     *
-     * بنابراین اگر کاربر بعد از انتخاب فاکتور
-     * فیلتر را تغییر دهد، انتخاب قبلی حفظ می‌شود.
-     */
-
     return this.invoices.filter(invoice =>
 
       invoice.statusId === 4 &&
@@ -530,6 +648,7 @@ export class FactorListComponent implements OnInit, OnDestroy {
       invoice.isSelected === true
 
     );
+
   }
 
 
@@ -540,6 +659,7 @@ export class FactorListComponent implements OnInit, OnDestroy {
   get totalCount(): number {
 
     return this.selectedInvoices.length;
+
   }
 
 
@@ -553,12 +673,13 @@ export class FactorListComponent implements OnInit, OnDestroy {
 
       (sum, invoice) =>
 
-        sum + Number(
-          invoice.amount || 0
-        ),
+        sum +
+        Number(invoice.amount || 0),
 
       0
+
     );
+
   }
 
 
@@ -573,6 +694,7 @@ export class FactorListComponent implements OnInit, OnDestroy {
       ? this.selectedInvoices[0]
 
       : undefined;
+
   }
 
 
@@ -580,21 +702,12 @@ export class FactorListComponent implements OnInit, OnDestroy {
   // Selected Invoice IDs
   // =========================================================
 
-  /*
-   * توجه:
-   *
-   * اینجا فقط getter داریم.
-   *
-   * بنابراین دیگر نباید این را داشته باشیم:
-   *
-   * selectedInvoiceIds: number[] = [];
-   */
-
   get selectedInvoiceIds(): number[] {
 
     return this.selectedInvoices.map(
       invoice => invoice.id
     );
+
   }
 
 
@@ -611,12 +724,14 @@ export class FactorListComponent implements OnInit, OnDestroy {
     if (selected.length === 0) {
 
       return null;
+
     }
 
 
     return this.getInvoicePhone(
       selected[0]
     );
+
   }
 
 
@@ -624,18 +739,49 @@ export class FactorListComponent implements OnInit, OnDestroy {
   // Check Selectable Invoice
   // =========================================================
 
- isInvoiceSelectable(invoice: Invoice): boolean {
-  if (invoice.statusId !== 4) return false;
-  if (invoice.isSelected) return true;
-  
-  const selected = this.selectedInvoices;
-  if (selected.length === 0) return true;
-  
-  const selectedClinicDoctorId = selected[0].clinicDoctorId;
-  const invoiceClinicDoctorId = invoice.clinicDoctorId;
-  
-  return selectedClinicDoctorId === invoiceClinicDoctorId;
-}
+  isInvoiceSelectable(
+    invoice: Invoice
+  ): boolean {
+
+    if (invoice.statusId !== 4) {
+
+      return false;
+
+    }
+
+
+    if (invoice.isSelected) {
+
+      return true;
+
+    }
+
+
+    const selected =
+      this.selectedInvoices;
+
+
+    if (selected.length === 0) {
+
+      return true;
+
+    }
+
+
+    const selectedClinicDoctorId =
+      selected[0].clinicDoctorId;
+
+
+    const invoiceClinicDoctorId =
+      invoice.clinicDoctorId;
+
+
+    return (
+      selectedClinicDoctorId ===
+      invoiceClinicDoctorId
+    );
+
+  }
 
 
   // =========================================================
@@ -647,12 +793,14 @@ export class FactorListComponent implements OnInit, OnDestroy {
   ): void {
 
     /*
-     * فقط statusId = 4
+     * فقط فاکتورهای statusId = 4
+     * قابل انتخاب هستند.
      */
 
     if (invoice.statusId !== 4) {
 
       return;
+
     }
 
 
@@ -668,12 +816,13 @@ export class FactorListComponent implements OnInit, OnDestroy {
       this.cdr.markForCheck();
 
       return;
+
     }
 
 
     /*
-     * اگر شماره تلفن متفاوت است،
-     * انتخاب ممنوع است.
+     * اگر clinicDoctorId متفاوت باشد،
+     * اجازه انتخاب نداریم.
      */
 
     if (
@@ -681,16 +830,14 @@ export class FactorListComponent implements OnInit, OnDestroy {
     ) {
 
       return;
+
     }
 
-
-    /*
-     * انتخاب فاکتور
-     */
 
     invoice.isSelected = true;
 
     this.cdr.markForCheck();
+
   }
 
 
@@ -705,6 +852,7 @@ export class FactorListComponent implements OnInit, OnDestroy {
     return String(
       invoice.phone || ''
     ).trim();
+
   }
 
 
@@ -716,7 +864,18 @@ export class FactorListComponent implements OnInit, OnDestroy {
     status: string
   ): string {
 
-    return status || '';
+    switch (status) {
+
+      case 'WAITING_INVOICE_SEND':
+
+        return 'انتظار ارسال فاکتور';
+
+      default:
+
+        return status || '';
+
+    }
+
   }
 
 
@@ -731,23 +890,41 @@ export class FactorListComponent implements OnInit, OnDestroy {
     switch (status) {
 
       case 'WAITING_INVOICE_SEND':
-        return 'در انتظار';
 
-      case 'انتظار ارسال فاکتور':
         return 'status-waiting-invoice';
 
+
+      case 'انتظار ارسال فاکتور':
+
+        return 'status-waiting-invoice';
+
+
       case 'پرداخت شده':
+
         return 'status-paid';
 
+
       case 'در حال ساخت':
+
         return 'status-building';
 
+
       case 'تحویل داده شده':
+
         return 'status-delivered';
 
+
+      case 'در انتظار پرداخت':
+
+        return 'status-pending-payment';
+
+
       default:
+
         return '';
+
     }
+
   }
 
 
@@ -761,6 +938,7 @@ export class FactorListComponent implements OnInit, OnDestroy {
   ): number {
 
     return item.id;
+
   }
 
 
@@ -781,6 +959,7 @@ export class FactorListComponent implements OnInit, OnDestroy {
 
 
     this.cdr.markForCheck();
+
   }
 
 
@@ -800,6 +979,7 @@ export class FactorListComponent implements OnInit, OnDestroy {
 
 
     this.cdr.markForCheck();
+
   }
 
 
@@ -815,6 +995,7 @@ export class FactorListComponent implements OnInit, OnDestroy {
 
 
     this.cdr.markForCheck();
+
   }
 
 
@@ -828,36 +1009,27 @@ export class FactorListComponent implements OnInit, OnDestroy {
       this.selectedInvoices;
 
 
-    /*
-     * حداقل یک فاکتور باید انتخاب شده باشد.
-     */
-
     if (selected.length === 0) {
 
       return;
+
     }
 
 
     /*
-     * BillPreview فعلاً فقط یک invoiceId
-     * دریافت می‌کند.
-     *
-     * بنابراین اولین فاکتور انتخاب‌شده
-     * برای نمایش صورتحساب ارسال می‌شود.
+     * BillPreview قابلیت دریافت
+     * چند invoiceId را دارد.
      */
 
     this.selectedInvoiceId =
       selected[0].id;
 
 
-    /*
-     * باز کردن دیالوگ
-     */
-
     this.showBillDialog = true;
 
 
     this.cdr.markForCheck();
+
   }
 
 
@@ -872,10 +1044,8 @@ export class FactorListComponent implements OnInit, OnDestroy {
     this.selectedInvoiceId = null;
 
 
-
     /*
-     * بعد از بسته شدن صورتحساب،
-     * انتخاب‌ها پاک می‌شوند.
+     * پاک کردن انتخاب‌ها
      */
 
     this.invoices.forEach(
@@ -885,10 +1055,17 @@ export class FactorListComponent implements OnInit, OnDestroy {
 
       }
     );
-     this.loadInvoices();
+
+
+    /*
+     * دریافت مجدد اطلاعات
+     */
+
+    this.loadInvoices();
 
 
     this.cdr.markForCheck();
+
   }
 
 }
