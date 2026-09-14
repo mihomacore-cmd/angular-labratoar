@@ -517,7 +517,7 @@
           <ng-container
             *ngIf="!sending; else sendingTemplate"
           >
-            📱 ارسال پیامک جهت واریز صورتحساب
+             ارسال پیامک جهت واریز صورتحساب
           </ng-container>
 
           <ng-template #sendingTemplate>
@@ -532,16 +532,6 @@
         >
           ⚠️ برای فعال‌سازی دکمه ارسال، ابتدا شماره فاکتور را ثبت کنید.
         </div>
-
-        <button
-          type="button"
-          class="btn-cancel"
-          [disabled]="sending"
-          (click)="close()"
-        >
-          بستن
-        </button>
-
       </div>
 
     </ng-container>

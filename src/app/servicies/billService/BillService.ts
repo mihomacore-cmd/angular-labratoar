@@ -46,6 +46,31 @@ export class BillService {
   }
 
 
+sendSms(
+  orderIds: number[],
+  invoiceNumber: string,
+  files: File[]
+): Observable<string> {
+  const token = localStorage.getItem('access_token');
+  const headers = new HttpHeaders({
+    Authorization: `Bearer ${token}`
+    // توجه: Content-Type را ست نکنید چون FormData خودش مرز multipart را می‌سازد
+  });
+
+  const formData = new FormData();
+  formData.append('invoiceNumber', invoiceNumber);
+  orderIds.forEach(id => formData.append('orderIds', id.toString()));
+  files.forEach(file => formData.append('files', file, file.name));
+
+  return this.http.post(`${this.baseUrl}/sendSms`, formData, {
+    headers,
+    responseType: 'text'
+  });
+}
+
+
+
+
 
 
 

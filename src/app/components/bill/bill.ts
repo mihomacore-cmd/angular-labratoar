@@ -17,7 +17,6 @@ import {
   OrderDetailResponse
 } from '../../servicies/kenbanService/kenban.service';
 
-import { InvoiceService } from '../../servicies/invoiceService/InvoiceService';
 import { BillService } from '../../servicies/billService/BillService';
 
 import { Jalali } from '../../components/persianCalender/jalali';
@@ -96,7 +95,6 @@ export class BillPreviewComponent implements OnInit {
 private successAction: 'setInvoice' | 'sendSms' = 'setInvoice';
 
   private kanbanService = inject(KanbanService);
-  private invoiceService = inject(InvoiceService);
   private billService = inject(BillService);
 
 
@@ -276,7 +274,7 @@ private successAction: 'setInvoice' | 'sendSms' = 'setInvoice';
       clinicName: data.clinicName || '',
       doctorName: data.doctorName || '',
       patientName: data.patientName || '',
-      statusCode:  '',
+      statusCode: this.getOrderStatusDisplay(data.orderStatus),
       invoiceType: this.getInvoiceTypeDisplay(data.invoiceType),
       invoiceNumber: data.invoiceNumber || '',
       phoneNumber: data.phoneNumber || '',
@@ -388,48 +386,68 @@ private successAction: 'setInvoice' | 'sendSms' = 'setInvoice';
   // =========================================================
   // Status Class
   // =========================================================
-
-  getStatusClass(status: string): string {
-    switch (status) {
-      case 'در انتظار پرداخت': return 'status-pending-payment';
-      case 'انتظار ارسال فاکتور': return 'status-waiting-invoice';
-      case 'پرداخت شده': return 'status-paid';
-      case 'در حال ساخت': return 'status-building';
-      case 'تحویل داده شده': return 'status-delivered';
-      default: return 'status-default';
-    }
+getStatusClass(status: string): string {
+  switch (status) {
+    case 'در انتظار پرداخت اولیه': return 'status-pending-payment';
+    case 'در انتظار ارسال فاکتور': return 'status-waiting-invoice';
+    case 'در انتظار پرداخت':       return 'status-pending-payment';
+    case 'در انتظار پرداخت نهایی': return 'status-pending-payment';
+    case 'پرداخت شده':              return 'status-paid';
+    case 'در حال ساخت':             return 'status-building';
+    case 'تحویل داده شده':          return 'status-delivered';
+    default:                        return 'status-default';
   }
-
-
+}
   // =========================================================
   // Send SMS
   // =========================================================
 
-  sendSms(): void {
-    if (!this.invoiceIds || this.invoiceIds.length === 0 || this.sending) {
-      return;
-    }
 
-    this.sending = true;
+          sendSms(): void {
+            if (!this.invoiceIds || this.invoiceIds.length === 0 || this.sending) {
+              return;
+            }
 
-    const requests = this.invoiceIds.map(id => this.invoiceService.sendSms(id));
+            // جمع‌آوری شماره فاکتورها (همه باید یکسان باشند چون با یک شماره ثبت شدند)
+            const invoiceNumber = this.orders
+              .map(o => o.invoiceNumber)
+              .filter(n => n && n.trim() !== '')
+              .join(',');
 
-    forkJoin(requests).subscribe({
-      next: () => {
-        this.sending = false;
-       this.showSuccessModalMessage(
-              `پیامک برای ${this.invoiceIds.length} فاکتور با موفقیت ارسال شد.`,
-              'sendSms'
-            );
-      },
-      error: (error) => {
-        console.error('خطا در ارسال پیامک:', error);
-        this.sending = false;
-        this.showErrorModalMessage('در ارسال پیامک خطایی رخ داد. لطفاً مجدداً تلاش کنید.');
-      }
-    });
-  }
+            if (!invoiceNumber) {
+              this.showErrorModalMessage('ابتدا شماره فاکتور را ثبت کنید.');
+              return;
+            }
 
+            this.sending = true;
+
+            // ارسال به BillService با شماره فاکتور، ID سفارش‌ها و فایل‌ها
+            this.billService.sendSms(
+              this.invoiceIds,
+              invoiceNumber,
+              this.selectedFiles
+            ).subscribe({
+              next: (responseMessage: string) => {
+                this.sending = false;
+
+                // پاک کردن فایل‌های انتخاب‌شده بعد از ارسال موفق
+                this.selectedFiles = [];
+
+                this.showSuccessModalMessage(
+                  responseMessage ||
+                    `پیامک برای ${this.invoiceIds.length} فاکتور با موفقیت ارسال شد.`,
+                  'sendSms'
+                );
+              },
+              error: (error) => {
+                console.error('خطا در ارسال پیامک:', error);
+                this.sending = false;
+                this.showErrorModalMessage(
+                  'در ارسال پیامک خطایی رخ داد. لطفاً مجدداً تلاش کنید.'
+                );
+              }
+            });
+          }
 
   // =========================================================
   // Set Invoice Number for current orders
@@ -528,6 +546,25 @@ onFilesSelected(event: Event): void {
 
 removeFile(index: number): void {
   this.selectedFiles.splice(index, 1);
+}
+
+
+
+// =========================================================
+// Order Status Display (تبدیل enum به متن فارسی)
+// =========================================================
+
+private getOrderStatusDisplay(status: string): string {
+  switch (status) {
+    case 'WAITING_INITIAL_PAYMENT': return 'در انتظار پرداخت اولیه';
+    case 'IN_PRODUCTION':           return 'در حال ساخت';
+    case 'WAITING_FINAL_PAYMENT':   return 'در انتظار پرداخت نهایی';
+    case 'WAITING_INVOICE_SEND':    return 'در انتظار ارسال فاکتور';
+    case 'WAITING_PAYMENT':         return 'در انتظار پرداخت';
+    case 'DELIVERED':               return 'تحویل داده شده';
+    case 'Paid':                    return 'پرداخت شده';
+    default:                        return status || '';
+  }
 }
 
 
