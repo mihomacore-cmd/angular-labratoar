@@ -125,6 +125,7 @@ private successAction: 'setInvoice' | 'sendSms' = 'setInvoice';
   errorMessage = '';
 
 
+
   // =========================================================
   // Orders
   // =========================================================
@@ -158,6 +159,7 @@ private successAction: 'setInvoice' | 'sendSms' = 'setInvoice';
   invoiceNumberToSet = '';
   settingInvoiceNumber = false;
   setInvoiceError = '';
+  selectedFiles: File[] = [];
 
 
   // =========================================================
@@ -515,5 +517,18 @@ private successAction: 'setInvoice' | 'sendSms' = 'setInvoice';
     if (this.orders.length === 0) return false;
     return this.orders.every(order => order.invoiceNumber && order.invoiceNumber.trim() !== '');
   }
+
+onFilesSelected(event: Event): void {
+  const input = event.target as HTMLInputElement;
+
+  this.selectedFiles = input.files
+    ? Array.from(input.files)
+    : [];
+}
+
+removeFile(index: number): void {
+  this.selectedFiles.splice(index, 1);
+}
+
 
 }

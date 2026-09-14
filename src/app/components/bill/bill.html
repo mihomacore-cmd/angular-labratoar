@@ -114,41 +114,166 @@
       </div>
 
 
-      <!-- =================================================== -->
-      <!-- Set Invoice Number Section -->
-      <!-- =================================================== -->
+<!-- =================================================== -->
+<!-- Set Invoice Number + Attachments -->
+<!-- =================================================== -->
 
-      <div
-        class="set-invoice-section"
-        *ngIf="orders.length > 0"
-      >
-        <div class="set-invoice-group">
-          <input
-            type="text"
-            class="set-invoice-input"
-            placeholder="شماره فاکتور جدید را وارد کنید..."
-            [(ngModel)]="invoiceNumberToSet"
-            [disabled]="settingInvoiceNumber"
-            (keydown.enter)="setInvoiceNumberForOrders()"
-          />
-          <button
-            type="button"
-            class="btn-set-invoice"
-            (click)="setInvoiceNumberForOrders()"
-            [disabled]="settingInvoiceNumber || !invoiceNumberToSet.trim()"
-          >
-            <span *ngIf="!settingInvoiceNumber">📝 ثبت شماره فاکتور</span>
-            <span *ngIf="settingInvoiceNumber">⏳ در حال ثبت...</span>
-          </button>
-        </div>
-        <div
-          *ngIf="setInvoiceError"
-          class="set-invoice-error"
-        >
-          {{ setInvoiceError }}
-        </div>
-      </div>
+                <div
+                  class="set-invoice-section"
+                  *ngIf="orders.length > 0"
+                >
 
+                  <div class="invoice-input-wrapper">
+
+                    <!-- شماره فاکتور -->
+                    <div class="invoice-number-box">
+
+                      <div class="field-label">
+                        <span class="field-icon">🧾</span>
+                        <span>شماره فاکتور</span>
+                      </div>
+
+                      <div class="set-invoice-group">
+
+                        <input
+                          type="text"
+                          class="set-invoice-input"
+                          placeholder="شماره فاکتور جدید را وارد کنید..."
+                          [(ngModel)]="invoiceNumberToSet"
+                          [disabled]="settingInvoiceNumber"
+                          (keydown.enter)="setInvoiceNumberForOrders()"
+                        />
+
+                        <button
+                          type="button"
+                          class="btn-set-invoice"
+                          (click)="setInvoiceNumberForOrders()"
+                          [disabled]="
+                            settingInvoiceNumber ||
+                            !invoiceNumberToSet.trim()
+                          "
+                        >
+                          <span *ngIf="!settingInvoiceNumber">
+                            📝 ثبت شماره فاکتور
+                          </span>
+
+                          <span *ngIf="settingInvoiceNumber">
+                            ⏳ در حال ثبت...
+                          </span>
+                        </button>
+
+                      </div>
+
+                    </div>
+
+
+                    <!-- آپلود فایل -->
+                    <div class="invoice-file-box">
+
+                      <div class="field-label">
+                        <span class="field-icon">📎</span>
+                        <span>فایل فاکتور</span>
+                      </div>
+
+                      <label
+                        for="invoice-attachments"
+                        class="upload-file-button"
+                      >
+
+                        <span class="upload-icon">
+                          ⬆
+                        </span>
+
+                        <span class="upload-content">
+                          <strong>بارگذاری فایل</strong>
+                          <small>
+                            PNG، JPG، JPEG، PDF
+                          </small>
+                        </span>
+
+                      </label>
+
+                      <input
+                        id="invoice-attachments"
+                        type="file"
+                        class="hidden-file-input"
+                        multiple
+                        accept=".png,.jpg,.jpeg,.pdf"
+                        (change)="onFilesSelected($event)"
+                      />
+
+                    </div>
+
+                  </div>
+
+
+                  <!-- فایل‌های انتخاب شده -->
+                  <div
+                    class="selected-files"
+                    *ngIf="selectedFiles.length > 0"
+                  >
+
+                    <div class="selected-files-header">
+
+                      <span>
+                        فایل‌های انتخاب‌شده
+                      </span>
+
+                      <span class="file-count">
+                        {{ selectedFiles.length }} فایل
+                      </span>
+
+                    </div>
+
+
+                    <div class="file-items">
+
+                      <div
+                        class="file-item"
+                        *ngFor="let file of selectedFiles; let i = index"
+                      >
+
+                        <div class="file-icon">
+                          📄
+                        </div>
+
+                        <div class="file-info">
+
+                          <span class="file-name">
+                            {{ file.name }}
+                          </span>
+
+                          <span class="file-size">
+                            {{ (file.size / 1024 / 1024).toFixed(2) }} MB
+                          </span>
+
+                        </div>
+
+                        <button
+                          type="button"
+                          class="remove-file-btn"
+                          (click)="removeFile(i)"
+                          aria-label="حذف فایل"
+                        >
+                          ×
+                        </button>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+
+                  <!-- خطای شماره فاکتور -->
+                  <div
+                    *ngIf="setInvoiceError"
+                    class="set-invoice-error"
+                  >
+                    {{ setInvoiceError }}
+                  </div>
+
+                </div>
 
       <!-- =================================================== -->
       <!-- Selected Phone -->

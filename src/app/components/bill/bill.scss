@@ -1234,3 +1234,246 @@ $background-light: #f8fafc;
     font-size: 0.95rem;
   }
 }
+
+
+
+// ============================================================
+// Invoice File Upload (بارگذاری فایل فاکتور)
+// ============================================================
+
+.invoice-file-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 220px;
+}
+
+// لیبل مشترک (شماره فاکتور + فایل)
+.field-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: $text-main;
+
+  .field-icon {
+    font-size: 14px;
+  }
+}
+
+// دکمه آپلود (label)
+.upload-file-button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #ffffff;
+  border: 2px dashed #b0c8e0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  user-select: none;
+
+  &:hover {
+    border-color: $primary-color;
+    background: #f0fdfa;
+
+    .upload-icon {
+      background: $primary-color;
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    .upload-content strong {
+      color: $primary-color;
+    }
+  }
+
+  &:active {
+    transform: scale(0.99);
+  }
+
+  .upload-icon {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ccfbf1;
+    color: $primary-color;
+    border-radius: 50%;
+    font-size: 18px;
+    font-weight: 800;
+    transition: all 0.25s ease;
+    flex-shrink: 0;
+  }
+
+  .upload-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    line-height: 1.3;
+
+    strong {
+      font-size: 13px;
+      font-weight: 700;
+      color: $text-main;
+      transition: color 0.2s ease;
+    }
+
+    small {
+      font-size: 11px;
+      color: $text-light;
+    }
+  }
+}
+
+// input مخفی
+.hidden-file-input {
+  display: none;
+}
+
+// ============================================================
+// Selected Files
+// ============================================================
+
+.selected-files {
+  margin-top: 6px;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.selected-files-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: #f8fafc;
+  border-bottom: 1px solid $border-color;
+  font-size: 12px;
+  font-weight: 700;
+  color: $text-main;
+
+  .file-count {
+    color: $primary-color;
+    font-size: 11.5px;
+    background: #f0fdfa;
+    padding: 3px 9px;
+    border-radius: 12px;
+  }
+}
+
+.file-items {
+  display: flex;
+  flex-direction: column;
+  max-height: 180px;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+  }
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.2s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: #f8fffe;
+  }
+
+  .file-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0fdfa;
+    color: $primary-color;
+    border-radius: 8px;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+
+  .file-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+
+    .file-name {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: $text-main;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-size {
+      font-size: 11px;
+      color: $text-light;
+    }
+  }
+
+  .remove-file-btn {
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    background: #fef2f2;
+    color: $danger-color;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+
+    &:hover {
+      background: $danger-color;
+      color: #fff;
+      transform: rotate(90deg);
+    }
+  }
+}
+
+// ریسپانسیو برای بخش آپلود
+@media (max-width: 700px) {
+  .invoice-file-box {
+    min-width: 100%;
+  }
+
+  .upload-file-button {
+    padding: 10px 12px;
+
+    .upload-icon {
+      width: 34px;
+      height: 34px;
+      font-size: 16px;
+    }
+
+    .upload-content strong {
+      font-size: 12.5px;
+    }
+  }
+}
