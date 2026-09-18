@@ -2251,3 +2251,156 @@
     transform: scale(1.08);
     box-shadow: 0 20px 40px rgba(0,0,0,0.2);
 }
+/* =====================================================
+   موبایل - کارت دیجیتال
+   ===================================================== */
+
+@media (max-width: 600px) {
+
+  /* خود کارت */
+  .card-digital {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 1rem;
+    border-radius: 20px;
+    margin-top: 0.75rem;
+    box-shadow:
+      0 8px 25px rgba(59, 110, 255, 0.12),
+      0 0 35px rgba(59, 110, 255, 0.08);
+  }
+
+  /* محتوای کارت */
+  .card-digital .digital-content {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  /* =========================
+     ویدیو
+     ========================= */
+  .card-digital .digital-icon {
+    width: 100% !important;
+    height: 170px !important;
+    flex: none !important;
+    border-radius: 18px !important;
+    overflow: hidden;
+    margin: 0 auto;
+    box-shadow:
+      0 8px 20px rgba(59, 110, 255, 0.15),
+      inset 0 0 0 1px rgba(59, 110, 255, 0.1);
+  }
+
+  .card-digital .digital-icon video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;
+    border-radius: 18px;
+    display: block;
+  }
+
+  /* =========================
+     بخش نوشته‌ها
+     ========================= */
+  .card-digital .digital-content > div:last-child {
+    width: 100%;
+    text-align: center;
+  }
+
+  .card-digital h2 {
+    font-size: 1.45rem;
+    line-height: 1.6;
+    margin: 0;
+    color: #1a2a6a;
+  }
+
+  .card-digital p {
+    font-size: 0.95rem;
+    line-height: 2;
+    margin: 0.5rem 0 0.8rem;
+    min-height: auto;
+    color: #2d3a6e;
+  }
+
+  /* خط زیر عنوان */
+  .card-digital .title-divider {
+    width: 55px;
+    height: 3px;
+    margin: 0.5rem auto 0.8rem;
+  }
+
+  .card-digital:hover .title-divider {
+    width: 55px;
+  }
+
+  /* =========================
+     بخش پیشرفت
+     ========================= */
+  .card-digital .progress-wrapper {
+    width: 100%;
+    margin-top: 0.8rem;
+  }
+
+  .card-digital .progress-label {
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+
+  .card-digital .progress-text {
+    font-size: 0.85rem;
+  }
+
+  .card-digital .icon-vial {
+    font-size: 1.1rem;
+  }
+
+  .card-digital .progress-bar-container {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .card-digital .progress-bar {
+    height: 7px;
+  }
+
+  .card-digital .progress-percent {
+    font-size: 0.78rem;
+    padding: 0.15rem 0.55rem;
+  }
+}
+
+
+/* =====================================================
+   گوشی‌های خیلی کوچک
+   ===================================================== */
+
+@media (max-width: 380px) {
+
+  .card-digital {
+    padding: 0.8rem;
+    border-radius: 18px;
+  }
+
+  .card-digital .digital-icon {
+    height: 145px !important;
+  }
+
+  .card-digital h2 {
+    font-size: 1.3rem;
+  }
+
+  .card-digital p {
+    font-size: 0.88rem;
+    line-height: 1.9;
+  }
+
+  .card-digital .progress-text {
+    font-size: 0.78rem;
+  }
+
+  .card-digital .progress-percent {
+    font-size: 0.72rem;
+  }
+}
