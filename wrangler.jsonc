@@ -1,0 +1,9 @@
+﻿{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "negar",
+  "compatibility_date": "2026-09-18",
+  "assets": {
+    "directory": "./dist/angular_corse/browser",
+    "not_found_handling": "single-page-application"
+  }
+}
